@@ -1,0 +1,7 @@
+*.log
+*.pdb
+*.fasta
+Coeliac*
+choose_mutants*
+868*
+201*
