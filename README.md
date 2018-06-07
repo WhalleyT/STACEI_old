@@ -9,9 +9,13 @@ STACEI leverages several pre-existing tools for its analyses. As such, the follo
 ### Prerequisites
 
 STACEI leverages several pre-existing tools for its analyses. As such, the following must already be installed before using it:
+
 *[CCP4 suite](http://www.ccp4.ac.uk/)
+
 *[Python 2.7](https://www.python.org/download/releases/2.7/)
+
 *[R](https://www.r-project.org/)
+
 *[PyMol](https://www.schrodinger.com/suites/pymol)
 
 ### Installing
