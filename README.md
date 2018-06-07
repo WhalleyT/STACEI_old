@@ -22,10 +22,7 @@ STACEI leverages several pre-existing tools for its analyses. As such, the follo
 todo
 
 ## Authors
-
-**Bruce MacLachlan**
-**Barbara Szomolay**
-**Tom Whalley**
+Manuscript in  progress
 
 ## License
 
