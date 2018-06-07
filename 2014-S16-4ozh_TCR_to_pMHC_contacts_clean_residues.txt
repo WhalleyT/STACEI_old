@@ -1,0 +1,21 @@
+Chain 	Annotation 	ResNum 	ResCode 	Chain 	Annotation 	ResNum 	ResCode 	vdW 	HB 	SB 
+TCRB		28	G	MHCB		58	Y	True	False	False	
+TCRB		37	T	peptide		9	P	True	False	False	
+TCRB		57	Q	MHCA		61	T	True	False	False	
+TCRB		66	P	MHCA		57	Q	True	False	False	
+TCRB		108	V	MHCB		62	Q	True	False	False	
+TCRB		108	V	peptide		8	Y	True	False	False	
+TCRB		109	R	MHCA		61	T	True	False	False	
+TCRB		109	R	MHCA		62	N	True	False	False	
+TCRB		109	R	MHCA		65	V	True	False	False	
+TCRB		109	R	peptide		6	L	True	False	False	
+TCRB		109	R	peptide		7	P	True	False	False	
+TCRB		109	R	peptide		8	Y	True	False	False	
+TCRB		110	S	MHCA		61	T	True	False	False	
+TCRB		113	T	MHCB		68	R	True	False	False	
+TCRB		113	T	peptide		6	L	True	False	False	
+TCRB		114	D	MHCB		68	R	True	False	False	
+TCRB		114	D	peptide		8	Y	True	False	False	
+TCRB		115	T	MHCB		64	D	True	False	False	
+TCRB		115	T	MHCB		68	R	True	False	False	
+TCRB		117	Y	MHCB		64	D	True	False	False	

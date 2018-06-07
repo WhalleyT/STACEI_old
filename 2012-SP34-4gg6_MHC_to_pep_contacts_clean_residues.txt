@@ -1,0 +1,23 @@
+Chain 	Annotation 	ResNum 	ResCode 	Chain 	Annotation 	ResNum 	ResCode 	vdW 	HB 	SB 
+MHCA		10	Y	peptide		6	F	True	False	False	
+MHCA		24	Y	peptide		5	S	True	False	False	
+MHCA		26	H	peptide		4	G	True	False	False	
+MHCA		26	H	peptide		5	S	True	False	False	
+MHCA		45	W	peptide		3	E	True	False	False	
+MHCA		54	R	peptide		3	E	True	False	False	
+MHCA		55	R	peptide		2	G	True	False	False	
+MHCA		55	R	peptide		3	E	True	False	False	
+MHCA		56	F	peptide		5	S	True	False	False	
+MHCA		64	N	peptide		6	F	True	False	False	
+MHCA		64	N	peptide		7	Q	True	False	False	
+MHCA		64	N	peptide		8	P	True	False	False	
+MHCA		67	V	peptide		8	P	True	False	False	
+MHCA		70	H	peptide		11	E	True	False	False	
+MHCA		71	N	peptide		9	S	True	False	False	
+MHCA		71	N	peptide		10	Q	True	False	False	
+MHCA		71	N	peptide		11	E	True	False	False	
+MHCA		74	I	peptide		11	E	True	False	False	
+MHCA		74	I	peptide		12	N	True	False	False	
+MHCA		74	I	peptide		13	P	True	False	False	
+MHCA		75	V	peptide		11	E	True	False	False	
+MHCA		78	R	peptide		11	E	True	False	False	
