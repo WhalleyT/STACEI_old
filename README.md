@@ -5,7 +5,6 @@ STACEI is a tool, primarily written in Python and R designed for the analysis an
 
 ## Getting Started
 
-STACEI leverages several pre-existing tools for its analyses. As such, the following must alre
 ### Prerequisites
 
 STACEI leverages several pre-existing tools for its analyses. As such, the following must already be installed before using it:
