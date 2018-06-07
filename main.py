@@ -11,6 +11,7 @@ import bin.contact_map as con_map
 import bin.new_pisa as pisa
 import bin.planar_crossing_angle as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
+import bin.electrostatics as electro
 
 import warnings
 
@@ -153,11 +154,32 @@ def main():
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
 
+    """
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex)
 
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
+    """
+
+ ####################################################################################################################
+
+    """
+     Check crystal structure validation in pymol
+    """
+    mtz = None
+    if mtz is not None:
+        electro.mtz_map()
+
+
+ ####################################################################################################################
+
+    """
+     Check crystal structure validation in pymol
+    """
+
+
+
 
 if __name__ == "__main__":
     main()
