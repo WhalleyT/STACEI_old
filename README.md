@@ -17,8 +17,10 @@ STACEI leverages several pre-existing tools for its analyses. As such, the follo
 
 * [PyMol](https://www.schrodinger.com/suites/pymol)
 
+* [ANARCI](http://opig.stats.ox.ac.uk/webapps/sabdab-sabpred/ANARCI.php)
+
 ### Installing
-todo
+
 
 ## Authors
 Manuscript in  progress
