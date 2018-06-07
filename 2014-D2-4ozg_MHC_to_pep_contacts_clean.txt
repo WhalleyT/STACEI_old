@@ -1,1 +1,0 @@
-Donor_Chain_Letter 	Donor_Chain 	Donor_ResNum 	Donor_Annotation 	Donor_ResCode 	Donor_Position 	Donor_Atom 	Acceptor_Chain_Letter 	Acceptor_Chain 	Acceptor_ResNum 	Acceptor_Annotation 	Acceptor_ResCode 	Acceptor_Position 	Acceptor_Atom 	Distance 	Type

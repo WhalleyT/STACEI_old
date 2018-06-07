@@ -1,1 +1,0 @@
-Chain 	Annotation 	ResNum 	ResCode 	Chain 	Annotation 	ResNum 	ResCode 	vdW 	HB 	SB 
