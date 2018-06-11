@@ -115,12 +115,12 @@ def main():
 
     
     print "Generating contact maps for TCR to pMHC contacts"
-    """
+
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, [], pdb.name)
     for tcr, pmhc, smart in zip(tcr_permutations.tcr_safe, tcr_permutations.pmhc_safe, tcr_permutations.safe_calls):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, smart, pdb.name)
-    """
+
 
     print "Cleaning and generating p to MHC contacts"
     # MHC -> peptide contacts
@@ -156,7 +156,7 @@ def main():
     pisa.call_pisa(pdb.imgt, "full_complex")
     for i,j in zip(pisa_files.order, pisa_files.monomers):
         BSA, ASA = pisa.extract_pisa("full_complex", j, i)
-    
+
 
  ####################################################################################################################
 

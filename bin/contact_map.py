@@ -709,3 +709,4 @@ def generate_mhc(seqFile, MHCclass, fileName) :
     plt.savefig(mapPath + "/svg/" + outputName + ".svg", format="svg", transparent=True)
     plt.savefig(mapPath + "/png/" + outputName + ".png", format="png", transparent=True)
     #print('\n''     ~  End of contactMap_pMHC.py v1.0  ~')
+    clear()
