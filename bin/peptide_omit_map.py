@@ -106,23 +106,6 @@ def omit_map():
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
 
-    # Make output folder #
-
-    if not os.path.exists(fileName):
-        print "Creating Directory " + fileName
-        os.makedirs(fileName)
-
-    if not os.path.exists(fileName + "/visualisation"):
-        print "Creating Directory " + fileName + "/visualisation"
-        os.makedirs(fileName + "/visualisation")
-
-    if not os.path.exists(fileName + "/maps"):
-        print "Creating Directory " + fileName + "/maps"
-        os.makedirs(fileName + "/maps")
-
-    if not os.path.exists(fileName + "/pdbs"):
-        print "Creating Directory " + fileName + "/pdbs"
-        os.makedirs(fileName + "/pdbs")
 
     if mtz != "ebi":
         print "A map.mtz file was provided!", mtz, "will be moved to", fileName + "/maps/" + fileName + ".mtz"

@@ -15,7 +15,6 @@ import bin.peptide_MHC_visualise as electrostatic
 
 import warnings
 
-from Bio.PDB import PDBExceptions
 from Bio import BiopythonWarning
 
 
@@ -32,7 +31,6 @@ def main():
 
 
     if args.suppress:
-        #warnings.simplefilter('ignore', PDBExceptions) <- ignnoring PDB exceptions seems to be an issue?
         warnings.simplefilter('ignore', BiopythonWarning)
 
 
