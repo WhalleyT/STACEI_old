@@ -30,24 +30,30 @@ def main():
     print "Collecting parse arguments"
     args, auto = housekeeping.check_parse()
 
+
     if args.suppress:
-        warnings.simplefilter('ignore', PDBExceptions)
+        #warnings.simplefilter('ignore', PDBExceptions) <- ignnoring PDB exceptions seems to be an issue?
         warnings.simplefilter('ignore', BiopythonWarning)
+
 
     print "Assigning classes"
     pdb = classes.PDBStrings(args.infile)
 
+    
     print "Assigning paths"
     paths = housekeeping.create_paths(pdb.name)
 
+    
     print "Finding TCR-pMHC chain annotation"
     tcra, tcrb, peptide, mhca, mhcb, mhc_class = annotation.annotate_complex(pdb.file, pdb.filtered, pdb.numbered)
     full_complex = classes.ChainInformation(tcra, tcrb, peptide, mhc_class, mhca, mhcb)
 
+    
     print "TCRa and TCRb are %s and %s, respectively" % (tcra, tcrb)
     print "MHCa and MHCb are %s and %s respectively" % (mhca, mhcb)
     print "Peptide is %s" % peptide
     print "MHC is class %i" % mhc_class
+
 
     ####################################################################################################################
 
@@ -72,6 +78,7 @@ def main():
     print "Renumbering file to IMGT standards"
     imgt.renumber_ANARCI(fasta_files.annotated, pdb.numbered, full_complex.tcra, full_complex.tcrb,
                          full_complex.peptide, full_complex.mhca, full_complex.mhcb)
+
 
     ####################################################################################################################
 
@@ -106,8 +113,9 @@ def main():
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.tcr_to_mhc_residues)
     contacts.stats(contact_paths.tcr_to_mhc_clean_file, pdb.name)
 
-    """
+    
     print "Generating contact maps for TCR to pMHC contacts"
+    """
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, [], pdb.name)
     for tcr, pmhc, smart in zip(tcr_permutations.tcr_safe, tcr_permutations.pmhc_safe, tcr_permutations.safe_calls):
@@ -123,6 +131,7 @@ def main():
 
     print "Generating contact maps for p to MHC"
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
+
 
     ####################################################################################################################
 
@@ -147,6 +156,7 @@ def main():
     pisa.call_pisa(pdb.imgt, "full_complex")
     for i,j in zip(pisa_files.order, pisa_files.monomers):
         BSA, ASA = pisa.extract_pisa("full_complex", j, i)
+    
 
  ####################################################################################################################
 
@@ -154,22 +164,19 @@ def main():
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
 
-    """
-    crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
+
+    crossing_angle.calculate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex)
 
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
-    """
+
 
  ####################################################################################################################
 
     """
      Check crystal structure validation in pymol
     """
-    mtz = None
-    if mtz is not None:
-        electro.mtz_map()
 
 
  ####################################################################################################################
