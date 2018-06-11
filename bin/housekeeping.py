@@ -19,6 +19,8 @@ def _parse_args():
                         help='Flag. If provided, structures will be ray traced in Pymol. This will affect performance.')
     parser.add_argument('--suppress', '-S', dest='suppress', action='store_true',
                         help='Flag. If provided stdout output will be suppressed (inc. CCP4, Pymol and ANARCI)')
+    parser.add_argument('--mtz', '-M', dest='mtz', required=False, default='ebi', type=str,
+                        help='The MTZ file to be analysed')
     args = parser.parse_args()
     return args
 

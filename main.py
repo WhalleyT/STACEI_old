@@ -11,7 +11,7 @@ import bin.contact_map as con_map
 import bin.new_pisa as pisa
 import bin.planar_crossing_angle as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
-import bin.electrostatics as electro
+import bin.peptide_MHC_visualise as electrostatic
 
 import warnings
 
@@ -178,12 +178,9 @@ def main():
      Check crystal structure validation in pymol
     """
 
+    electrostatic.visualise_omit_MHC_only(pdb.clean_imgt, args.mtz, full_complex.complex, args.ray_trace)
+    electrostatic.omit_map(pdb.clean_imgt, args.mtz, full_complex.complex, args.ray_trace)
 
- ####################################################################################################################
-
-    """
-     Check crystal structure validation in pymol
-    """
 
 
 
