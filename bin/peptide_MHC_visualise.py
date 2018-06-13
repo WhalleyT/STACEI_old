@@ -3,6 +3,7 @@ import pymol
 import sys
 import time
 import shutil
+import urllib
 
 import bin.data.colourSet as colourSet
 import bin.data.viewSet as viewSet
@@ -58,67 +59,70 @@ def rayTime(saveas):
     print "Done! " + str(saveas) + " was outputted"
 
 
-def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray):
-    pdb_name = pdb.rsplit('.', 1)[0].lower()
-
-    fileName = pdb.rsplit('.', 1)[0]
+def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
+    pdb_name = file_name.lower()
 
     # Make output folder #
+    print file_name
 
-    if not os.path.exists(fileName):
-        print "Creating Directory " + fileName
-        os.makedirs(fileName)
+    if not os.path.exists(file_name):
+        print "Creating Directory " + file_name
+        os.makedirs(file_name)
 
-    if not os.path.exists(fileName + "/visualisation"):
-        print "Creating Directory " + fileName + "/visualisation"
-        os.makedirs(fileName + "/visualisation")
+    if not os.path.exists(file_name + "/visualisation"):
+        print "Creating Directory " + file_name + "/visualisation"
+        os.makedirs(file_name + "/visualisation")
 
-    if not os.path.exists(fileName + "/maps"):
-        print "Creating Directory " + fileName + "/maps"
-        os.makedirs(fileName + "/maps")
+    if not os.path.exists(file_name + "/maps"):
+        print "Creating Directory " + file_name + "/maps"
+        os.makedirs(file_name + "/maps")
 
     if mtz != "ebi":
-        print "A map.mtz file was provided!", mtz, "will be moved to", fileName + "/maps/" + fileName + ".mtz"
+        print "A map.mtz file was provided!", mtz, "will be moved to", file_name + "/electrostatics/" + file_name + ".mtz"
 
-        shutil.copy(mtz, fileName + "/maps/" + fileName + ".mtz")
+        shutil.copy(mtz, file_name + "/electrostatics/" + file_name + ".mtz")
 
     if mtz == "ebi":
-        if not os.path.exists(fileName + "/maps/" + fileName + ".mtz"):
+        if not os.path.exists(file_name + "/electrostatics/" + file_name + ".mtz"):
             print "Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)"
-            import urllib
 
-            urllib.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
-                               fileName + "/maps/" + fileName + ".mtz")
+            try:
+                urllib.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
+                               file_name + "/electrostatics/" + file_name + ".mtz")
+            except:
+                print "Could not retrieve url. Please try again, making sure you either supply a file," \
+                      " or your file shares its name with one on PDB"
+                # quit early, get rid of pymol
+                pymol.cmd.quit()
+                sys.exit()
+
+
         else:
             "Did not need to download from ebi as map.mtz already exists"
 
-        if os.path.exists(fileName + "/maps/" + fileName + ".mtz"):
+        if os.path.exists(file_name + "/electrostatics/" + file_name + ".mtz"):
             print "Download successful!"
-        else:
-            sys.exit(
-                "ERROR! Could not scrape the map.mtz file from the EBI server. Ensure input pdb "
-                "file is named according to pdb entry name or supply loca mtz file")
 
-    mtz = fileName + "/maps/" + fileName + ".mtz"
+    mtz = file_name + "/electrostatics/" + file_name + ".mtz"
 
     # Use CCP4 to generate map
 
-    os.system("fft HKLIN " + mtz + " MAPOUT " + fileName + "/maps/" +
-              fileName + ".map1.tmp" + " < " + "bin/EDMparam1.tmp")
-    os.system("mapmask MAPIN " + fileName + "/maps/" + fileName + ".map1.tmp" +
-              " MAPOUT " + fileName + "/maps/" + fileName + ".map.ccp4" + " XYZIN " + pdb + " < " + "bin/EDMparam2.tmp")
-    os.system("fft HKLIN " + mtz + " MAPOUT " + fileName + "/maps/" +
-              fileName + ".map3.tmp" + " < " + " bin/EDMparam3.tmp")
-    os.system("mapmask MAPIN " + fileName + "/maps/" + fileName + ".map3.tmp" +
-              " MAPOUT " + fileName + "/maps/" + fileName + ".difference_map.ccp4" +
+    os.system("fft HKLIN " + mtz + " MAPOUT " + file_name + "/electrostatics/" +
+              file_name + ".map1.tmp" + " < " + "bin/EDMparam1.tmp")
+    os.system("mapmask MAPIN " + file_name + "/electrostatics/" + file_name + ".map1.tmp" +
+              " MAPOUT " + file_name + "/electrostatics/" + file_name + ".map.ccp4" + " XYZIN " + pdb + " < " + "bin/EDMparam2.tmp")
+    os.system("fft HKLIN " + mtz + " MAPOUT " + file_name + "/electrostatics/" +
+              file_name + ".map3.tmp" + " < " + " bin/EDMparam3.tmp")
+    os.system("mapmask MAPIN " + file_name + "/electrostatics/" + file_name + ".map3.tmp" +
+              " MAPOUT " + file_name + "/electrostatics/" + file_name + ".difference_map.ccp4" +
               " XYZIN " + pdb + " < " + "bin/EDMparam4.tmp")
 
-    os.remove(fileName + "/maps/" + fileName + ".map1.tmp")
-    os.remove(fileName + "/maps/" + fileName + ".map3.tmp")
+    os.remove(file_name + "/electrostatics/" + file_name + ".map1.tmp")
+    os.remove(file_name + "/electrostatics/" + file_name + ".map3.tmp")
 
-    edmap = fileName + "/maps/" + fileName + ".map.ccp4"
+    edmap = file_name + "/electrostatics/" + file_name + ".map.ccp4"
 
-    diffmap = fileName + "/maps/" + fileName + ".difference_map.ccp4"
+    diffmap = file_name + "/electrostatics/" + file_name + ".difference_map.ccp4"
 
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
@@ -142,14 +146,14 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray):
     pymol.cmd.reinitialize()
 
     pymol.cmd.load(pdb, "complex")
-    pymol.cmd.load(edmap, fileName + "_map")
-    pymol.cmd.load(diffmap, fileName + "_dmap")
+    pymol.cmd.load(edmap, file_name + "_map")
+    pymol.cmd.load(diffmap, file_name + "_dmap")
 
     # align to template
     print "\nAligning file to template...\n"
     pymol.cmd.load("bin/" + MHCclass + "_template.pdb")
     pymol.cmd.align("complex", MHCclass + "_template")
-    pymol.cmd.matrix_copy("complex", fileName + "_map")
+    pymol.cmd.matrix_copy("complex", file_name + "_map")
     pymol.cmd.delete(MHCclass + "_template")
     print "\nAlignment to " + MHCclass + "_template.pdb complete!\n"
 
@@ -174,9 +178,9 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray):
     pymol.cmd.select("MHCa2", selection=MHCa2[0] + "s and resi " + locs)
 
     # Make electron density map
-    pymol.cmd.map_double(fileName + "_map", -1)
-    pymol.cmd.isomesh("p_map_1sigma", fileName + "_map", 1.0, "ps", carve=1.6)
-    pymol.cmd.isomesh("p_map_05sigma", fileName + "_map", 0.5, "ps", carve=1.6)
+    pymol.cmd.map_double(file_name + "_map", -1)
+    pymol.cmd.isomesh("p_map_1sigma", file_name + "_map", 1.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("p_map_05sigma", file_name + "_map", 0.5, "ps", carve=1.6)
     pymol.cmd.set("mesh_width", 0.5)
 
     pymol.cmd.hide("mesh", "all")
@@ -189,7 +193,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray):
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm1sig", action="store")
     if ray:
-        PeptideEdm1sig = fileName + "/visualisation/" + "PeptideEdm1sig.png"
+        PeptideEdm1sig = file_name + "/visualisation/" + "PeptideEdm1sig.png"
         rayTime(PeptideEdm1sig)
 
     pymol.cmd.hide("mesh", "all")
@@ -200,23 +204,23 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray):
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm05sig", action="store")
     if ray:
-        PeptideEdm05sig = fileName + "/visualisation/" + "PeptideEdm05sig.png"
+        PeptideEdm05sig = file_name + "/visualisation/" + "PeptideEdm05sig.png"
         rayTime(PeptideEdm05sig)
 
     # Make difference map
 
     pymol.cmd.hide("mesh", "all")
-    pymol.cmd.isomesh("posdiffmesh", fileName + "_dmap", 3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("posdiffmesh", file_name + "_dmap", 3.0, "ps", carve=1.6)
     pymol.cmd.color("green", "posdiffmesh")
     pymol.cmd.show("mesh", "posdiffmesh")
-    pymol.cmd.isomesh("negdiffmesh", fileName + "_dmap", -3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("negdiffmesh", file_name + "_dmap", -3.0, "ps", carve=1.6)
     pymol.cmd.color("red", "negdiffmesh")
     pymol.cmd.show("mesh", "negdiffmesh")
 
     # Photo op here
     pymol.cmd.scene(key="differencemap", action="store")
     if ray:
-        differencemap = fileName + "/visualisation/" + "differencemap.png"
+        differencemap = file_name + "/visualisation/" + "differencemap.png"
         rayTime(differencemap)
 
     # pMHC helices
@@ -228,7 +232,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray):
     # Photo op here
     pymol.cmd.scene(key="MHChelixPeptide1", action="store")
     if ray:
-        MHChelixPeptide1 = fileName + "/visualisation/" + "MHChelixPeptid1e.png"
+        MHChelixPeptide1 = file_name + "/visualisation/" + "MHChelixPeptid1e.png"
         rayTime(MHChelixPeptide1)
 
     # Copy above scene but with a pink peptide
@@ -239,103 +243,98 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray):
 
     pymol.cmd.scene(key="MHChelixPeptide2", action="store")
     if ray:
-        MHChelixPeptide2 = fileName + "/visualisation/" + "MHChelixPeptide2.png"
+        MHChelixPeptide2 = file_name + "/visualisation/" + "MHChelixPeptide2.png"
         rayTime(MHChelixPeptide2)
 
     # Save the session
-    pymol.cmd.save(fileName + "/visualisation/" + fileName + "_peptideMHCvis.pse")
+    pymol.cmd.save(file_name + "/visualisation/" + file_name + "_peptideMHCvis.pse")
 
     # Quit pymol
-    pymol.cmd.quit()
+    #pymol.cmd.quit()
     print('     ~  End peptideMHCvisualisation.py v0.1 BETA  ~')
 
 
-def omit_map(pdb, mtz, MHCclass, chains, ray):
+def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     pdb_name = pdb.rsplit('.', 1)[0].lower()
-
-    fileName = pdb.rsplit('.', 1)[0]
 
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
 
     # Make output folder #
 
-    if not os.path.exists(fileName):
-        print "Creating Directory " + fileName
-        os.makedirs(fileName)
+    if not os.path.exists(file_name):
+        print "Creating Directory " + file_name
+        os.makedirs(file_name)
 
-    if not os.path.exists(fileName + "/visualisation"):
-        print "Creating Directory " + fileName + "/visualisation"
-        os.makedirs(fileName + "/visualisation")
+    if not os.path.exists(file_name + "/visualisation"):
+        print "Creating Directory " + file_name + "/visualisation"
+        os.makedirs(file_name + "/visualisation")
 
-    if not os.path.exists(fileName + "/maps"):
-        print "Creating Directory " + fileName + "/maps"
-        os.makedirs(fileName + "/maps")
+    if not os.path.exists(file_name + "/maps"):
+        print "Creating Directory " + file_name + "/maps"
+        os.makedirs(file_name + "/maps")
 
-    if not os.path.exists(fileName + "/pdbs"):
-        print "Creating Directory " + fileName + "/pdbs"
-        os.makedirs(fileName + "/pdbs")
+    if not os.path.exists(file_name + "/pdbs"):
+        print "Creating Directory " + file_name + "/pdbs"
+        os.makedirs(file_name + "/pdbs")
 
     if mtz != "ebi":
-        print "A map.mtz file was provided!", mtz, "will be moved to", fileName + "/maps/" + fileName + ".mtz"
+        print "A map.mtz file was provided!", mtz, "will be moved to", file_name + "/electrostatics/" + file_name + ".mtz"
 
-        shutil.copy(mtz, fileName + "/maps/" + fileName + ".mtz")
+        shutil.copy(mtz, file_name + "/electrostatics/" + file_name + ".mtz")
 
     if mtz == "ebi":
-        if not os.path.exists(fileName + "/maps/" + fileName + ".mtz"):
+        if not os.path.exists(file_name + "/electrostatics/" + file_name + ".mtz"):
             print "Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)"
-            import urllib
 
-            urllib.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
-                               fileName + "/maps/" + fileName + ".mtz")
-        else:
-            "Did not need to download from ebi as map.mtz already exists"
+            try:
+                urllib.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
+                               file_name + "/electrostatics/" + file_name + ".mtz")
+            except:
+                print "Could not retrieve url. Please try again, making sure you either supply a file," \
+                      " or your file shares its name with one on PDB"
+                # quit early, get rid of pymol
+                pymol.cmd.quit()
+                sys.exit()
 
-        if os.path.exists(fileName + "/maps/" + fileName + ".mtz"):
-            print "Download successful!"
-        else:
-            sys.exit("ERROR! Could not scrape the map.mtz file from the EBI server."
-                     "Ensure input pdb file is named according to pdb entry name or supply loca mtz file")
-
-    # Use CCP4 to generate map
 
     tempTxt = "rmchain " + peptidechain + "\n" + "END"
-    temp = open(fileName + "/pdbs/" + fileName + "_pdbcurPARAM.tmp", "w")
+    temp = open(file_name + "/pdbs/" + file_name + "_pdbcurPARAM.tmp", "w")
     temp.write(tempTxt)
     temp.close()
 
     # delete chain
-    os.system("pdbcur XYZIN " + pdb + " XYZOUT " + fileName + "/pdbs/" + fileName +
-              "_nopeptide.pdb" + " < " + fileName + "/pdbs/" + fileName + "_pdbcurPARAM.tmp")
-    os.remove(fileName + "/pdbs/" + fileName + "_pdbcurPARAM.tmp")
+    os.system("pdbcur XYZIN " + pdb + " XYZOUT " + file_name + "/pdbs/" + file_name +
+              "_nopeptide.pdb" + " < " + file_name + "/pdbs/" + file_name + "_pdbcurPARAM.tmp")
+    os.remove(file_name + "/pdbs/" + file_name + "_pdbcurPARAM.tmp")
 
     # Run one cycle of refmac without peptide in the groove
-    os.system("refmac5 XYZIN " + fileName + "/pdbs/" + fileName + "_nopeptide.pdb" + " XYZOUT " +
-              fileName + "/pdbs/" + fileName + "_refmac5_omitmap.pdb" + " HKLIN " + fileName + "/maps/"
-              + fileName + ".mtz" + " HKLOUT " + fileName + "/maps/" + fileName + "_refmac5_omitmap.mtz" + " LIBOUT "
-              + fileName + "/maps/" + fileName + "_refmac_omitmap.cif" + " < " + "bin/OMITparam.tmp")
+    os.system("refmac5 XYZIN " + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " XYZOUT " +
+              file_name + "/pdbs/" + file_name + "_refmac5_omitmap.pdb" + " HKLIN " + file_name + "/electrostatics/"
+              + file_name + ".mtz" + " HKLOUT " + file_name + "/electrostatics/" + file_name + "_refmac5_omitmap.mtz" + " LIBOUT "
+              + file_name + "/electrostatics/" + file_name + "_refmac_omitmap.cif" + " < " + "bin/OMITparam.tmp")
 
-    os.system("mtzdump " + " HKLIN " + fileName + "/maps/" + fileName + "_refmac5_omitmap.mtz END")
+    os.system("mtzdump " + " HKLIN " + file_name + "/electrostatics/" + file_name + "_refmac5_omitmap.mtz END")
 
     # This bit is the same as peptideMHCvisualise except the inputs and outputs are different
 
-    os.system("fft HKLIN " + fileName + "/maps/" + fileName + "_refmac5_omitmap.mtz" + " MAPOUT " + fileName +
-              "/maps/" + fileName + "_om.map1.tmp" + " < " + "bin/EDMparam1.tmp")
-    os.system("mapmask MAPIN " + fileName + "/maps/" + fileName + "_om.map1.tmp" +
-              " MAPOUT " + fileName + "/maps/" + fileName + "_om.map.ccp4" + " XYZIN "
-              + fileName + "/pdbs/" + fileName + "_nopeptide.pdb" + " < " + "bin/EDMparam2.tmp")
+    os.system("fft HKLIN " + file_name + "/electrostatics/" + file_name + "_refmac5_omitmap.mtz" + " MAPOUT " + file_name +
+              "/electrostatics/" + file_name + "_om.map1.tmp" + " < " + "bin/EDMparam1.tmp")
+    os.system("mapmask MAPIN " + file_name + "/electrostatics/" + file_name + "_om.map1.tmp" +
+              " MAPOUT " + file_name + "/electrostatics/" + file_name + "_om.map.ccp4" + " XYZIN "
+              + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " < " + "bin/EDMparam2.tmp")
 
-    os.system("fft HKLIN " + fileName + "/maps/" + fileName + "_refmac5_omitmap.mtz"
-              + " MAPOUT " + fileName + "/maps/" + fileName + "_om.map3.tmp" + " < " + " bin/EDMparam3.tmp")
-    os.system("mapmask MAPIN " + fileName + "/maps/" + fileName + "_om.map3.tmp" +
-              " MAPOUT " + fileName + "/maps/" + fileName + "_om.difference_map.ccp4"
-              + " XYZIN " + fileName + "/pdbs/" + fileName + "_nopeptide.pdb" + " < " + "bin/EDMparam4.tmp")
+    os.system("fft HKLIN " + file_name + "/electrostatics/" + file_name + "_refmac5_omitmap.mtz"
+              + " MAPOUT " + file_name + "/electrostatics/" + file_name + "_om.map3.tmp" + " < " + " bin/EDMparam3.tmp")
+    os.system("mapmask MAPIN " + file_name + "/electrostatics/" + file_name + "_om.map3.tmp" +
+              " MAPOUT " + file_name + "/electrostatics/" + file_name + "_om.difference_map.ccp4"
+              + " XYZIN " + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " < " + "bin/EDMparam4.tmp")
 
-    os.remove(fileName + "/maps/" + fileName + "_om.map3.tmp")
+    os.remove(file_name + "/electrostatics/" + file_name + "_om.map3.tmp")
 
-    edmap = fileName + "/maps/" + fileName + "_om.map.ccp4"
+    edmap = file_name + "/electrostatics/" + file_name + "_om.map.ccp4"
 
-    diffmap = fileName + "/maps/" + fileName + "_om.difference_map.ccp4"
+    diffmap = file_name + "/electrostatics/" + file_name + "_om.difference_map.ccp4"
 
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
@@ -359,17 +358,17 @@ def omit_map(pdb, mtz, MHCclass, chains, ray):
     pymol.cmd.reinitialize()
 
     pymol.cmd.load(pdb, "complex")
-    pymol.cmd.load(fileName + "/pdbs/" + fileName + "_refmac5_omitmap.pdb", "omitxyz")
-    pymol.cmd.load(edmap, fileName + "_map")
-    pymol.cmd.load(diffmap, fileName + "_dmap")
+    pymol.cmd.load(file_name + "/pdbs/" + file_name + "_refmac5_omitmap.pdb", "omitxyz")
+    pymol.cmd.load(edmap, file_name + "_map")
+    pymol.cmd.load(diffmap, file_name + "_dmap")
 
     # align to template
     print "\nAligning file to template...\n"
     pymol.cmd.load("bin/" + MHCclass + "_template.pdb")
     pymol.cmd.align("omitxyz", MHCclass + "_template")
     pymol.cmd.matrix_copy("omitxyz", "complex")
-    pymol.cmd.matrix_copy("omitxyz", fileName + "_map")
-    pymol.cmd.matrix_copy("omitxyz", fileName + "_dmap")
+    pymol.cmd.matrix_copy("omitxyz", file_name + "_map")
+    pymol.cmd.matrix_copy("omitxyz", file_name + "_dmap")
     pymol.cmd.delete(MHCclass + "_template")
     print "\nAlignment to " + MHCclass + "_template.pdb complete!\n"
     pymol.cmd.delete("omitxyz")
@@ -395,9 +394,9 @@ def omit_map(pdb, mtz, MHCclass, chains, ray):
     pymol.cmd.select("MHCa2", selection=MHCa2[0] + "s and resi " + locs)
 
     # Make electron density map
-    pymol.cmd.map_double(fileName + "_map", -1)
-    pymol.cmd.isomesh("p_map_1sigma", fileName + "_map", 1.0, "ps", carve=1.6)
-    pymol.cmd.isomesh("p_map_05sigma", fileName + "_map", 0.5, "ps", carve=1.6)
+    pymol.cmd.map_double(file_name + "_map", -1)
+    pymol.cmd.isomesh("p_map_1sigma", file_name + "_map", 1.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("p_map_05sigma", file_name + "_map", 0.5, "ps", carve=1.6)
     pymol.cmd.set("mesh_width", 0.5)
 
     pymol.cmd.hide("mesh", "all")
@@ -410,7 +409,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray):
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm_omitmap_1sig", action="store")
     if ray:
-        PeptideEdm1sig = fileName + "/visualisation/" + "omitmap_PeptideEdm1sig.png"
+        PeptideEdm1sig = file_name + "/visualisation/" + "omitmap_PeptideEdm1sig.png"
         rayTime(PeptideEdm1sig)
 
     pymol.cmd.hide("mesh", "all")
@@ -421,23 +420,23 @@ def omit_map(pdb, mtz, MHCclass, chains, ray):
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm_omitmap_05sig", action="store")
     if ray:
-        PeptideEdm05sig = fileName + "/visualisation/" + "omitmap_PeptideEdm05sig.png"
+        PeptideEdm05sig = file_name + "/visualisation/" + "omitmap_PeptideEdm05sig.png"
         rayTime(PeptideEdm05sig)
 
     # Make difference map
 
     pymol.cmd.hide("mesh", "all")
-    pymol.cmd.isomesh("posdiffmesh", fileName + "_dmap", 3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("posdiffmesh", file_name + "_dmap", 3.0, "ps", carve=1.6)
     pymol.cmd.color("green", "posdiffmesh")
     pymol.cmd.show("mesh", "posdiffmesh")
-    pymol.cmd.isomesh("negdiffmesh", fileName + "_dmap", -3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("negdiffmesh", file_name + "_dmap", -3.0, "ps", carve=1.6)
     pymol.cmd.color("red", "negdiffmesh")
     pymol.cmd.show("mesh", "negdiffmesh")
 
     # Photo op here
     pymol.cmd.scene(key="omitmap_differencemap", action="store")
     if ray:
-        differencemap = fileName + "/visualisation/" + "omitmap_differencemap.png"
+        differencemap = file_name + "/visualisation/" + "omitmap_differencemap.png"
         rayTime(differencemap)
 
     # pMHC helices
@@ -449,7 +448,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray):
     # Photo op here
     pymol.cmd.scene(key="MHChelixPeptide1", action="store")
     if ray:
-        MHChelixPeptide1 = fileName + "/visualisation/" + "omitmap_MHChelixPeptide1.png"
+        MHChelixPeptide1 = file_name + "/visualisation/" + "omitmap_MHChelixPeptide1.png"
         rayTime(MHChelixPeptide1)
 
     # Copy above scene but with a pink peptide
@@ -460,11 +459,11 @@ def omit_map(pdb, mtz, MHCclass, chains, ray):
 
     pymol.cmd.scene(key="MHChelixPeptide2", action="store")
     if ray:
-        MHChelixPeptide2 = fileName + "/visualisation/" + "omitmap_MHChelixPeptide2.png"
+        MHChelixPeptide2 = file_name + "/visualisation/" + "omitmap_MHChelixPeptide2.png"
         rayTime(MHChelixPeptide2)
 
     # Save the session
-    pymol.cmd.save(fileName + "/visualisation/" + fileName + "_omitmap.pse")
+    pymol.cmd.save(file_name + "/visualisation/" + file_name + "_omitmap.pse")
 
     # Quit pymol
     pymol.cmd.quit()

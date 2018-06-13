@@ -487,7 +487,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         pymol.cmd.save(fileName + "/pdbs/" + fileName + "_" + name + ".pdb", name)
 
     # Quit pymol
-    pymol.cmd.quit()
+    #pymol.cmd.quit()
     print('     ~  End autoCDRloops.py v0.1 BETA  ~')
 
 

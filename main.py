@@ -162,13 +162,13 @@ def main():
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
 
-
-    crossing_angle.calculate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
+    """
+    crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex)
 
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
-
+    """
 
  ####################################################################################################################
 
@@ -176,11 +176,11 @@ def main():
      Check crystal structure validation in pymol
     """
 
-    electrostatic.visualise_omit_MHC_only(pdb.clean_imgt, args.mtz, full_complex.complex, args.ray_trace)
-    electrostatic.omit_map(pdb.clean_imgt, args.mtz, full_complex.complex, args.ray_trace)
+    electrostatic.visualise_omit_MHC_only(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
+                                          full_complex.complex, args.ray_trace, pdb.name)
 
-
-
+    electrostatic.omit_map(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
+                           full_complex.complex, args.ray_trace, pdb.name)
 
 
 if __name__ == "__main__":

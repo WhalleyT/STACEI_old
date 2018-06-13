@@ -467,6 +467,7 @@ def parse_anarci(chains, fasta, anarci):
 
     fasta_entries_new = []
 
+
     for entry in fasta_entries:
         if entry[1] == chains.tcra:
             fasta_entries_new.append(tcra_final)

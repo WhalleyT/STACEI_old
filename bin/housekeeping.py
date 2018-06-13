@@ -8,7 +8,7 @@ def _parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', '-F', dest='infile', type=str,
                         help='PDB file of a TCR-pMHC complex', required=True)
-    parser.add_argument('--mhc', '-M', dest='mhc_class', type=int,
+    parser.add_argument('--mhc', '-Mh', dest='mhc_class', type=int,
                         help='MHC class. if not supplied, then class will be automatically predicted',
                         required=False)
     parser.add_argument('--chains', '-C', dest='chains', type=str,
@@ -19,7 +19,7 @@ def _parse_args():
                         help='Flag. If provided, structures will be ray traced in Pymol. This will affect performance.')
     parser.add_argument('--suppress', '-S', dest='suppress', action='store_true',
                         help='Flag. If provided stdout output will be suppressed (inc. CCP4, Pymol and ANARCI)')
-    parser.add_argument('--mtz', '-M', dest='mtz', required=False, default='ebi', type=str,
+    parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, default='ebi', type=str,
                         help='The MTZ file to be analysed')
     args = parser.parse_args()
     return args

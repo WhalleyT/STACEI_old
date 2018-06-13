@@ -1,16 +1,16 @@
 # ANNOTATION LOCATIONS IMGT ALIGNED #
 
-TCRdict = {"CDR1a": range(27,39) ,
-           "CDR2a": range(56,65) ,
+TCRdict = {"CDR1a": range(27,39),
+           "CDR2a": range(56,65),
            "FWa"  : range(81, 86),
-           "CDR3a": [104] ,
-           "Cys1a": [23] ,
+           "CDR3a": [104],
+           "Cys1a": [23],
            "Cys2a": [104],
-           "CDR1b": range(27,39) ,
-           "CDR2b": range(55,70) ,
+           "CDR1b": range(27,39),
+           "CDR2b": range(55,70),
            "FWb"  : range(79, 88),
-           "CDR3b": [104] ,
-           "Cys1b": [23] ,
+           "CDR3b": [104],
+           "Cys1b": [23],
            "Cys2b": [104]
            }
 
