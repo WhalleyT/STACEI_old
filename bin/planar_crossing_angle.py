@@ -40,14 +40,14 @@ def init_pymol():
     return None
 
 
-def align_to_template(fileName, MHCClass):
+def align_to_template(pdb, file_name, mhc_class):
     pymol.cmd.delete("all")
     print "\nAligning file to template...\n"
-    pymol.cmd.load(fileName + ".pdb")
-    pymol.cmd.load("bin/data/" + MHCClass + "_template.pdb")
-    pymol.cmd.align(fileName, MHCClass + "_template")
-    pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_aligned_noMeta.pdb", fileName)
-    print "\nAlignment to " + MHCClass + "_template.pdb complete!\n"
+    pymol.cmd.load(pdb)
+    pymol.cmd.load("bin/data/" + mhc_class + "_template.pdb")
+    pymol.cmd.align(file_name, mhc_class + "_template")
+    pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb", file_name)
+    print "\nAlignment to " + mhc_class + "_template.pdb complete!\n"
     return None
 
 
@@ -438,7 +438,7 @@ def whichCrossingAngle(crossingAngle, rangeLow):
         return 360 - crossingAngle
 
 
-def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
+def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
 
     if MHCclass == 1:
         MHCclass = "I"
@@ -446,9 +446,8 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
         MHCclass = "II"
 
     origPDB = read_file(pdb, "pdb")
-    fileName = pdb.rsplit('.', 1)[0]
 
-    if type(fileName) != str:
+    if type(file_name) != str:
         sys.exit('No file to grab metadata was loaded. Please view usage and provide a valid .pdb to be processed')
 
     # Sort chains
@@ -456,19 +455,19 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
 
     # Make output folder #
 
-    if not os.path.exists(fileName):
-        print "Creating Directory " + fileName
-        os.makedirs(fileName)
+    if not os.path.exists(file_name):
+        print "Creating Directory " + file_name
+        os.makedirs(file_name)
 
-    if not os.path.exists(fileName + "/crossingAngle"):
-        print "Creating Directory " + fileName + "/crossingAngle"
-        os.makedirs(fileName + "/crossingAngle")
+    if not os.path.exists(file_name + "/crossingAngle"):
+        print "Creating Directory " + file_name + "/crossingAngle"
+        os.makedirs(file_name + "/crossingAngle")
 
     # Align input.pdb to template #
     init_pymol()
-    align_to_template(fileName, MHCclass)
+    align_to_template(pdb, file_name, MHCclass)
     print "Opening aligned PDB file"
-    alignedPDBnoMeta = read_file(fileName + "/crossingAngle/" + fileName + "_aligned_noMeta.pdb", "pdb")
+    alignedPDBnoMeta = read_file(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb", "pdb")
 
     # Extract all lines from PDB file of orig and aligned PDB files #
 
@@ -476,11 +475,11 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     aligned_all_lines = file_to_list(alignedPDBnoMeta)
     alignedPDBnoMeta.close()
 
-    print "Transfering metadata from " + fileName + ".pdb to " + fileName + "_aligned_noMeta\n"
+    print "Transfering metadata from " + file_name + ".pdb to " + file_name + "_aligned_noMeta\n"
     metatitle = title_parser(origall_lines)
     metaheader = headerParser(origall_lines)
     MetaSS = SSParser(origall_lines)
-    working_file = open(fileName + "/crossingAngle/" + fileName + '_aligned.pdb', 'w')
+    working_file = open(file_name + "/crossingAngle/" + file_name + '_aligned.pdb', 'w')
     outTxtMeta = ''
     outTxtMeta += "         " + str(1) + "         " + str(2) + "         " + str(3) + "         " + str(4) + \
                   "         " + str(5) + "         " + str(6) + "         " + str(7) + "         " + str(8) + "\n"
@@ -504,11 +503,11 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     for Metax in aligned_all_lines:
         outTxtMeta += Metax
     working_file.write(outTxtMeta)
-    print "Metadata added to " + fileName + "/crossingAngle/" + fileName + "_aligned.pdb\n"
+    print "Metadata added to " + file_name + "/crossingAngle/" + file_name + "_aligned.pdb\n"
 
     # Load the working PDB file #
-    print "Extracting all lines from " + fileName + "/crossingAngle/" + fileName + "_aligned.pdb\n"
-    working_file = open(fileName + "/crossingAngle/" + fileName + '_aligned.pdb', 'r')
+    print "Extracting all lines from " + file_name + "/crossingAngle/" + file_name + "_aligned.pdb\n"
+    working_file = open(file_name + "/crossingAngle/" + file_name + '_aligned.pdb', 'r')
     all_lines = file_to_list(working_file)
 
     working_file.close()
@@ -736,7 +735,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     planeAtTCRbtxt = plane_at_tcr[1].tolist()
 
     outPDB = ''
-    outPDBfile = open(fileName + "/crossingAngle/" + fileName + "_planeCorners.pdb", mode="w")
+    outPDBfile = open(file_name + "/crossingAngle/" + file_name + "_planeCorners.pdb", mode="w")
 
     # File header
 
@@ -843,7 +842,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     outPDBfile.write(outPDB)
     outPDBfile.close()
 
-    print "Done!", "\n", "Coordinate file written as ", fileName + "/crossingAngle/" + fileName + "_planeCorners.pdb\n"
+    print "Done!", "\n", "Coordinate file written as ", file_name + "/crossingAngle/" + file_name + "_planeCorners.pdb\n"
 
     coordinateDict = {
         "corner1": "/corners//P/CYS`1/SG",
@@ -899,7 +898,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.delete("all")
     pymol.cmd.scene("*", "clear")
     # alignment
-    pymol.cmd.load(fileName + "/crossingAngle/" + fileName + "_planeCorners.pdb", "corners")
+    pymol.cmd.load(file_name + "/crossingAngle/" + file_name + "_planeCorners.pdb", "corners")
     pymol.cmd.select("MHCmove", selection=coordinateDict["MHCafitatTCR"] + " + " + coordinateDict["MHCbfitatTCR"])
     pymol.cmd.load("bin/data/centroids_target.pdb", "centroids_target")
     pymol.cmd.align("MHCmove", "centroids_target")
@@ -929,13 +928,13 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     # generate images
     print "Generating image.."
     if ray is True:
-        centroidonxaxis = fileName + "/crossingAngle/" + fileName + "_crossingAngleOnAxis.png"
+        centroidonxaxis = file_name + "/crossingAngle/" + file_name + "_crossingAngleOnAxis.png"
         ray_tracer(centroidonxaxis)
 
     # save the moved centroids
 
-    pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_centroid_onxaxis.pdb")
-    pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_centroid_onxaxis.pse")
+    pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_centroid_onxaxis.pdb")
+    pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_centroid_onxaxis.pse")
 
     # Getting coords of TCRB
     TCRorig = np.vstack((pymol.cmd.get_coords("TCRA"), pymol.cmd.get_coords("TCRB")))
@@ -1022,7 +1021,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     print "\nGenerating output file..\n"
 
     outTxt = ''
-    outTxt += fileName + ".pdb\n\n"
+    outTxt += file_name + ".pdb\n\n"
     outTxt += "Crossing angle (Rudolph 3D angle)\t" + str("%.2f" % smartCrossingAngle) + "\n"
     outTxt += "Rotation angle (2D crossing angle)\t" + str("%.2f" % smart2DAngle) + "\n"
     outTxt += "Tilt angle (2D elevation away from MHC)\t" + str("%.2f" % tilt2D) + "\n"
@@ -1087,7 +1086,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
         outTxt += "TCR docks with canonical polarity\n\n"
     if rangeHigh is 270 or rangeHigh is 360:
         outTxt += "TCR docks with reverse polarity\n\n"
-    outTxtFile = open(fileName + "/crossingAngle/" + fileName + '_crossingAngle.txt', 'w')
+    outTxtFile = open(file_name + "/crossingAngle/" + file_name + '_crossingAngle.txt', 'w')
     outTxtFile.write(outTxt)
 
     print "Done!"
@@ -1095,14 +1094,14 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     print "~~~~~~~~~~~ Creating visualisations of crossing angles in pymol... ~~~~~~~~~~~"
 
     # load and extract to objects
-    pymol.cmd.load(fileName + "/crossingAngle/" + fileName + "_planeCorners.pdb", "corners")
+    pymol.cmd.load(file_name + "/crossingAngle/" + file_name + "_planeCorners.pdb", "corners")
 
     for key in coordinateDict:
         pymol.cmd.select(key + "s", selection=coordinateDict[key])
         pymol.cmd.extract(key, key + "s")
         pymol.cmd.delete(key + "s")
 
-    pymol.cmd.load(fileName + "/crossingAngle/" + fileName + "_aligned.pdb", "complex")
+    pymol.cmd.load(file_name + "/crossingAngle/" + file_name + "_aligned.pdb", "complex")
 
     for key in complexDict:
         pymol.cmd.select(key + "s", selection="complex and chain " + complexDict[key])
@@ -1168,7 +1167,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     # generate images
 
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_crossing_centroids_angle_pMHC.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids_angle_pMHC.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("cartoon", "all")
@@ -1178,7 +1177,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="centroids_angle", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_crossing_centroids_angle.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids_angle.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("dashes", "all")
@@ -1187,7 +1186,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="centroids", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_crossing_centroids.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("spheres", "all")
@@ -1197,12 +1196,12 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="angle", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_crossing_angle.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_angle.png"
         ray_tracer(scene_name)
 
     # save session
-    pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_crossing_angle.pse")
-    print "\nOutputted PyMOL session file: " + fileName + "/crossingAngle/" + fileName + "_crossing_angle.pse"
+    pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_crossing_angle.pse")
+    print "\nOutputted PyMOL session file: " + file_name + "/crossingAngle/" + file_name + "_crossing_angle.pse"
 
     # rotation angle
     pymol.cmd.scene("*", "clear")
@@ -1244,14 +1243,14 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_pMHC_1", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_angle_pMHC.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_pMHC.png"
         ray_tracer(scene_name)
 
         # Photo op here   
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_pMHC_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_angle_pMHC_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_pMHC_2.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("cartoon", "all")
@@ -1262,14 +1261,14 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_centroids_1", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_angle_centroids_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_centroids_1.png"
         ray_tracer(scene_name)
 
         # Photo op here   
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_centroids_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_angle_centroids_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_centroids_2.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("dashes", "MHCfitPline")
@@ -1281,14 +1280,14 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_centroids", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_centroids_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_centroids_1.png"
         ray_tracer(scene_name)
 
         # Photo op here   
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_centroids_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_centroids_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_centroids_2.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("spheres", "all")
@@ -1301,18 +1300,18 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_angle_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_1.png"
         ray_tracer(scene_name)
 
         # Photo op here   
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_rotation_angle_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_2.png"
         ray_tracer(scene_name)
     # save session
-    pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_rotation_angle.pse")
-    print "\nOutputted PyMOL session file: " + fileName + "/crossingAngle/" + fileName + "_rotation_angle.pse"
+    pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_rotation_angle.pse")
+    print "\nOutputted PyMOL session file: " + file_name + "/crossingAngle/" + file_name + "_rotation_angle.pse"
 
     pymol.cmd.scene("*", "clear")
     pymol.cmd.hide("all")
@@ -1345,7 +1344,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_TCR_pMHC_1", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_TCR_pMHC_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_TCR_pMHC_1.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("cartoon", "TCRa")
@@ -1355,7 +1354,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_pMHC_1", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_pMHC_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_pMHC_1.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("surface", "all")
@@ -1365,7 +1364,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_centroids_1", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_centroids_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_centroids_1.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("dashes", "all")
@@ -1374,7 +1373,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_centroids_1", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_centroids_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_centroids_1.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("spheres", "all")
@@ -1389,12 +1388,12 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_1", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_1.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_1.png"
         ray_tracer(scene_name)
 
         # save session
-    pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_tilt_angle.pse")
-    print "\nOutputted PyMOL session file: " + fileName + "/crossingAngle/" + fileName + "_tilt_angle.pse"
+    pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_tilt_angle.pse")
+    print "\nOutputted PyMOL session file: " + file_name + "/crossingAngle/" + file_name + "_tilt_angle.pse"
 
     pymol.cmd.scene("*", "clear")
     pymol.cmd.hide("all")
@@ -1447,7 +1446,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
 
     pymol.cmd.scene(key="tilt_angle_TCR_pMHC_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_TCR_pMHC_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_TCR_pMHC_2.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("cartoon", "TCRa")
@@ -1456,7 +1455,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     # Photo op here   
     pymol.cmd.scene(key="tilt_angle_pMHC_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_pMHC_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_pMHC_2.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("surface", "all")
@@ -1465,7 +1464,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     # Photo op here   
     pymol.cmd.scene(key="tilt_angle_centroids_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_centroids_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_centroids_2.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("dashes", "all")
@@ -1473,7 +1472,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     # Photo op here   
     pymol.cmd.scene(key="tilt_centroids_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_centroids_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_centroids_2.png"
         ray_tracer(scene_name)
 
     pymol.cmd.hide("spheres", "all")
@@ -1487,12 +1486,12 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     # Photo op here   
     pymol.cmd.scene(key="tilt_angle_2", action="store")
     if ray is True:
-        scene_name = fileName + "/crossingAngle/" + fileName + "_tilt_angle_2.png"
+        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_2.png"
         ray_tracer(scene_name)
 
         # save session
-    pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_tilt_angle_2.pse")
-    print "\nOutputted PyMOL session file: " + fileName + "/crossingAngle/" + fileName + "_tilt_angle_2.pse"
+    pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_tilt_angle_2.pse")
+    print "\nOutputted PyMOL session file: " + file_name + "/crossingAngle/" + file_name + "_tilt_angle_2.pse"
 
     # planeProperties = {'ALPHA':0.6, 'COLOR':[0.55, 0.25, 0.60], 'INVERT':False}
     # plane.make_plane("MHCplane","corner2","corner3", "corner4", center = True, settings=planeProperties)
@@ -1504,9 +1503,9 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     # Clean up #
     outTxtFile.close()
     #pymol.cmd.quit()
-    os.remove(fileName + "/crossingAngle/" + fileName + "_aligned_noMeta.pdb")
-    print "\ncrossingAngle.py created the following files in the directory " + fileName + "/crossingAngle" + ":"
-    for files in os.listdir(os.getcwd() + "/" + fileName + "/crossingAngle"):
+    os.remove(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb")
+    print "\ncrossingAngle.py created the following files in the directory " + file_name + "/crossingAngle" + ":"
+    for files in os.listdir(os.getcwd() + "/" + file_name + "/crossingAngle"):
         print files
 
     print('     ~  End crossingAngle.py v1.9 BETA  ~')

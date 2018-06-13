@@ -162,13 +162,13 @@ def main():
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
 
-    """
+
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
-                                       args.ray_trace, full_complex.complex)
+                                       args.ray_trace, full_complex.complex, pdb.name)
 
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
-    """
+
 
  ####################################################################################################################
 
