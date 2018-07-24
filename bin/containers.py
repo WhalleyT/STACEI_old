@@ -1,10 +1,15 @@
 import os
+import glob
 
 class PDBStrings:
     """small class that holds various pdb associated filenames"""
 
     def __init__(self, arg):
         self.name = arg.rsplit(".")[0]
+
+        if "/" in self.name:
+            self.name = self.name.split("/")[-1]
+
         self.file = arg
         self.filtered = self.name + "_filtered.pdb"
         self.annotation = self.name + "/" + self.name + "_annotation.txt"
@@ -144,3 +149,22 @@ class PisaOutputs:
 
         self.order = [self.mhca_chains, self.mhcb_chains, self.pept_chains, self.tcra_chains, self.tcrb_chains]
         self.monomers = range(1,6)
+
+
+class cleanUp:
+    def __init__(self):
+        print "hi"
+
+
+
+
+
+
+
+
+
+
+
+
+
+

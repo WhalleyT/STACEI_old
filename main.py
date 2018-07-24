@@ -52,7 +52,6 @@ def main():
     print "Peptide is %s" % peptide
     print "MHC is class %i" % mhc_class
 
-
     ####################################################################################################################
 
     """
@@ -168,6 +167,8 @@ def main():
 
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
+
+    #buried surface area viz
 
 
  ####################################################################################################################

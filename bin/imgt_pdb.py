@@ -266,6 +266,7 @@ def iterate_tcr(tcr, nums):
     for i, j in enumerate(tcr):
         print i,j
 
+
 def find_start(tcr):
     if tcr[0] == "M":
         return -1
@@ -300,33 +301,31 @@ def renumber_chain(pdb, chain, chain_pairs):
 
     previous = 9999
     start = True
+    on_first_chain = True
 
     out = []
 
     for line in pdb:
         if line.startswith("ATOM"):
             split = line.split()
+            if split[4] == chain:
+                met = split[3] == "MET"
 
-            start_not_met = start and split[3] == "MET"
-            #print start_not_met
-            if start_not_met == False:
-                if split[4] == chain:
-                    #print "right chain"
+                start_not_met = start and on_first_chain and met
+
+                if start_not_met == False:
                     current = int(split[5])
 
                     if current != previous:
-                        #print "not previous"
+                        on_first_chain = False
                         start = False
                         chain_pair = chain_iter.next()
-                        #print chain_pair
 
-                    #print split
                     split[5] = str(chain_pair[0])
-                    #print split
 
                     previous = current
 
-                out.append("   ".join(split) + "\n")
+        out.append("   ".join(split) + "\n")
     return out
 
 
@@ -360,7 +359,6 @@ def renumber_ANARCI(fasta, pdb, tcra, tcrb, peptide, mhca, mhcb):
                 tcra_seq = seq
             if name.split("|")[1] == tcrb:
                 tcrb_seq = seq
-
 
     a_start = find_start(tcra_seq)
     b_start = find_start(tcrb_seq)
