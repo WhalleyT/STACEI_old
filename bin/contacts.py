@@ -183,8 +183,13 @@ def contact_matrix_row(line, tcr_a_locations, tcr_b_locations, mhc_a_chain,
                 if loc == int(line[6:10]):
                     annotation1 = loop[0]
     annotation2 = ''
-    contact_row = [line[4], s_new_name, int(line[6:10]), annotation1, line[11:14], line[19:22], line[24], line[32],
-                   t_new_name, int(line[34:38]), annotation2, line[39:42], line[47:50], line[52], float(line[-4:])]
+    contact_row = [line[4], s_new_name, int(line[6:10]), annotation1, line[11:14], line[19:22], line[23], line[32],
+                   t_new_name, int(line[34:38]), annotation2, line[39:42], line[47:50], line[51], float(line[-4:])]
+
+
+    print line
+    print contact_row
+    print " "
 
     return contact_row
 
@@ -233,6 +238,11 @@ def is_salt_bridge(contact_row):
 
     id_1 = contact_row[4] + contact_row[5] + contact_row[6]
     id_2 = contact_row[11] + contact_row[12] + contact_row[13]
+
+    print contact_row
+    print id_1, id_2
+    print ""
+
     if id_1 in acid_atoms and id_2 in base_atoms:
         if contact_row[14] <= 3.40:
             return True

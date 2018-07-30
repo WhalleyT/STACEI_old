@@ -176,12 +176,12 @@ def main():
     """
      Check crystal structure validation in pymol
     """
+    if args.mtz:
+        electrostatic.visualise_omit_MHC_only(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
+                                              full_complex.complex, args.ray_trace, pdb.name)
 
-    electrostatic.visualise_omit_MHC_only(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
-                                          full_complex.complex, args.ray_trace, pdb.name)
-
-    electrostatic.omit_map(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
-                           full_complex.complex, args.ray_trace, pdb.name)
+        electrostatic.omit_map(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
+                               full_complex.complex, args.ray_trace, pdb.name)
 
 
 if __name__ == "__main__":
