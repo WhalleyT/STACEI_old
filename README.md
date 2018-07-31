@@ -20,12 +20,12 @@ STACEI leverages several pre-existing tools for its analyses. As such, the follo
 * [ANARCI](http://opig.stats.ox.ac.uk/webapps/sabdab-sabpred/ANARCI.php)
 
 ### Installing
-
+To install, simply clone this repository or download it. 
 
 ## Authors
 Manuscript in  progress
 
 ## License
 
-This project is licensed under the GNU GPL License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU GPL License - see the [LICENSE](LICENSE) file for details
 

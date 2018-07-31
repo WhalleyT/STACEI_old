@@ -2,6 +2,7 @@ import argparse
 import sys
 import os
 import containers
+import pymol
 
 
 def _parse_args():
@@ -135,3 +136,12 @@ def give_tree(startpath):
         subindent = ' ' * 4 * (level + 1)
         for f in files:
             print('{}{}'.format(subindent, f))
+
+
+def clean_namespace():
+
+    # remove uneeded files
+    os.remove("clean.fasta")
+
+    # pymol may be left open
+    pymol.cmd.quit()

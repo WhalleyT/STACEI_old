@@ -185,11 +185,7 @@ def contact_matrix_row(line, tcr_a_locations, tcr_b_locations, mhc_a_chain,
     annotation2 = ''
     contact_row = [line[4], s_new_name, int(line[6:10]), annotation1, line[11:14], line[19:22], line[23], line[32],
                    t_new_name, int(line[34:38]), annotation2, line[39:42], line[47:50], line[51], float(line[-4:])]
-
-
-    print line
-    print contact_row
-    print " "
+    
 
     return contact_row
 
