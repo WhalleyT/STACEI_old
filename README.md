@@ -19,13 +19,18 @@ STACEI leverages several pre-existing tools for its analyses. As such, the follo
 
 * [ANARCI](http://opig.stats.ox.ac.uk/webapps/sabdab-sabpred/ANARCI.php)
 
+CCP4 can be installed by following the instruction guidlines. It must also be added to the path in order for Python to recognise it when making calls to it. This can be done by either running `./start` from within the CCP4 directory, or by running `source /applications/ccp4-x.y.x/bin/ccp4.setup-sh` and adding it to your BASH path.
+
+
 ### Installing
-To install, simply clone this repository or download it. 
+To install, simply clone this repository or download it. Cloning it can be done with:
+
+`git clone github.com/whalleyt/STACEI` 
 
 ## Authors
 Manuscript in  progress
 
 ## License
 
-This project is licensed under the GNU GPL License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the GNU GPL License - see the [LICENSE](LICENSE) file for details.
 

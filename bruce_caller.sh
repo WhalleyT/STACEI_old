@@ -1,0 +1,15 @@
+python main.py -F J_1AO7_A6_a2tax.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F I_2PYE_c5c1_A2_nyeso.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F H_2P5W_c58c62_A2_nyeso.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F G_2P5E_c58c61_A2_nyeso.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F E_2BNR_Nyeso_wt_comp.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F D_4JFF_a24b17_ELA.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F C_3HG1_MEL5_ELA.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F B_xxxx_a24b17_EAA.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F M_4MNQ_a1b1_A2_ILA.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F A_4QOK_Mel5_EAA.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F L_5MEN_ILA1_A2_ILA.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F F_2F53_c49c50_TCR_a2_nyeso.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F E_ALT_2F54_Nyeso_wt_comp.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F N_3QDG_DMF5_WT_A2_ELA.pdb -Mt None -Mh 1 -C DECAB
+python main.py -F O_4L3E_DMF5_HA_A2_ELA.pdb -Mt None -Mh 1 -C DECAB

@@ -193,7 +193,7 @@ def main():
     """
 
     print "Done! Now cleaning up"
-    housekeeping.clean_namespace()
+    housekeeping.clean_namespace(pdb.name)
 
 
 if __name__ == "__main__":

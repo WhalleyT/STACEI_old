@@ -138,10 +138,51 @@ def give_tree(startpath):
             print('{}{}'.format(subindent, f))
 
 
-def clean_namespace():
+def clean_namespace(name):
 
     # remove uneeded files
     os.remove("clean.fasta")
+    os.remove("ANARCI.txt")
+
+    os.rename(name + "_ANARCI_IMGT_annotated.fasta",
+              name + "/" + name + "_ANARCI_IMGT_annotated.fasta")
+    os.rename(name + "_MHC_to_pep_contacts.txt",
+              name + "/" + name + "_MHC_to_pep_contacts.txt")
+    os.rename(name + "_MHC_to_pep_contacts_clean.txt",
+              name + "/" + name + "_MHC_to_pep_contacts_clean.txt")
+    os.rename(name + "_MHC_to_pep_contacts_clean_residues.txt",
+              name + "/" + name + "_MHC_to_pep_contacts_clean_residues.txt")
+    os.rename(name + "_MHC_to_pep_contacts_clean_residues_contacts_residues_full.txt",
+              name + "/" + name + "_MHC_to_pep_contacts_clean_residues_contacts_residues_full.txt")
+    os.rename(name + "_TCR_to_pMHC_contacts.txt",
+              name + "/" + name + "_TCR_to_pMHC_contacts.txt")
+    os.rename(name + "_TCR_to_pMHC_contacts_clean.txt",
+              name + "/" + name + "_TCR_to_pMHC_contacts_clean.txt")
+    os.rename(name + "_TCR_to_pMHC_contacts_clean_residues.txt",
+              name + "/" + name + "_TCR_to_pMHC_contacts_clean_residues.txt")
+    os.rename(name + "_TCR_to_pMHC_contacts_clean_residues_contacts_residues_full.txt",
+              name + "/" + name + "_TCR_to_pMHC_contacts_clean_residues_contacts_residues_full.txt")
+    os.rename(name + "_clean_numbered_imgt.pdb",
+              name + "/" + name + "_clean_numbered_imgt.pdb")
+    os.rename(name + "_filtered.pdb", name + "/" + name + "_filtered.pdb")
+    os.rename(name + "_mhca_pisa_chains.txt", name + "/" + name + "_mhca_pisa_chains.txt")
+    os.rename(name + "_mhcb_pisa_chains.txt", name + "/" + name + "_mhcb_pisa_chains.txt")
+    os.rename(name + "_numbered.pdb", name + "/" + name + "_numbered.pdb")
+    os.rename(name + "_numbered_imgt.pdb", name + "/" + name + "_numbered_imgt.pdb")
+    os.rename(name + "_pMHC_only_pisa_chains.txt",
+              name + "/" + name + "_pMHC_only_pisa_chains.txt")
+    os.rename(name + "_peptide_pisa_chains.txt",
+              name + "/" + name + "_peptide_pisa_chains.txt")
+    os.rename(name + "_pmhc.pdb", name + "/" + name + "_pmhc.pdb")
+    os.rename(name + "_sequence.txt", name + "/" + name + "_sequence.txt")
+    os.rename(name + "_sequence_annot.txt", name + "/" + name + "_sequence_annot.txt")
+    os.rename(name + "_statistics.txt", name + "/" + name + "_statistics.txt")
+    os.rename(name + "_tcra_pisa_chains.txt", name + "/" + name + "_tcra_pisa_chains.txt")
+    os.rename(name + "_tcrb_complex_pisa_chains.txt",
+              name + "/" + name + "_tcrb_complex_pisa_chains.txt")
+    os.rename(name + "_ANARCI.txt", name + "/" + name + "_ANARCI.txt")
+
+
 
     # pymol may be left open
     pymol.cmd.quit()

@@ -235,9 +235,6 @@ def is_salt_bridge(contact_row):
     id_1 = contact_row[4] + contact_row[5] + contact_row[6]
     id_2 = contact_row[11] + contact_row[12] + contact_row[13]
 
-    print contact_row
-    print id_1, id_2
-    print ""
 
     if id_1 in acid_atoms and id_2 in base_atoms:
         if contact_row[14] <= 3.40:

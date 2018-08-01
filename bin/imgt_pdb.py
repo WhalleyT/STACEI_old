@@ -296,7 +296,7 @@ def get_pdb_list(pdb):
     return l
 
 
-def renumber_chain(pdb, chain, chain_pairs):
+def renumber_chain(pdb, chain, chain_pairs, starting_chain):
     chain_iter = iter(chain_pairs)
 
     previous = 9999
@@ -313,6 +313,9 @@ def renumber_chain(pdb, chain, chain_pairs):
 
                 start_not_met = start and on_first_chain and met
 
+                if not start_not_met and starting_chain[0] == "M":
+                    start_not_met = False
+
                 if start_not_met == False:
                     current = int(split[5])
 
@@ -328,6 +331,41 @@ def renumber_chain(pdb, chain, chain_pairs):
         out.append("   ".join(split) + "\n")
     return out
 
+
+def renumber_chain_safe_MET(pdb, chain, chain_pairs, starting_chain):
+    chain_iter = iter(chain_pairs)
+    print starting_chain
+    out = []
+
+    start_found = False
+    previous = 9999
+
+    three2one = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+                 'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+                 'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+                 'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+    for line in pdb:
+        if line.startswith("ATOM"):
+            split = line.split()
+
+            if split[4] == chain:
+
+                if three2one[split[3]] == starting_chain[1]:
+                    start_found = True
+
+                if start_found:
+                    current = int(split[5])
+
+                    if current != previous and start_found:
+                        chain_pair = chain_iter.next()
+
+                    split[5] = str(chain_pair[0])
+                    previous = current
+
+        out.append("   ".join(split) + "\n")
+
+    return out
 
 
 def write_atoms(pdb_list, name):
@@ -376,8 +414,15 @@ def renumber_ANARCI(fasta, pdb, tcra, tcrb, peptide, mhca, mhcb):
     b_pair = map(lambda x,y:(x,y), b_nums, b_lets)
     b_pair = b_pair +  [(b_nums[-1] + 1, "X")]
 
-    pdb_list = renumber_chain(pdb_list, tcra, a_pair)
-    pdb_list = renumber_chain(pdb_list, tcrb, b_pair)
+    a_start_pair = (a_nums[0], a_lets[0])
+    b_start_pair = (b_nums[0], b_lets[0])
+
+    pdb_list = renumber_chain_safe_MET(pdb_list, tcra, a_pair, a_start_pair)
+
+    for p in pdb_list:
+        if p.split()[3] == "D":
+            print p
+    pdb_list = renumber_chain_safe_MET(pdb_list, tcrb, b_pair, b_start_pair)
 
     #pmhc = get_pMHC([peptide, mhca, mhcb], pdb)
     #pdb_list = pmhc + pdb_list
