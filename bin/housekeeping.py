@@ -143,6 +143,7 @@ def clean_namespace(name):
     # remove uneeded files
     os.remove("clean.fasta")
     os.remove("ANARCI.txt")
+    os.remove("ab_contact.txt")
 
     os.rename(name + "_ANARCI_IMGT_annotated.fasta",
               name + "/" + name + "_ANARCI_IMGT_annotated.fasta")

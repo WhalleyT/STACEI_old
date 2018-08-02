@@ -4,10 +4,12 @@ import math
 import os
 import swalign
 import sys
+import pdb
 
 from Bio.SeqIO import convert
 from itertools import product
-from data.mhc_sequences import mhc_fastas
+
+from bin.data.mhc_sequences import mhc_fastas
 
 
 def _three_dimensional_distance(a, b):
@@ -55,6 +57,8 @@ def _get_chains(pdb):
     with open(pdb) as f:
         for line in f:
             if line.startswith("ATOM"):
+                print repr(line)
+
                 chain = line[21]
                 chains.append(chain)
 
@@ -87,6 +91,7 @@ def _clean_pdb_new(pdb, outfile):
                 if aa.startswith("B") is False:
                     out.write(line)
 
+
 def untangle(i):
     # if our coordinates are joined togther, seperate them
     if len(i) < 12:
@@ -114,7 +119,8 @@ def _list_to_pdb_spec(pdb, out):
 
         while len(i) < 12:
             i = untangle(i)
-            
+
+
         outstr = i[0] + (7 - len(str(i[1]))) * " " + str(i[1]) + 2 * " " + str(i[2]) + \
                  (4 - len(str(i[2]))) * " " + str(i[3]) + " " + str(i[4]) + " " * (4- len(str(i[5]))) + \
                  str(i[5]) + (11 - len(str(i[6]))) * " " + str(i[6]) + (8 - len(str(i[7]))) * " " + str(i[7]) + (8 - len(str(i[8]))) * \
@@ -418,24 +424,105 @@ def _map_peptide(tcra, tcrb, mhca, mhcb, peptides, pdb):
 
 
 def annotate_complex(pdb_file, filtered_name, numbered_name):
+    raw_input()
     chains = _get_chains(pdb_file)
     print "PDB contains %i chains" %len(chains)
+
+    if len(chains) < 4:
+        os.remove(pdb_file)
+        return
 
     _clean_pdb_new(pdb_file, filtered_name)
     _renumber_pdb(filtered_name, chains, numbered_name)
     print "Clean PDB written"
 
-    convert(numbered_name, "pdb-atom", "clean.fasta", "fasta")
+    try:
+        convert(numbered_name, "pdb-atom", "clean.fasta", "fasta")
+    except:
+        os.remove(pdb_file)
+        os.remove(filtered_name)
+        os.remove(numbered_name)
+        print "Error in conversion for %s" %pdb_file
+        return
+
+
     alphas, betas = _call_ANARCI("clean.fasta", chains)
+
+    if len(alphas) == 0 or len(betas) == 0:
+        os.remove(pdb_file)
+        os.remove(filtered_name)
+        os.remove(numbered_name)
+        os.remove("ANARCI.txt")
+        os.remove("clean.fasta")
+        print "No TCR pairs in %s" %pdb_file
+        return
+
     not_tcrs = _non_tcr_chains(chains, alphas, betas)
     tcr_alpha, tcr_beta = _pair_tcrs(alphas, betas, numbered_name)
 
+
     none_tcr = list(set(chains) - set(alphas + betas))
     peps, mhcas, mhcbs, mhc_class =_get_mhc_pep(tcr_alpha, tcr_beta, none_tcr, "clean.fasta")
+
+    if len(mhcas) == 0 or len(mhcbs) == 0:
+        os.remove(pdb_file)
+        os.remove(filtered_name)
+        os.remove(numbered_name)
+        os.remove("ANARCI.txt")
+        os.remove("clean.fasta")
+        print "No MHC pairs in %s" %pdb_file
+        return
 
     #now let's pair our mhca and bs then see if they map to the tcr
     mhc_pairs = _pair_mhcs(mhcas, mhcbs, numbered_name)
     mhc_alpha, mhc_beta =_map_tcr_to_mhc(mhc_pairs, tcr_alpha, tcr_beta, numbered_name)
     peptide = _map_peptide(tcr_alpha, tcr_beta, mhc_alpha, mhc_beta, peps, numbered_name)
 
-    return tcr_alpha, tcr_beta, peptide, mhc_alpha, mhc_beta, mhc_class
+    if len(tcr_alpha) > 0 and len(tcr_beta) > 0 and len(mhcas) > 0 and len(mhcbs) > 0:
+        if mhc_class == 1:
+            os.rename(pdb_file, "class_one/" + pdb_file)
+        elif mhc_class == 2:
+            os.rename(pdb_file, "class_two/" + pdb_file)
+
+    os.remove(filtered_name)
+    os.remove(numbered_name)
+    os.remove("clean.fasta")
+    os.remove("ANARCI.txt")
+
+def main():
+    all_pdbs = pdb.get_all()
+
+    if os.path.exists("class_one") is False:
+        os.mkdir("class_one")
+
+    if os.path.exists("class_two") is False:
+        os.mkdir("class_two")
+
+    already = set()
+    if os.path.exists("already_analysed.txt"):
+        with open("already_analysed.txt") as f:
+            for line in f:
+                alread.add(line.strip())
+
+    pdbs = list(set(all_pdbs) - already)
+
+    print "There are %i PDB entries to check" %len(pdbs)
+
+    pdbs = ["3TE3"]
+
+    for entry in pdbs:
+        print entry
+        pdb_text = pdb.get_pdb_file(entry, filetype="pdb", compression=False)
+
+        file = entry + ".pdb"
+        out = open(file, "w")
+        out.write(pdb_text + "\n")
+
+        annotate_complex(file, "filt_" + file, "numbered_" + file)
+
+
+
+
+
+if __name__ == "__main__":
+    main()

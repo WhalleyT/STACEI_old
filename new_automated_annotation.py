@@ -9,7 +9,6 @@ from Bio.SeqIO import convert
 from itertools import product
 from data.mhc_sequences import mhc_fastas
 
-
 def _three_dimensional_distance(a, b):
     #distance = root(x^2 + y^2 + z2) where x = x1 -x2 etc
     #https://math.stackexchange.com/questions/42640/calculate-distance-in-3d-space
@@ -87,23 +86,6 @@ def _clean_pdb_new(pdb, outfile):
                 if aa.startswith("B") is False:
                     out.write(line)
 
-def untangle(i):
-    # if our coordinates are joined togther, seperate them
-    if len(i) < 12:
-        new = []
-        for item in i:
-            if item.count(".") > 1:
-                splitter = item.find(".") + 3
-                first = item[0:splitter]
-                second = item[splitter:]
-                new.append(first)
-                new.append(second)
-            else:
-                new.append(item)
-        return new
-    else:
-        return i
-
 
 def _list_to_pdb_spec(pdb, out):
 
@@ -112,9 +94,19 @@ def _list_to_pdb_spec(pdb, out):
     for i in pdb:
         i = i.split()
 
-        while len(i) < 12:
-            i = untangle(i)
-            
+        #if our coordinates are joined togther, seperate them
+        if len(i) < 12:
+            new = []
+            for item in i:
+                if item.count(".") > 1:
+                    splitter = item.find(".") + 3
+                    first  = item[0:splitter]
+                    second = item[splitter:]
+                    new.append(first)
+                    new.append(second)
+                else:
+                    new.append(item)
+            i = new
         outstr = i[0] + (7 - len(str(i[1]))) * " " + str(i[1]) + 2 * " " + str(i[2]) + \
                  (4 - len(str(i[2]))) * " " + str(i[3]) + " " + str(i[4]) + " " * (4- len(str(i[5]))) + \
                  str(i[5]) + (11 - len(str(i[6]))) * " " + str(i[6]) + (8 - len(str(i[7]))) * " " + str(i[7]) + (8 - len(str(i[8]))) * \
