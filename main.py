@@ -125,7 +125,7 @@ def main():
     contacts.clean_contacts(contact_paths.mhc_to_pep_file, full_complex.string, fasta_files.annotated)
     contacts.residue_only_contacts(contact_paths.mhc_to_pep_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.mhc_to_pep_residues)
-    contacts.stats(contact_paths.mhc_to_pep_clean_file, pdb.name)
+    #contacts.stats(contact_paths.mhc_to_pep_clean_file, pdb.name)
 
     print "Generating contact maps for p to MHC"
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)

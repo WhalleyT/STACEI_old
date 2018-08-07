@@ -218,6 +218,8 @@ def is_hydrogen_bond(contact_row):
 
     id_1 = contact_row[4] + contact_row[5] + contact_row[6]
     id_2 = contact_row[11] + contact_row[12] + contact_row[13]
+
+    #print id_1, id_2
     if id_1 in hb_donors and id_2 in hb_acceptors:
         if contact_row[14] <= 3.40:
             return True
@@ -893,6 +895,7 @@ def allLevels(contactMatrix, requestList):
     odds are column you to be analysed
     evens are the value you are looking for in the previous odd entry
     '''
+
     counter = 0
     if len(requestList) <= 1:
        print "Request error"
@@ -930,6 +933,7 @@ def allLevels(contactMatrix, requestList):
 
 
 def stats(fileIn, inFileName):
+    print "calling stats"
 
     inFile = read_file(fileIn, "txt")
 
