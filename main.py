@@ -202,7 +202,7 @@ def main():
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name)
-    
+
     subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,

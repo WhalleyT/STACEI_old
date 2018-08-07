@@ -147,6 +147,10 @@ def clean_namespace(name):
     if os.path.exists("ab_contact.txt"):
         os.remove("ab_contact.txt")
 
+    os.remove("peptide_BSA_piped.txt")
+    os.remove("Rplots.pdf")
+    os.remove("session.txt")
+
     os.rename(name + "_ANARCI_IMGT_annotated.fasta",
               name + "/" + name + "_ANARCI_IMGT_annotated.fasta")
     os.rename(name + "_MHC_to_pep_contacts.txt",
