@@ -124,9 +124,9 @@ count_contacts <- function(df)
 
 args <- commandArgs(TRUE) #don't need for now
 
-if(length(args) != 3)
+if(length(args) != 4)
 {
-  print("3 arguments must be supplied")
+  print("4 arguments must be supplied")
   print(length(args))
   quit()
 }
@@ -149,6 +149,8 @@ cols <- colnames(contacts)
 cols <- cols[2:length(cols)]
 
 colnames(contacts) <- cols
+
+contacts[,17] <- NULL
 
 #now let's start ploting
 lightblue    <- rgb(0.75, 0.75, 1.0)
@@ -191,6 +193,7 @@ force_count$Force      <- gsub("HB", "Hydrogen Bond", force_count$Force)
 force_count$Force      <- gsub("SB", "Salt Bridge", force_count$Force)
 force_count$Force      <- gsub("VW", "Van der Waals", force_count$Force)
 
+force_count <- as.data.frame(force_count)
 
 ggplot(force_count, aes(x = `CDR loop`, y = Count, fill = Force))+
   geom_bar(stat = "identity")+

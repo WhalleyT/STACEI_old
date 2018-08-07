@@ -21,6 +21,15 @@ def extract_pisa(session, chain, outfile):
          'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
          'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
 
+    subprocess.call("pisa %s -list monomers > session.txt" % session, shell=True)
+
+    with open("session.txt") as f:
+        for line in f:
+            if "    " + chain + "    " in line:
+                chain = line.split()[1]
+                break
+
+
     subprocess.call("pisa %s -detail monomers %s > %s" % (session, chain, outfile), shell=True)
     start = False
     data = []

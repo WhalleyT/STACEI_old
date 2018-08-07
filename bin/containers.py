@@ -137,7 +137,7 @@ class TCRPermutationContainers:
 
 
 class PisaOutputs:
-    def __init__(self, name):
+    def __init__(self, name, mhca, mhcb, peptide, tcra, tcrb):
         self.pmhc_chains = name + "_pMHC_only_pisa_chains.txt"
         self.complex_chains = name + "_full_complex_pisa_chains.txt"
 
@@ -148,7 +148,7 @@ class PisaOutputs:
         self.tcrb_chains = name + "_tcrb_complex_pisa_chains.txt"
 
         self.order = [self.mhca_chains, self.mhcb_chains, self.pept_chains, self.tcra_chains, self.tcrb_chains]
-        self.monomers = range(1,6)
+        self.monomers = [mhca, mhcb, peptide, tcra, tcrb]
 
 
 class cleanUp:

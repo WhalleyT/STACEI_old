@@ -14,6 +14,7 @@ import bin.pymol_cdr_loops as pymol_cdr
 import bin.peptide_MHC_visualise as electrostatic
 
 import warnings
+import subprocess
 
 from Bio import BiopythonWarning
 
@@ -137,14 +138,15 @@ def main():
     Then we can do the same, but just for pMHC.
     """
 
-    pisa_files = classes.PisaOutputs(pdb.name)
+    pisa_files = classes.PisaOutputs(pdb.name, full_complex.mhca, full_complex.mhcb, full_complex.peptide,
+                                     full_complex.tcra, full_complex.tcrb)
 
     print "Making a pMHC only PDB file for PISA"
     pisa.make_pmhc_pdb(pdb.clean_imgt, pdb.pmhc, full_complex.pMHC)
 
     print "Calling PISA on pMHC complex"
     pisa.call_pisa(pdb.pmhc, "pMHC_only")
-    pepBSA, pepASA = pisa.extract_pisa("pMHC_only", "3", pisa_files.pmhc_chains)
+    pepBSA, pepASA = pisa.extract_pisa("pMHC_only", full_complex.peptide, pisa_files.pmhc_chains)
 
     print "Calling PISA on full complex"
     total_complex_bsa = []
@@ -187,7 +189,29 @@ def main():
 
 
  ####################################################################################################################
+    """
+    Run the R code for BSA, and the circos plots/pies (static).
+    """
 
+    print "Calling R for BSA of peptide"
+    subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pmhc_chains, shell=True)
+
+    print "Making Circos plots"
+
+    x = "Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
+                                                                    contact_paths.tcr_to_mhc_clean_file,
+                                                                    fasta_files.annotated,
+                                                                    pdb.name)
+    
+    subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
+                                                                    contact_paths.tcr_to_mhc_clean_file,
+                                                                    fasta_files.annotated,
+                                                                    pdb.name), shell=True)
+
+
+
+
+ ###################################################################################################################
     """
     clean up and move things to right paths
     """

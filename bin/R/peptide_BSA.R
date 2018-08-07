@@ -1,23 +1,21 @@
 #graphs peptide BSA
 
 library("ggplot2")
+
+#print(getwd())
+
 args <- commandArgs(TRUE)
-setwd(args[1])
-BSA <- read.table("peptide_BSA.txt")
-BSA[,1] <- NULL
-BSA[,5] <- NULL
-BSA[,5] <- NULL
-colnames(BSA) <- c("Amino Acid", "Residue", "ASA", "BSA")
-BSA[,1] <-  substring(BSA[,1], 3)
 
-#remember to go and check if we want 100 - score or just score
-BSA$Availability <- (((BSA$ASA - BSA$BSA) / BSA$ASA) * 100)
+BSA <- read.table(args[1])
 
-ggplot(data = BSA, aes(x = Residue, y = Availability, fill = Availability))+
+
+ggplot(data = BSA, aes(x = No, y = Availability, fill = Availability))+
   geom_bar(stat = "identity")+
-  scale_x_continuous(breaks = round(seq(min(BSA$Residue), max(BSA$Residue), by = 1),1))+
+    theme_classic()+
+  scale_x_continuous(breaks = round(seq(min(BSA$No), max(BSA$No), by = 1),1))+
   theme(legend.position="none")+
   ggtitle("Availability of peptide in bound pMHC")+
+  xlab("Residue No.")
   theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("BSA.png", plot = last_plot())
