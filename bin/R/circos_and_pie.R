@@ -110,7 +110,8 @@ make_circos <- function(mat, color_vector, color_name, outname)
   circos.par(gap.after = c(rep(5, nrow(mat)-1), 15,
                            rep(5, ncol(mat)-1), 15))
   
-  chordDiagram(mat, grid.col = color_vector, directional = 2)
+  chordDiagram(mat, grid.col = color_vector, directional = 2, grid.border = NA,
+               annotationTrack = c("grid", "name"))
   #ggsave(outname)
   circos.clear()
 }
