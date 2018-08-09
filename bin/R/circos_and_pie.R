@@ -43,8 +43,8 @@ make_pallete <- function(df)
                     grey90, tv_yellow, lightmagenta, deepblue,
                     grey90)
   colour_name  <- c("TCRa", "TCRb", "peptide", "MHCa", "MHCb",
-                    "CDR1a", "CDR2a", "CDR3a", "CDR3afw",
-                    "CDR1b", "CDR2b", "CDR3b", "CDR3bfw")
+                    "CDR1a", "CDR2a", "CDR3a", "FWa",
+                    "CDR1b", "CDR2b", "CDR3b", "FWb")
   names_in_contact <- unique(as.character(df$Donor_Annotation))
   name_indexes     <- match(sort(names_in_contact), colour_name)
   sub_pallete      <- colour_hex[name_indexes]
@@ -172,8 +172,8 @@ colour_hex   <- c(lightblue, palegreen, yellow, grey60,
                   grey90, tv_yellow, lightmagenta, deepblue,
                   grey90)
 colour_name  <- c("TCRa", "TCRb", "peptide", "MHCa", "MHCb",
-                  "CDR1a", "CDR2a", "CDR3a", "CDR3afw",
-                  "CDR1b", "CDR2b", "CDR3b", "CDR3bfw")
+                  "CDR1a", "CDR2a", "CDR3a", "FWa",
+                  "CDR1b", "CDR2b", "CDR3b", "FWb")
 
 
 
@@ -202,7 +202,9 @@ ggplot(force_count, aes(x = `CDR loop`, y = Count, fill = Force))+
   theme(plot.title = element_text(hjust = 0.5),
         legend.title.align = 0.5)+
   scale_fill_brewer(palette = "Set2")
+
 force_count_out <- paste(sub_dir, "/force_count.tiff", sep = "")
+
 ggsave(force_count_out)
 
 force_count_residues <- TCR %>%
@@ -230,7 +232,8 @@ colnames(z) <- c("CDR Loop", "Residue", "Force", "Count")
 ggplot(z, aes(x = Residue, y = Count, fill = Force))+
   geom_bar(stat = "identity")+
   facet_grid(`CDR Loop` ~ .)+
-  scale_x_continuous(breaks = seq(0, max(z$Count), 1))
+  scale_x_continuous(breaks = seq(0, max(z$Count), 1))+
+  scale_fill_brewer(palette = "Set2")
 
 single_facet <- paste(sub_dir, "/single_facet.tiff", sep = "")
 ggsave(single_facet)
@@ -266,7 +269,8 @@ ggsave(force_count_double)
 ggplot(zz, aes(x = Residue, y = Count, fill = Force))+
   geom_bar(stat = "identity")+
   facet_grid(Chain ~ `CDR Loop`)+
-  scale_x_continuous(breaks = seq(0, max(zz$Count), 1))
+  scale_x_continuous(breaks = seq(0, max(zz$Count), 1))+
+  scale_fill_brewer(palette = "Set2")
 
 force_count_double_rev <- paste(sub_dir, "/cdr_loop_force_contact_rev.tiff", sep = "")
 ggsave(force_count_double_rev)
@@ -298,6 +302,10 @@ to_mhc_count$Size    <- sum(to_mhc_count$freq) / total_size
 to_p_count$Size      <- sum(to_p_count$freq) / total_size
 
 all_mhc_counts <- rbind(to_p_count, to_mhc_count, to_pmhc_count)
+
+all_mhc_counts <- all_mhc_counts[all_mhc_counts$Donor_Annotation %in% 
+                                   c("CDR1a","CDR1b","CDR2a",
+                                     "CDR3a","CDR3b","FWa","FWb"),]
 
 names_in_contact <- unique(as.character(all_mhc_counts$Donor_Annotation))
 name_indexes     <- match(sort(names_in_contact), colour_name)
@@ -347,6 +355,9 @@ casted_contacts[is.na(casted_contacts)] <- 0
 rownames(casted_contacts)        <- casted_contacts$Donor_Annotation
 casted_contacts$Donor_Annotation <- NULL
 casted_contacts                  <- as.matrix(casted_contacts)
+casted_contacts                 <- casted_contacts[rownames(casted_contacts) %in% 
+                                                     c("CDR1a","CDR1b","CDR2a",
+                                                       "CDR3a","CDR3b","FWa","FWb"),]
 
 
 

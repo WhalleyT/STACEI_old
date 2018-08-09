@@ -12,6 +12,7 @@ import bin.new_pisa as pisa
 import bin.planar_crossing_angle as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
 import bin.peptide_MHC_visualise as electrostatic
+import bin.shape_complementarity as sc
 
 import warnings
 import subprocess
@@ -125,7 +126,6 @@ def main():
     contacts.clean_contacts(contact_paths.mhc_to_pep_file, full_complex.string, fasta_files.annotated)
     contacts.residue_only_contacts(contact_paths.mhc_to_pep_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.mhc_to_pep_residues)
-    #contacts.stats(contact_paths.mhc_to_pep_clean_file, pdb.name)
 
     print "Generating contact maps for p to MHC"
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
@@ -198,16 +198,25 @@ def main():
 
     print "Making Circos plots"
 
-    x = "Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
-                                                                    contact_paths.tcr_to_mhc_clean_file,
-                                                                    fasta_files.annotated,
-                                                                    pdb.name)
-
     subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name), shell=True)
 
+
+
+
+ ###################################################################################################################
+    """
+    Surface complementarity
+    """
+
+    print "Calling SC"
+
+    sc.write_SC_pipe(full_complex.mhca, full_complex.mhcb, full_complex.peptide,
+                     full_complex.tcra, full_complex.tcrb)
+
+    sc.run_SC(pdb.clean_imgt)
 
 
 

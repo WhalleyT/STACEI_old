@@ -188,8 +188,12 @@ def clean_namespace(name):
     os.rename(name + "_tcrb_complex_pisa_chains.txt",
               name + "/" + name + "_tcrb_complex_pisa_chains.txt")
     os.rename(name + "_ANARCI.txt", name + "/" + name + "_ANARCI.txt")
+    os.rename("BSA.png", name + "/BSA.png")
 
+    os.rename("sc.txt", name + "/" + "SC/sc.txt")
 
+    os.remove("sc_in.txt")
+    os.remove("sc_out.txt")
 
     # pymol may be left open
     pymol.cmd.quit()

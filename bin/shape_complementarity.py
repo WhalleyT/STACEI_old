@@ -2,9 +2,9 @@ import sys
 import re
 import os
 
-def write_SC_pipe(MHCa_res, MHCb_res, peptide_res, TCRa_res, TCRb_res, sc_path):
-    #print sc_path + '/sc_in.txt'
-    f = open(sc_path + '/sc_in.txt','w')
+def write_SC_pipe(MHCa_res, MHCb_res, peptide_res, TCRa_res, TCRb_res):
+    
+    f = open('sc_in.txt','w')
     sc_MHCa_line = 'chain ' + MHCa_res + '\n'
     sc_MHCb_line = 'chain ' + MHCb_res + '\n'
     sc_pep_line  = 'chain ' + peptide_res + '\n'
@@ -94,24 +94,21 @@ def get_ATOM(file):
             if line.startswith("ATOM"):
                 out.write(line)
 
-def run_SC(filtered_name, sc_path):
-    cmdstring = "sc XYZIN %s < %s/sc_in.txt > %s/sc_out.txt" % (filtered_name, sc_path, sc_path)
-    os.system(cmdstring)
-    print cmdstring
 
-    #grab the relevant line
-    print sc_path
-    with open(sc_path + '/sc_out.txt', 'r') as f:
+def run_SC(filtered_name):
+    cmdstring = "sc XYZIN %s < sc_in.txt > sc_out.txt" % filtered_name
+    os.system(cmdstring)
+
+    with open('sc_out.txt', 'r') as f:
         for line in f:
-            print line
             if 'Shape complementarity statistic Sc' in line:
                 SC = line
-                print SC
 
-    f = open(sc_path + '/sc.txt', 'w')
+    f = open('sc.txt', 'w')
     f.write(SC)
     f.close()
     return
+
 
 def remove_double_conformations(pdb):
     outlist = []
