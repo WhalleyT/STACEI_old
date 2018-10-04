@@ -121,6 +121,9 @@ def clean_namespace(name):
     if os.path.exists("ab_contact.txt"):
         os.remove("ab_contact.txt")
 
+    if os.path.exists("session.txt"):
+        os.remove("session.txt")
+
     os.remove("peptide_BSA_piped.txt")
     os.remove("Rplots.pdf")
     os.remove("session.txt")
