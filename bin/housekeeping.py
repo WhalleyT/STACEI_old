@@ -74,48 +74,22 @@ def create_paths(file_name):
 
     seq_path = file_name + "/sequences"
     contact_path = file_name + "/contacts"
-    sc_path = file_name + "/SC"
-    pisa_path = file_name + "/pisa"
+    pisa_path = file_name + "/buried_surface"
+    sc_path = file_name + "/surface_complementarity"
     xing_path = file_name + "/crossingAngle"
-    vis_path = file_name + "/visualisation"
     map_path = file_name + "/maps"
-    pdb_path = file_name + "/pdbs"
+    pdb_path = file_name + "/PDBs"
+    vis_path = file_name + "/pymol_visualisation"
+    session_path = file_name + "/sessions"
 
+    paths = [seq_path, contact_path, pisa_path, sc_path, xing_path, map_path, pdb_path, vis_path, session_path]
 
-    if not os.path.exists(file_name):
-        # print "Creating Directory " + file_name
-        os.makedirs(file_name)
+    for path in paths:
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-    if not os.path.exists(file_name + "/contacts"):
-        # print "Creating Directory " + file_name + "/contacts"
-        os.makedirs(contact_path)
-
-    if not os.path.exists(file_name + "/sequences"):
-        # print "Creating Directory " + file_name + "/sequences"
-        os.makedirs(seq_path)
-
-    if not os.path.exists(file_name + "/pisa"):
-        # print "Creating Directory " + file_name + "/pisa"
-        os.makedirs(pisa_path)
-
-    if not os.path.exists(file_name + "/SC"):
-        # print "Creating Directory " + file_name + "/SC"
-        os.makedirs(sc_path)
-
-    if not os.path.exists(xing_path):
-        # print "Creating Directory " + file_name + "/crossingAngle"
-        os.makedirs(xing_path)
-
-    if not os.path.exists(map_path):
-        os.makedirs(map_path)
-
-    if not os.path.exists(vis_path):
-        os.makedirs(vis_path)
-
-    if not os.path.exists(pdb_path):
-        os.makedirs(pdb_path)
-
-    return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path, map_path, vis_path, pdb_path)
+    return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path,
+                            map_path, vis_path, pdb_path, session_path)
 
 
 def disable_print(suppress):

@@ -1163,7 +1163,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.set("cartoon_transparency", 0.5)
 
     # set view
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="crossing_angle", action="store")
     # generate images
 
@@ -1175,7 +1175,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.hide("surface", "all")
 
     # photo op
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="centroids_angle", action="store")
     if ray is True:
         scene_name = fileName + "/crossingAngle/" + fileName + "_crossing_centroids_angle.png"
@@ -1184,7 +1184,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.hide("dashes", "all")
 
     # photo op
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="centroids", action="store")
     if ray is True:
         scene_name = fileName + "/crossingAngle/" + fileName + "_crossing_centroids.png"
@@ -1194,7 +1194,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.show("dashes", "TCRline")
 
     # photo op
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="angle", action="store")
     if ray is True:
         scene_name = fileName + "/crossingAngle/" + fileName + "_crossing_angle.png"
@@ -1240,7 +1240,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.show("cartoon", "MHCa2")
 
     # Photo op here   
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_pMHC_1", action="store")
     if ray is True:
@@ -1258,7 +1258,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.hide("surface", "all")
 
     # Photo op here   
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_centroids_1", action="store")
     if ray is True:
@@ -1277,7 +1277,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.hide("dashes", "MHCfitatTCRPline")
 
     # Photo op here   
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_centroids", action="store")
     if ray is True:
@@ -1297,7 +1297,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains):
     pymol.cmd.show("dashes", "MHCfitatTCRPline")
 
     # Photo op here   
-    pymol.cmd.set_view(viewSet.birdsEyeView)
+    pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle", action="store")
     if ray is True:
