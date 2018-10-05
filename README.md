@@ -1,7 +1,8 @@
 # STACEI
 STACEI: STructural Analysis of TCR-pEptide-MHC Interactions
 
-STACEI is a tool, primarily written in Python and R designed for the analysis and exploration of T-cell receptor (TCR) to peptide:major histocompatibility complex (pMHC) crystal structures.
+STACEI is a tool, primarily written in Python and R designed for the analysis and exploration of T-cell receptor (TCR) to peptide:major histocompatibility complex (pMHC) crystal structures. For more information about the specific functionality please see <citation>.
+
 
 ## Getting Started
 
