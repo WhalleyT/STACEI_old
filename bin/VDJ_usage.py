@@ -88,7 +88,7 @@ def xToDot(sequence):
 
 
 def generate_fasta(file_name, full_file, chains):
-    fasta_name = file_name + "/sequences/" + file_name + ".fasta"
+    fasta_name = file_name + "/FASTAs/" + file_name + ".fasta"
 
     bio_convert(full_file, "pdb-atom", fasta_name, "fasta")
 
@@ -100,7 +100,7 @@ def generate_fasta(file_name, full_file, chains):
             names.append(name)
             seqs.append(seq)
 
-    out = open(file_name + "/sequences/" + file_name + ".fasta", 'w')
+    out = open(file_name + "/FASTAs/" + file_name + ".fasta", 'w')
 
     outnames = []
     outseqs = []
@@ -113,7 +113,7 @@ def generate_fasta(file_name, full_file, chains):
                 out.write(seqs[i] + "\n")
                 counter += 1
 
-    fasta_path = file_name + "/sequences/" + file_name + ".fasta"
+    fasta_path = file_name + "/FASTAs/" + file_name + ".fasta"
    # print "fasta written to file " + fasta_path
     return fasta_path
 
@@ -131,7 +131,7 @@ def first_annotation_fasta(chains_class, fasta_name, pdb_name, full_file):
             seqs.append(xToDot(seq))
    # print len(seqs)
 
-    out = open(pdb_name + "/sequences/" + pdb_name + ".fasta", 'w')
+    out = open(pdb_name + "/FASTAs/" + pdb_name + ".fasta", 'w')
 
     # convert letter index to their numeric equivalent e.g. A == 1
     nums = []

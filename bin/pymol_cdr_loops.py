@@ -133,13 +133,18 @@ def wait4ray(query):
     return None
 
 
-def rayTime(saveas):
+def rayTime(saveas, ray_bool):
+    ray_int = 0
+
+    if ray_bool:
+        ray_int = 1
+
     print "Outputting image.. This may take a few seconds.."
     if os.path.exists(saveas):
         print "Removing " + saveas + " as it already exists!"
         os.remove(saveas)
     time.sleep(10)
-    pymol.cmd.png(saveas, ray=1, width=3000, height=3000, dpi=300)
+    pymol.cmd.png(saveas, ray=ray_int, width=3000, height=3000, dpi=300)
     wait4ray(saveas)
     print "Done! " + str(saveas) + " was outputted"
 
@@ -273,16 +278,16 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     # General front scene
     pymol.cmd.set_view(viewSet.frontView)
     pymol.cmd.scene(key="front", action="store")
-    if ray == True:
-        frontViewImage = fileName + "/visualisation/" + "front.png"
-        rayTime(frontViewImage)
+
+    frontViewImage = fileName + "/visualisation/" + "front.png"
+    rayTime(frontViewImage, ray)
 
     # General side scene
     pymol.cmd.set_view(viewSet.sideView)
     pymol.cmd.scene(key="side", action="store")
-    if ray == True:
-        sideViewImage = fileName + "/visualisation/" + "side.png"
-        rayTime(sideViewImage)
+
+    sideViewImage = fileName + "/visualisation/" + "side.png"
+    rayTime(sideViewImage, ray)
 
     # Birds eye with CDR loops over MHC
 
@@ -301,9 +306,9 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     # Photo op. Let's image just the loops alone
     pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="CDRloops", action="store")
-    if ray == True:
-        CDRloopsImage = fileName + "/visualisation/" + "CDRloops.png"
-        rayTime(CDRloopsImage)
+
+    CDRloopsImage = fileName + "/visualisation/" + "CDRloops.png"
+    rayTime(CDRloopsImage, ray)
 
     # pMHC surface
     pymol.cmd.show("surface", "MHCa")
@@ -322,9 +327,9 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
 
     pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="CDRbirdseye", action="store")
-    if ray == True:
-        CDRbirdseyeout = fileName + "/visualisation/" + "CDRloopsBirdsEye.png"
-        rayTime(CDRbirdseyeout)
+
+    CDRbirdseyeout = fileName + "/visualisation/" + "CDRloopsBirdsEye.png"
+    rayTime(CDRbirdseyeout, ray)
 
     ## Now let's add some surface to the CDR loops up the birdseye
     for loop in TCRAlocations:
@@ -340,9 +345,9 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     ## Photo op here. CDR birds eye with CDR ribbons and surface on top of surface pMHC showing cartoon helices
     pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="CDRsurfaceBirdseye", action="store")
-    if ray == True:
-        CDRsurfaceBirdseye = fileName + "/visualisation/" + "CDRsurfaceBirdseye.png"
-        rayTime(CDRsurfaceBirdseye)
+
+    CDRsurfaceBirdseye = fileName + "/visualisation/" + "CDRsurfaceBirdseye.png"
+    rayTime(CDRsurfaceBirdseye, ray)
     # Now let's show the surface of pMHC with coloured contacts by the CDR loops
 
     # Hide the loop surfaces
@@ -367,9 +372,9 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     ## Photo op here
     pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="CDRfootprint", action="store")
-    if ray == True:
-        CDRfootprint = fileName + "/visualisation/" + "CDRfootprint.png"
-        rayTime(CDRfootprint)
+
+    CDRfootprint = fileName + "/visualisation/" + "CDRfootprint.png"
+    rayTime(CDRfootprint, ray)
 
     # Now let's just view the pMHC surface as this might be useful for overlays
 
@@ -391,9 +396,9 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     ## Photo op here
     pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="pMHCsurface", action="store")
-    if ray == True:
-        pMHCsurface = fileName + "/visualisation/" + "pMHCsurface.png"
-        rayTime(pMHCsurface)
+
+    pMHCsurface = fileName + "/visualisation/" + "pMHCsurface.png"
+    rayTime(pMHCsurface, ray)
 
     # MHC helices cos pymol is being a pain
     pymol.cmd.hide("all")
@@ -404,9 +409,9 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     ## Photo op here
     pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="MHChelices", action="store")
-    if ray == True:
-        MHChelices = fileName + "/visualisation/" + "MHChelices.png"
-        rayTime(MHChelices)
+
+    MHChelices = fileName + "/visualisation/" + "MHChelices.png"
+    rayTime(MHChelices, ray)
 
     # CDR (backbone) centre of mass
 
@@ -445,12 +450,12 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     ## Photo op here
     pymol.cmd.set_view(viewSet.newBirdsEyeView)
     pymol.cmd.scene(key="CDRCOM", action="store")
-    if ray == True:
-        CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
-        rayTime(CDRCOMimage)
+
+    CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
+    rayTime(CDRCOMimage, ray)
 
     # Save the session
-    pymol.cmd.save(fileName + "/visualisation/" + fileName + "_autoCDRloops.pse")
+    pymol.cmd.save(fileName + "/sessions/" + fileName + "_autoCDRloops.pse")
     # loopMeans=[]
     # for loop in TCRAlocations:
     #    loopMean=[]

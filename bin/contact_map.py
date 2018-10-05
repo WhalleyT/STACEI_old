@@ -279,7 +279,7 @@ def generate_tcr(seqFile, donors, acceptors, smart, fileName):
 
     seqInFile = readFile(seqFile, "txt")
 
-    mapPath = fileName+ "/maps"
+    mapPath = fileName+ "/contacts/maps"
 
     # Openers #
     if type(fileName) != str:

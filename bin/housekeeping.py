@@ -3,9 +3,14 @@ import sys
 import os
 import containers
 import pymol
+import glob
 
 
 def _parse_args():
+    """
+    Parse the command line arguments
+    """
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', '-F', dest='infile', type=str,
                         help='PDB file of a TCR-pMHC complex', required=True)
@@ -27,6 +32,10 @@ def _parse_args():
 
 
 def check_parse():
+    """
+    Sanitize the parse arguments
+    """
+
     args = _parse_args()
 
     classes = [1, 2]
@@ -48,6 +57,9 @@ def check_parse():
 
 
 def read_file(infile, file_type):
+    """
+    read the file
+    """
     if infile is None:
         sys.exit('No file to read')
     if infile.split('.')[-1].lower() != str(file_type):
@@ -58,6 +70,10 @@ def read_file(infile, file_type):
 
 
 def detect_os():
+    """
+    Used to deal with faulty calls to
+    subprocess, left in just in case
+    """
     nixs = ['posix', 'linux']
     if os.name in nixs:
         return "nix"
@@ -81,23 +97,36 @@ def create_paths(file_name):
     pdb_path = file_name + "/PDBs"
     vis_path = file_name + "/pymol_visualisation"
     session_path = file_name + "/sessions"
+    fasta_path = file_name + "/FASTAs"
+    table_path = contact_path + "/contact_tables"
+    mhc_table = table_path + "/MHC_to_pep"
+    tcr_table = table_path + "/TCR_to_pMHC"
 
-    paths = [seq_path, contact_path, pisa_path, sc_path, xing_path, map_path, pdb_path, vis_path, session_path]
+    paths = [seq_path, contact_path, pisa_path, sc_path, xing_path, map_path,
+             pdb_path, vis_path, session_path, fasta_path, table_path, mhc_table, tcr_table]
 
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path)
 
+
+
     return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path,
-                            map_path, vis_path, pdb_path, session_path)
+                            map_path, pdb_path, vis_path, session_path, fasta_path)
 
 
 def disable_print(suppress):
+    """
+    stop flushing to stdout
+    """
     if suppress:
         sys.stdout = open(os.devnull, 'w')
 
 
 def enable_print():
+    """
+    as above, but re-enable
+    """
     sys.stdout = sys.__stdout__
 
 
@@ -112,65 +141,40 @@ def give_tree(startpath):
             print('{}{}'.format(subindent, f))
 
 
-def clean_namespace(name):
+def clean_namespace(name, paths, original):
 
     # remove uneeded files
-    os.remove("clean.fasta")
-    os.remove("ANARCI.txt")
+    stray_files = ["clean.fasta", "ANARCI.txt", "ab_contact", "session.txt", "peptide_BSA_piped.txt", "Rplots.pdf",
+                   "sc_in.txt", "sc_out.txt"]
 
-    if os.path.exists("ab_contact.txt"):
-        os.remove("ab_contact.txt")
+    for file in stray_files:
+        if os.path.exists(file):
+            os.remove(file)
 
-    if os.path.exists("session.txt"):
-        os.remove("session.txt")
+    for file in glob.glob("*.fasta"):
+        os.rename(file, paths.fasta_path + "/" + file)
 
-    os.remove("peptide_BSA_piped.txt")
-    os.remove("Rplots.pdf")
-    os.remove("session.txt")
+    for file in glob.glob(name + "*.pdb") + glob.glob(name + "*.PDB"):
+        if file != original:
+            os.rename(file, paths.pdb_path + "/" + file)
 
-    os.rename(name + "_ANARCI_IMGT_annotated.fasta",
-              name + "/" + name + "_ANARCI_IMGT_annotated.fasta")
-    os.rename(name + "_MHC_to_pep_contacts.txt",
-              name + "/" + name + "_MHC_to_pep_contacts.txt")
-    os.rename(name + "_MHC_to_pep_contacts_clean.txt",
-              name + "/" + name + "_MHC_to_pep_contacts_clean.txt")
-    os.rename(name + "_MHC_to_pep_contacts_clean_residues.txt",
-              name + "/" + name + "_MHC_to_pep_contacts_clean_residues.txt")
-    os.rename(name + "_MHC_to_pep_contacts_clean_residues_contacts_residues_full.txt",
-              name + "/" + name + "_MHC_to_pep_contacts_clean_residues_contacts_residues_full.txt")
-    os.rename(name + "_TCR_to_pMHC_contacts.txt",
-              name + "/" + name + "_TCR_to_pMHC_contacts.txt")
-    os.rename(name + "_TCR_to_pMHC_contacts_clean.txt",
-              name + "/" + name + "_TCR_to_pMHC_contacts_clean.txt")
-    os.rename(name + "_TCR_to_pMHC_contacts_clean_residues.txt",
-              name + "/" + name + "_TCR_to_pMHC_contacts_clean_residues.txt")
-    os.rename(name + "_TCR_to_pMHC_contacts_clean_residues_contacts_residues_full.txt",
-              name + "/" + name + "_TCR_to_pMHC_contacts_clean_residues_contacts_residues_full.txt")
-    os.rename(name + "_clean_numbered_imgt.pdb",
-              name + "/" + name + "_clean_numbered_imgt.pdb")
-    os.rename(name + "_filtered.pdb", name + "/" + name + "_filtered.pdb")
-    os.rename(name + "_mhca_pisa_chains.txt", name + "/" + name + "_mhca_pisa_chains.txt")
-    os.rename(name + "_mhcb_pisa_chains.txt", name + "/" + name + "_mhcb_pisa_chains.txt")
-    os.rename(name + "_numbered.pdb", name + "/" + name + "_numbered.pdb")
-    os.rename(name + "_numbered_imgt.pdb", name + "/" + name + "_numbered_imgt.pdb")
-    os.rename(name + "_pMHC_only_pisa_chains.txt",
-              name + "/" + name + "_pMHC_only_pisa_chains.txt")
-    os.rename(name + "_peptide_pisa_chains.txt",
-              name + "/" + name + "_peptide_pisa_chains.txt")
-    os.rename(name + "_pmhc.pdb", name + "/" + name + "_pmhc.pdb")
-    os.rename(name + "_sequence.txt", name + "/" + name + "_sequence.txt")
-    os.rename(name + "_sequence_annot.txt", name + "/" + name + "_sequence_annot.txt")
-    os.rename(name + "_statistics.txt", name + "/" + name + "_statistics.txt")
-    os.rename(name + "_tcra_pisa_chains.txt", name + "/" + name + "_tcra_pisa_chains.txt")
-    os.rename(name + "_tcrb_complex_pisa_chains.txt",
-              name + "/" + name + "_tcrb_complex_pisa_chains.txt")
-    os.rename(name + "_ANARCI.txt", name + "/" + name + "_ANARCI.txt")
-    os.rename("BSA.png", name + "/BSA.png")
+    os.rename("sc.txt", paths.sc_path + "/" + "sc.txt")
+    os.rename("BSA.png", paths.pisa_path + "/BSA.png")
+    os.rename(name + "_statistics.txt", paths.contact_path + "/contact_tables/" + name + "_statistics.txt")
+    os.rename(name + "_ANARCI.txt", paths.sequence_path + "/" + name + "_ANARCI.txt")
 
-    os.rename("sc.txt", name + "/" + "SC/sc.txt")
 
-    os.remove("sc_in.txt")
-    os.remove("sc_out.txt")
+    for file in glob.glob(name + "*pisa_chains*"):
+        os.rename(file, paths.pisa_path + "/" + file)
 
-    # pymol may be left open
+    for file in glob.glob(name + "*MHC_to_pep*"):
+        os.rename(file, paths.contact_path + "/contact_tables/MHC_to_pep/" + file)
+
+    for file in glob.glob(name + "*TCR_to_pMHC*"):
+        os.rename(file, paths.contact_path + "/contact_tables/TCR_to_pMHC/" + file)
+
+    for file in glob.glob(name + "*sequence*"):
+        os.rename(file, paths.sequence_path + "/" + file)
+
+
     pymol.cmd.quit()

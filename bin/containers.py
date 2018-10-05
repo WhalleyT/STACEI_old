@@ -54,7 +54,7 @@ class ChainInformation:
 
 class Paths:
     def __init__(self, seq_path, contact_path, pisa_path, sc_path, xing_path, map_path,
-                 pdb_path, vis_path, session_path):
+                 pdb_path, vis_path, session_path, fasta_path):
         self.sequence_path = seq_path
         self.contact_path = contact_path
         self.sc_path = sc_path
@@ -64,6 +64,7 @@ class Paths:
         self.vis_path = vis_path
         self.pdb_path = pdb_path
         self.session_path = session_path
+        self.fasta_path = fasta_path
         self.current = os.getcwd()
 
 
@@ -104,8 +105,8 @@ class AnarciFiles:
 
 class FastaFiles:
     def __init__(self, pdb):
-        self.default = pdb + "/sequences/" + pdb +  ".fasta"
-        self.linear = pdb + "/sequences/" + pdb + "_linear.fasta"
+        self.default = pdb + "/FASTAs/" + pdb +  ".fasta"
+        self.linear = pdb + "/FASTAs/" + pdb + "_linear.fasta"
         self.annotated = pdb + "_ANARCI_IMGT_annotated.fasta"
 
 

@@ -226,7 +226,7 @@ def main():
     """
 
     print "Done! Now cleaning up"
-    housekeeping.clean_namespace(pdb.name)
+    housekeeping.clean_namespace(pdb.name, paths, args.infile)
 
 
 if __name__ == "__main__":
