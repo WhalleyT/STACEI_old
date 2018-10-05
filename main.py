@@ -1,4 +1,7 @@
 #!/usr/bin/env python2.7
+# This allows us to use the correct display if one is using this script over a ssh session
+import matplotlib
+matplotlib.use('Agg')
 
 # Our own imports
 import bin.new_automated_annotation as annotation
