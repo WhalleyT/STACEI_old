@@ -99,7 +99,7 @@ class PeptideData:
 
 class AnarciFiles:
     def __init__(self, pdb):
-        self.infile =   pdb + "/sequences/" + pdb + ".fasta"
+        self.infile =   pdb + "/FASTAs/" + pdb + ".fasta"
         self.outfile = pdb + "_ANARCI.txt"
 
 

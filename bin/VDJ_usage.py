@@ -102,8 +102,6 @@ def generate_fasta(file_name, full_file, chains):
 
     out = open(file_name + "/FASTAs/" + file_name + ".fasta", 'w')
 
-    outnames = []
-    outseqs = []
     counter = 0
     chain_annotations = ["MHCA", "MHCB", "peptide", "TCRA", "TCRB"]
     for chain in chains:

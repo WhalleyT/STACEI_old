@@ -22,7 +22,8 @@ def _parse_args():
                              'peptide, MHC alpha and MHC beta',
                         required=False)
     parser.add_argument('--ray', '-R', dest='ray_trace', action='store_true',
-                        help='Flag. If provided, structures will be ray traced in Pymol. This will affect performance.')
+                        help='Flag. If provided, structures will be ray traced in Pymol. '
+                             'This will affect performance at run time but will produce better images.')
     parser.add_argument('--suppress', '-S', dest='suppress', action='store_true',
                         help='Flag. If provided stdout output will be suppressed (inc. CCP4, Pymol and ANARCI)')
     parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, default='ebi', type=str,
@@ -109,8 +110,6 @@ def create_paths(file_name):
         if not os.path.exists(path):
             os.makedirs(path)
 
-
-
     return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path,
                             map_path, pdb_path, vis_path, session_path, fasta_path)
 
@@ -142,6 +141,10 @@ def give_tree(startpath):
 
 
 def clean_namespace(name, paths, original):
+    """
+    Now the script has finished, so time to clean up our files;
+    either delete the unwanted ones, or move them to a new home
+    """
 
     # remove uneeded files
     stray_files = ["clean.fasta", "ANARCI.txt", "ab_contact", "session.txt", "peptide_BSA_piped.txt", "Rplots.pdf",
@@ -154,7 +157,7 @@ def clean_namespace(name, paths, original):
     for file in glob.glob("*.fasta"):
         os.rename(file, paths.fasta_path + "/" + file)
 
-    for file in glob.glob(name + "*.pdb") + glob.glob(name + "*.PDB"):
+    for file in glob.glob(name + "*.pdb") + glob.glob(paths.crossing_path("*.pdb") + "*.pdb"):
         if file != original:
             os.rename(file, paths.pdb_path + "/" + file)
 
@@ -175,6 +178,5 @@ def clean_namespace(name, paths, original):
 
     for file in glob.glob(name + "*sequence*"):
         os.rename(file, paths.sequence_path + "/" + file)
-
 
     pymol.cmd.quit()
