@@ -95,7 +95,7 @@ def create_paths(file_name):
     sc_path = file_name + "/surface_complementarity"
     xing_path = file_name + "/crossingAngle"
     map_path = file_name + "/maps"
-    pdb_path = file_name + "/PDBs"
+    pdb_path = file_name + "/pdbs"
     vis_path = file_name + "/pymol_visualisation"
     session_path = file_name + "/sessions"
     fasta_path = file_name + "/FASTAs"
@@ -157,9 +157,9 @@ def clean_namespace(name, paths, original):
     for file in glob.glob("*.fasta"):
         os.rename(file, paths.fasta_path + "/" + file)
 
-    for file in glob.glob(name + "*.pdb") + glob.glob(paths.crossing_path("*.pdb") + "*.pdb"):
+    for file in glob.glob(name + "*.pdb") + glob.glob(paths.crossing_path + "/*.pdb"):
         if file != original:
-            os.rename(file, paths.pdb_path + "/" + file)
+            os.rename(file, paths.pdb_path + "/" + file.split("/")[-1])
 
     os.rename("sc.txt", paths.sc_path + "/" + "sc.txt")
     os.rename("BSA.png", paths.pisa_path + "/BSA.png")
