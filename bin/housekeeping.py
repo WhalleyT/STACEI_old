@@ -147,7 +147,7 @@ def clean_namespace(name, paths, original):
     """
 
     # remove uneeded files
-    stray_files = ["clean.fasta", "ANARCI.txt", "ab_contact", "session.txt", "peptide_BSA_piped.txt", "Rplots.pdf",
+    stray_files = ["clean.fasta", "ANARCI.txt", "ab_contact.txt", "session.txt", "peptide_BSA_piped.txt", "Rplots.pdf",
                    "sc_in.txt", "sc_out.txt"]
 
     for file in stray_files:
