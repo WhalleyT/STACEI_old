@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>STACEI</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    
+     <!-- Bruce's styles -->
+    <link href="css/thumbnails.css" rel="stylesheet">
+
+</head>
+
+<body>
+   <!-- Navbar -->     
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <h1><a href="#menu-toggle" class="btn btn-dark" id="menu-toggle">☰</a></h1>
+            </li>
+        </ul>
+    </div>
+    <div class="mx-auto order-0">
+        <a class="navbar-brand mx-auto" href="#"><h2>STACEI</h2></a>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#"><h5><small><b>St</b>ructural <b>A</b>nalysis of T<b>C</b>R-p<b>e</b>ptide-MHC <b>I</b>nteractions</small></h5></a>
+            </li>
+            <li class="nav-item">
+                <img src="CU.svg" width="50" height="50" class="d-inline-block align-top" alt="Cardiff University">
+            </li>
+        </ul>
+    </div>
+</nav>
+    <!-- Navbar end -->
+
+    <div id="wrapper">
+
+              <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                    Project TRAMP
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="gen_vis.html">General Visualisation</a>
+                </li>
+                <li>
+                    <a href="gen_stat.html">General Statistics</a>
+                </li>
+                TCRpMHC Analyses
+                <li>
+                    <a href="CDR_pos.html">CDR Positioning</a>
+                </li>
+                <li>
+                    <a href="cross_ang.html">Crossing Angle</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_tab.html">Contact Tables</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_maps.html">Contact Maps</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_charts.html">Contact Charts</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_explorer.html">Contact Explorer</a>
+                </li>
+                <li>
+                    <a href="TCR_charts.html">BSA</a>
+                </li>
+                pMHC Analyses
+                <li>
+                    <a href="pMHC_surface.html">pMHC surface</a>
+                </li>
+                <li>
+                    <a href="pep_avail.html">Peptide Availability</a>
+                </li>               
+                <li>
+                    <a href="pep_density.html">Peptide Density Validation</a>
+                </li>       
+                <li>
+                    <a href="pep_contact_maps.html">p to MHC Contact Map</a>
+                </li> 
+                <li>
+                    <a href="pep_charts.html">p to MHC Contact Charts</a>
+                </li>                                 
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+       
+<!--    <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p> -->
+
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+        <!-- The jumbotron (page master description) starts here -->
+            <div class="jumbotron">
+           
+            <h1> CDR loop positions</h1>
+            <p>These visualisations show the location of each CDR loop over the peptide MHC. CDR loops are annotated using alignment to the IMGT protein displays database. Each image in this window is taken from a common viewpoint and can therefore be overlayed.</p>
+            </div>
+            
+        <!-- The jumbotron (page master description) ends here -->
+                
+        
+          <!-- OUTPUT DATA GOES IN HERE --> 
+          
+   <!-- Work in a grid of four system - the first three columns are for data and the 4th column is for a legend. Each column occupies a span of 3  --> 
+   <!-- New Row -->   
+   <!-- Column 1 -->                              
+  <div class="row">
+  <div class="col-sm-3">
+    <div class="img-thumbnail">
+      <a href="data/pymol_visualisation/CDRloopsBirdsEye.png">
+        <img src="data/pymol_visualisation/CDRloopsBirdsEye.png" alt="contactmap" style="width:100%">
+        
+        <div class="caption">
+        
+          <a href="data/pymol_visualisation/CDRloopsBirdsEye.png" class="btn btn-primary btn-sm" role="button">.png</a> 
+          <a href="#" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>   
+          <p>CDR loop backbones over pMHC</p> 
+        </div>     
+        </a>
+      
+    </div>
+  </div>
+  <!-- Column 2 -->      
+    <div class="col-sm-3">
+    <div class="img-thumbnail">
+      <a href="data/pymol_visualisation/CDRloops.png">
+        <img src="data/pymol_visualisation/CDRloops.png" alt="contactmap" style="width:100%">
+        
+        <div class="caption">
+        
+          <a href="data/pymol_visualisation/CDRloops.png" class="btn btn-primary btn-sm" role="button">.png</a> 
+          <a href="#" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>   
+          <p>CDR loop backbones</p> 
+        </div>     
+        </a>
+      
+    </div>
+  </div>
+<!-- Column 3 -->      
+    <div class="col-sm-3">
+    <div class="img-thumbnail">
+      <a href="data/pymol_visualisation/CDR_centre_of_mass.png">
+        <img src="data/pymol_visualisation/CDR_centre_of_mass.png" alt="contactmap" style="width:100%">
+        
+        <div class="caption">
+        
+          <a href="data/pymol_visualisation/CDR_centre_of_mass.png" class="btn btn-primary btn-sm" role="button">.png</a> 
+          <a href="#" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>   
+          <p>CDR loop centre of masses</p> 
+        </div>     
+        </a>
+      
+    </div>
+  </div>  
+  <!-- Column 4 - This is the right side bar - use for colour code keys etc. -->
+  	  <div class="col-sm-1"></div>
+      <div class="col-sm-2 sidenav sticky-top">
+      <div class="card">
+      <div class="card-header text-center"><h6>Legend</h6></div>
+      <div class="card-body">
+      CDR loops:<br>
+      <span class="badge badge-primary" style="background-color: rgb(255, 50, 50)">CDR1a</span>
+      <span class="badge badge-primary" style="background-color: rgb(50, 255, 50)">CDR2a</span>
+      <span class="badge badge-primary" style="background-color: rgb(230, 230, 230)">FWa</span>
+      <span class="badge badge-primary" style="background-color: rgb(128, 0, 255)">CDR3a</span>
+      <span class="badge badge-primary" style="background-color: rgb(255, 255, 50)">CDR1b</span>
+      <span class="badge badge-primary" style="background-color: rgb(255, 50, 204)">CDR2b</span>
+      <span class="badge badge-primary" style="background-color: rgb(230, 230, 230)">FWb</span>
+      <span class="badge badge-primary" style="background-color: rgb(64,64,64)">CDR3b</span>
+
+      </div>
+      
+      </div>
+      </div>
+     
+  <!-- Column 1 -->                          
+  <div class="col-sm-3">
+    <div class="img-thumbnail">
+      <a href="data/pymol_visualisation/CDRsurfaceBirdseye.png">
+        <img src="data/pymol_visualisation/CDRsurfaceBirdseye.png" alt="CDF locations" style="width:100%">
+        
+        <div class="caption">
+        
+          <a href="data/pymol_visualisation/CDRsurfaceBirdseye.png" class="btn btn-primary btn-sm" role="button">.png</a> 
+          <a href="#" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>   
+          <p>CDR surface volume</p> 
+        </div>     
+        </a>
+      
+    </div>
+  </div>
+  <!-- Column 2 -->
+    <div class="col-sm-3">
+    <div class="img-thumbnail">
+      <a href="data/pymol_visualisation/CDRfootprint.png">
+        <img src="data/pymol_visualisation/CDRfootprint.png" alt="contactmap" style="width:100%">
+        
+        <div class="caption">
+        
+          <a href="data/pymol_visualisation/CDRfootprint.png" class="btn btn-primary btn-sm" role="button">.png</a> 
+          <a href="#" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>   
+          <p>CDR footprint</p> 
+        </div>     
+        </a>
+      
+    </div>
+  </div>
+
+  <!-- /#row div --> 
+  </div>
+   <!-- /#container-fluid-wrapper -->   
+        </div>
+   <!-- /#page-content-wrapper -->
+        </div>
+   <!-- /#wrapper -->
+        </div>
+        
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+
+
+</body>
+
+</html>

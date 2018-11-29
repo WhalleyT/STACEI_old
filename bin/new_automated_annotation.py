@@ -111,16 +111,27 @@ def _list_to_pdb_spec(pdb, out):
 
     for i in pdb:
         i = i.split()
+        if i[-1].isalpha():
+            count = 12
+        else:
+            count = 11
 
-        while len(i) < 12:
+        while len(i) < count:
+            print i
             i = untangle(i)
-            
-        outstr = i[0] + (7 - len(str(i[1]))) * " " + str(i[1]) + 2 * " " + str(i[2]) + \
-                 (4 - len(str(i[2]))) * " " + str(i[3]) + " " + str(i[4]) + " " * (4- len(str(i[5]))) + \
-                 str(i[5]) + (11 - len(str(i[6]))) * " " + str(i[6]) + (8 - len(str(i[7]))) * " " + str(i[7]) + (8 - len(str(i[8]))) * \
-                 " " + str(i[8]) + (6 - (len(str(i[9])))) * " " + str(i[9]) + (6 - (len(str(i[10])))) * " " \
-                 + str(i[10]) + (12 - len(str(i[11]))) * " " + str(i[11])
 
+        if len(i) == 12:
+            outstr = i[0] + (7 - len(str(i[1]))) * " " + str(i[1]) + 2 * " " + str(i[2]) + \
+                     (4 - len(str(i[2]))) * " " + str(i[3]) + " " + str(i[4]) + " " * (4- len(str(i[5]))) + \
+                     str(i[5]) + (11 - len(str(i[6]))) * " " + str(i[6]) + (8 - len(str(i[7]))) * " " + str(i[7]) + (8 - len(str(i[8]))) * \
+                     " " + str(i[8]) + (6 - (len(str(i[9])))) * " " + str(i[9]) + (6 - (len(str(i[10])))) * " " \
+                     + str(i[10]) + (12 - len(str(i[11]))) * " " + str(i[11])
+        else:
+            outstr = i[0] + (7 - len(str(i[1]))) * " " + str(i[1]) + 2 * " " + str(i[2]) + \
+                     (4 - len(str(i[2]))) * " " + str(i[3]) + " " + str(i[4]) + " " * (4- len(str(i[5]))) + \
+                     str(i[5]) + (11 - len(str(i[6]))) * " " + str(i[6]) + (8 - len(str(i[7]))) * " " + str(i[7]) + (8 - len(str(i[8]))) * \
+                     " " + str(i[8]) + (6 - (len(str(i[9])))) * " " + str(i[9]) + (6 - (len(str(i[10])))) * " " \
+                     + str(i[10])
         outfile.write(outstr + "\n")
 
 
@@ -185,6 +196,7 @@ def _renumber_pdb(pdb, chains, outname):
             index += 1
 
     _list_to_pdb_spec(atoms, outname)
+
 
 
 def _call_ANARCI(fasta, chains):
@@ -417,13 +429,161 @@ def _map_peptide(tcra, tcrb, mhca, mhcb, peptides, pdb):
     return pep
 
 
+def remove_conformations(pdb_list):
+    """
+    Remove uncertain conformations (messes up some tools)
+    and replaces them just with the A set
+    """
+    lines = []
+
+    for line in pdb_list:
+        if line.startswith("ATOM"):
+            if line[16] == " ":
+                lines.append(line)
+            if line[16] == "A":
+                # python doesn't allow direct conversion; convert to list
+                line = list(line)
+                line[16] = " "
+                line = "".join(line)
+                lines.append(line)
+    return lines
+
+
+def get_default_residues(pdb_list, chain):
+    """
+    Gets length of PDB chain
+    """
+    started = False
+    numbers = set()
+
+    for line in pdb_list:
+        if chain == line[21]:
+            if started is False:
+                start = int(line[22:27].strip())
+                started = True
+
+            if line[22:27].isalpha() == False:
+                number = int(line[22:27].strip())
+                numbers.add(number)
+    return len(numbers), start
+
+
+def renumber(pdb_list, chain, residue_nums, start):
+    """
+    Takes a pdb list file, a chain and a
+    corresponding list of residues to replace
+    in the PDB file
+    """
+
+    previous = start
+
+    res_iter = iter(residue_nums)
+    new_residue = next(res_iter)
+
+    out = []
+
+    for line in pdb_list:
+        if chain == line[21]:
+            current = int(line[22:27].strip())
+            if current == previous:
+                print line
+                print new_residue
+                line = list(line)
+                size = len(str(new_residue))
+                spaces = 4 - size
+                spaces = " " * spaces
+                string = spaces + str(new_residue) + "  "
+
+                start_char = 22
+                for i in string:
+                    line[start_char] = i
+                    start_char += 1
+                line = "".join(line)
+            else:
+                new_residue = next(res_iter)
+                line = list(line)
+                size = len(str(new_residue))
+                spaces = 4 - size
+                spaces = " " * spaces
+                string = spaces + str(new_residue) + "  "
+
+                start_char = 22
+                for i in string:
+                    line[start_char] = i
+                    start_char += 1
+                line = "".join(line)
+
+            previous = current
+            out.append(line)
+    return out
+
+
+def read_fasta(fp):
+    name, seq = None, []
+    for line in fp:
+        line = line.rstrip()
+        if line.startswith(">"):
+            if name: yield (name, ''.join(seq))
+            name, seq = line, []
+        else:
+            seq.append(line)
+    if name: yield (name, ''.join(seq))
+
+
+def get_fasta_annot(fasta_file, chain):
+    indexes = []
+    with open(fasta_file) as f:
+        for name, seq in read_fasta(f):
+            if name.split("|")[:-2][1] == chain:
+                #chains found
+                if name.split("|")[2] in ["TCRA", "TCRB"]:
+                    for i,j in enumerate(seq):
+                        if j != ".":
+                            indexes.append(i)
+                else:
+                    indexes = range(1, len(seq) + 1)
+    return indexes
+
+
+def clean_pdb(pdb_file, chains, fasta, linear, outname):
+    pdb = []
+    with open(pdb_file) as f:
+        for line in f:
+            pdb.append(line)
+
+    pdb = remove_conformations(pdb)
+    pdb_2D = []
+
+    if linear:
+        for chain in chains:
+            size, start = get_default_residues(pdb, chain)
+            resi = list(range(1, size + 1))
+            subpdb = renumber(pdb, chain, resi, start)
+            pdb_2D.append(subpdb)
+
+            outfile = open(outname, "w")
+
+            for i in pdb_2D:
+                for j in i:
+                    outfile.write(j)
+    else:
+        for chain in chains:
+            size, start = get_default_residues(pdb, chain)
+            resi = get_fasta_annot(fasta, chain)
+            subpdb = renumber(pdb, chain, resi, start)
+            pdb_2D.append(subpdb)
+
+            outfile = open(outname, "w")
+
+            for i in pdb_2D:
+                for j in i:
+                    outfile.write(j)
+
 def annotate_complex(pdb_file, filtered_name, numbered_name):
     chains = _get_chains(pdb_file)
     print "PDB contains %i chains" %len(chains)
 
-    _clean_pdb_new(pdb_file, filtered_name)
-    _renumber_pdb(filtered_name, chains, numbered_name)
-    print "Clean PDB written"
+    clean_pdb(pdb_file, chains, "filler", True, numbered_name)
 
     convert(numbered_name, "pdb-atom", "clean.fasta", "fasta")
     alphas, betas = _call_ANARCI("clean.fasta", chains)

@@ -66,7 +66,7 @@ def find_missing(chains, pdb):
                         resnum = re.sub("\D", "", resnum)
                         numbers.append(resnum)
 
-        # get unique residues and re-sort them into ascending order            
+        # get unique residues and re-sort them into ascending order
         unique_residues = sorted(list(set(numbers)), key=int)
 
         start = unique_residues[0]
@@ -173,6 +173,7 @@ def _convert_pdb_to_fasta(pdb_name, pdb_fa):
 
 
 def run_anarci(anarci_in, anarci_out):
+    print anarci_in, anarci_out
     subprocess.call(["ANARCI", "--sequence", anarci_in, "--scheme", "imgt",
                      "--assign_germline", "--outfile", anarci_out])
 
@@ -209,7 +210,7 @@ def fasta_parser(file_name):
         sequence = "".join(seq_record.seq)
         entry.append(ident)
         entry.append(sequence)
-        entries.append(entry)   
+        entries.append(entry)
     return entries
 
 
@@ -292,7 +293,7 @@ def add_gene_usage(block_annot, fasta_entry):
     output += usage_terms[1:-2]
     output.append(seq)
 
-    return output  
+    return output
 
 
 def add_germline_annotations(tcr_header, tcr_imgt, annotation):
