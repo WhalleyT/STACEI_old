@@ -1,0 +1,39 @@
+		pMHC
+TCRab		104
+TCRab	vdW	91
+TCRab	HB	5
+TCRab	SB	8
+--------------------
+
+		pMHC
+TCRab	all	104
+
+TCRa	all	32
+TCRa	CDR1a	9
+TCRa	CDR2a	2
+TCRa	CDR3a	21
+TCRa	FWa	0
+TCRa	None	0
+
+TCRb	all	72
+TCRb	CDR1b	13
+TCRb	CDR2b	34
+TCRb	CDR3b	25
+TCRb	FWb	0
+TCRb	None	0
+--------------------
+		pMHCab	MHCa	MHCb	peptide
+TCRa	all	32	3	17	12
+TCRa	CDR1a	9	0	7	2
+TCRa	CDR2a	2	0	2	0
+TCRa	CDR3a	21	3	8	10
+TCRa	FWa	0	0	0	0
+TCRa	None	0	0	0	0
+
+TCRb	all	72	41	4	27
+TCRb	CDR1b	13	4	0	9
+TCRb	CDR2b	34	34	0	0
+TCRb	CDR3b	25	3	4	18
+TCRb	FWb	0	0	0	0
+TCRb	None	0	0	0	0
+--------------------

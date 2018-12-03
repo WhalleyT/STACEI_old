@@ -73,7 +73,7 @@ substract_CDR <- function(df, list, chain)
   {
     str   <- loops[i]
     subdf <- df[df$`CDR loop` == str,]
-    print(nrow(subdf))
+    #print(nrow(subdf))
     
     if(nrow(df) != 0)
     {
@@ -112,7 +112,7 @@ make_circos <- function(mat, color_vector, color_name, outname)
   
   chordDiagram(mat, grid.col = color_vector, directional = 2, grid.border = NA,
                annotationTrack = c("grid", "name"))
-  #ggsave(outname)
+  ggsave(outname)
   circos.clear()
 }
 
@@ -182,7 +182,7 @@ colour_name  <- c("TCRa", "TCRb", "peptide", "MHCa", "MHCb",
 TCR <- contacts[grep("TCR", contacts$Donor_Chain),]
 TCR <- TCR[!is.na(TCR$Donor_Annotation),]
 
-print(head(TCR))
+#print(head(TCR))
 
 force_count <- TCR %>%
   group_by(Donor_Annotation, Type) %>%
@@ -198,6 +198,7 @@ force_count <- as.data.frame(force_count)
 
 ggplot(force_count, aes(x = `CDR loop`, y = Count, fill = Force))+
   geom_bar(stat = "identity")+
+  theme_classic()+
   ggtitle("Contact Contribution of CDR loops")+
   theme(plot.title = element_text(hjust = 0.5),
         legend.title.align = 0.5)+
@@ -233,7 +234,8 @@ ggplot(z, aes(x = Residue, y = Count, fill = Force))+
   geom_bar(stat = "identity")+
   facet_grid(`CDR Loop` ~ .)+
   scale_x_continuous(breaks = seq(0, max(z$Count), 1))+
-  scale_fill_brewer(palette = "Set2")
+  scale_fill_brewer(palette = "Set2")+
+  theme_classic()
 
 single_facet <- paste(sub_dir, "/single_facet.tiff", sep = "")
 ggsave(single_facet)
@@ -259,7 +261,8 @@ ggplot(zz, aes(x = Residue, y = Count, fill = Force))+
   ggtitle("Contact Contribution of CDR loops")+
   theme(plot.title = element_text(hjust = 0.5),
         legend.title.align = 0.5)+
-  scale_fill_brewer(palette = "Set2")
+  scale_fill_brewer(palette = "Set2")+
+  theme_classic()
 
 force_count_double <- paste(sub_dir, "/cdr_loop_force_contact.tiff", sep = "")
 ggsave(force_count_double)
@@ -270,7 +273,8 @@ ggplot(zz, aes(x = Residue, y = Count, fill = Force))+
   geom_bar(stat = "identity")+
   facet_grid(Chain ~ `CDR Loop`)+
   scale_x_continuous(breaks = seq(0, max(zz$Count), 1))+
-  scale_fill_brewer(palette = "Set2")
+  scale_fill_brewer(palette = "Set2")+
+  theme_classic()
 
 force_count_double_rev <- paste(sub_dir, "/cdr_loop_force_contact_rev.tiff", sep = "")
 ggsave(force_count_double_rev)
@@ -324,6 +328,7 @@ sub_pallete      <- colour_hex[name_indexes]
 
 ggplot(all_mhc_counts, aes(x=Size/2, y=freq, fill=Donor_Annotation,
                            width=Size))+
+  theme_classic()+
   ggtitle("Contribution of CDR Loop to Contacts")+
   # black border around pie slices
   geom_bar(stat="identity", color='black', position = "fill")+

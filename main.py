@@ -42,16 +42,16 @@ def main():
     print "Assigning classes"
     pdb = classes.PDBStrings(args.infile)
 
-    
+
     print "Assigning paths"
     paths = housekeeping.create_paths(pdb.name)
 
-    
+
     print "Finding TCR-pMHC chain annotation"
     tcra, tcrb, peptide, mhca, mhcb, mhc_class = annotation.annotate_complex(pdb.file, pdb.filtered, pdb.numbered)
     full_complex = classes.ChainInformation(tcra, tcrb, peptide, mhc_class, mhca, mhcb)
 
-    
+
     print "TCRa and TCRb are %s and %s, respectively" % (tcra, tcrb)
     print "MHCa and MHCb are %s and %s respectively" % (mhca, mhcb)
     print "Peptide is %s" % peptide
@@ -115,7 +115,7 @@ def main():
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.tcr_to_mhc_residues)
     contacts.stats(contact_paths.tcr_to_mhc_clean_file, pdb.name)
 
-    
+
     print "Generating contact maps for TCR to pMHC contacts"
 
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
@@ -200,6 +200,10 @@ def main():
     subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pmhc_chains, shell=True)
 
     print "Making Circos plots"
+
+    print pisa_files.pmhc_chains
+    print contact_paths.mhc_to_pep_clean_file
+    print contact_paths.tcr_to_mhc_clean_file
 
     subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
                                                                     contact_paths.tcr_to_mhc_clean_file,

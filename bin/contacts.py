@@ -185,7 +185,7 @@ def contact_matrix_row(line, tcr_a_locations, tcr_b_locations, mhc_a_chain,
     annotation2 = ''
     contact_row = [line[4], s_new_name, int(line[6:10]), annotation1, line[11:14], line[19:22], line[23], line[32],
                    t_new_name, int(line[34:38]), annotation2, line[39:42], line[47:50], line[51], float(line[-4:])]
-    
+
 
     return contact_row
 
@@ -201,7 +201,7 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
         else:
             contact_matrix.append(contact_matrix_row(lines, tcr_a_locations, tcr_b_locations, mhc_a_chain,
                                                      mhc_b_chain, peptide_chain, tcr_a_chain, tcr_b_chain))
-   #### print str(omit_counter) + ' contacts were omitted due to water "HOH"...'
+    print str(omit_counter) + ' contacts were omitted due to water "HOH"'
     return sorted(contact_matrix, key=lambda items: (items[0], items[2]))
 
 
@@ -249,11 +249,6 @@ def is_salt_bridge(contact_row):
 
 
 def is_van_der_waals(contact_row):
-    if contact_row[4] == contact_row[11]:
-        if contact_row[5] == contact_row[12]:
-            if contact_row[7] == contact_row[13]:
-                # print "same atom hit"
-                return False
     if contact_row[14] <= 4.0:
         return True
 
@@ -277,10 +272,11 @@ def annotate_all_wrapper(contact_matrix):
         bond_annotator(row)
         if row[15] == "NO":
             omit_counter += 1
+            print row
         else:
             contact_matrix_new.append(row)
 
-   #### print str(omit_counter) + ' contacts were omitted due to not meeting annotation criteria "NO"...'
+    print str(omit_counter) + ' contacts were omitted due to not meeting annotation criteria "NO"'
     return contact_matrix_new
 
 
@@ -358,6 +354,7 @@ def run_ncont(pdb_name, mhca_res, mhcb_res, peptide_res, tcra_res, tcrb_res, fil
                       "mindist 0.0\n" \
                       "maxdist 4.0" %(filtered_name, pdb_mhc_pep_ncont, mhca_res, mhcb_res, peptide_res)
 
+    print "Calling: %s\n" %pep_mhc_command
     os.system(pep_mhc_command)
 
     tcr_pmhc_command = "ncont XYZIN %s <<eof > %s \n" \
@@ -369,6 +366,8 @@ def run_ncont(pdb_name, mhca_res, mhcb_res, peptide_res, tcra_res, tcrb_res, fil
                        "mindist 0.0\n" \
                        "maxdist 4.0" %(filtered_name, pdb_tcr_pmhc_ncont, tcra_res,
                                       tcrb_res, mhca_res, mhcb_res, peptide_res)
+
+    print "Calling: %s\n" %tcr_pmhc_command
     os.system(tcr_pmhc_command)
 
 
@@ -1030,11 +1029,3 @@ def stats(fileIn, inFileName):
 
     outFile.write(output)
     outFile.close()
-
-
-
-
-
-
-
-

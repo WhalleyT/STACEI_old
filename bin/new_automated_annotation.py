@@ -486,8 +486,6 @@ def renumber(pdb_list, chain, residue_nums, start):
         if chain == line[21]:
             current = int(line[22:27].strip())
             if current == previous:
-                print line
-                print new_residue
                 line = list(line)
                 size = len(str(new_residue))
                 spaces = 4 - size
