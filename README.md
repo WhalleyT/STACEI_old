@@ -38,6 +38,24 @@ To install, simply clone this repository or download it. Cloning it can be done 
 
 `git clone github.com/whalleyt/STACEI`
 
+### Docker
+should you not want to manually install the tool but want a local version of the tool you can download it as a docker container.
+
+First you must download an image of the tool like so:
+`docker pull twhalley93/stacei`
+
+Then create a container (an instance) of your container:
+`docker run -dit stacei`
+
+Now there is an active container, pass your pdb files into it:
+`docker cp <pdb_files> <container_id>:/`
+
+before finally entering the container:
+`docker exec -it <container_id>`
+
+Here one can run the tool much like you would on your normal bash shell, for example:
+`python STACEI.py -F <structure> -R`
+
 ## Authors
 Manuscript in  progress
 
