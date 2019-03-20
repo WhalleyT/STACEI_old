@@ -29,7 +29,7 @@ def file_to_list(infile):
 
 def init_pymol():
     print "\nInitialising pymol...\n"
-    pymol.finish_launching(['pymol', '-n'])
+    pymol.finish_launching(['pymol', '-nqc'])
     pymol.cmd.reinitialize()
     # set PyMOL parameters
     pymol.cmd.set("ray_shadows", "0")

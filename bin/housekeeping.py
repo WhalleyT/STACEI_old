@@ -26,8 +26,9 @@ def _parse_args():
                              'This will affect performance at run time but will produce better images.')
     parser.add_argument('--suppress', '-S', dest='suppress', action='store_true',
                         help='Flag. If provided stdout output will be suppressed (inc. CCP4, Pymol and ANARCI)')
-    parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, default='ebi', type=str,
-                        help='The MTZ file to be analysed, if None is supplied it will skip')
+    parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, type=str,
+                        help='The MTZ file to be analysed, if None is supplied it will skip',
+                        default="None")
     args = parser.parse_args()
     return args
 

@@ -421,7 +421,8 @@ def renumber_ANARCI(fasta, pdb, tcra, tcrb, peptide, mhca, mhcb):
 
     for p in pdb_list:
         if p.split()[3] == "D":
-            print p
+            #print p
+            pass
     pdb_list = renumber_chain_safe_MET(pdb_list, tcrb, b_pair, b_start_pair)
 
     #pmhc = get_pMHC([peptide, mhca, mhcb], pdb)

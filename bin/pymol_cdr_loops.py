@@ -113,7 +113,7 @@ def purgeCysLocs(locations):
 
 def initialisePymol():
     print "\nInitialising pymol...\n"
-    pymol.finish_launching(['pymol', '-qeim'])
+    pymol.finish_launching(['pymol', '-qeimc'])
     pymol.cmd.reinitialize()
     # set PyMOL parameters
     pymol.cmd.set("ray_shadows", "0")

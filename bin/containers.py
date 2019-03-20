@@ -148,7 +148,7 @@ class PisaOutputs:
         self.mhcb_chains = name + "_mhcb_pisa_chains.txt"
         self.pept_chains = name + "_peptide_pisa_chains.txt"
         self.tcra_chains = name + "_tcra_pisa_chains.txt"
-        self.tcrb_chains = name + "_tcrb_complex_pisa_chains.txt"
+        self.tcrb_chains = name + "_tcrb_pisa_chains.txt"
 
         self.order = [self.mhca_chains, self.mhcb_chains, self.pept_chains, self.tcra_chains, self.tcrb_chains]
         self.monomers = [mhca, mhcb, peptide, tcra, tcrb]

@@ -4,6 +4,7 @@ import math
 import os
 import swalign
 import sys
+import re
 
 from Bio.SeqIO import convert
 from itertools import product
@@ -117,7 +118,6 @@ def _list_to_pdb_spec(pdb, out):
             count = 11
 
         while len(i) < count:
-            print i
             i = untangle(i)
 
         if len(i) == 12:
@@ -271,6 +271,7 @@ def  _get_mhc_pep(alpha, beta, none_tcr, fasta):
     MISMATCH = -1
     SW_SCORE = swalign.NucleotideScoringMatrix(MATCH, MISMATCH)
     SMITH_WATERMAN = swalign.LocalAlignment(SW_SCORE)
+    b2m_found = False
 
     proteins = {}
 
@@ -310,7 +311,7 @@ def  _get_mhc_pep(alpha, beta, none_tcr, fasta):
 
             if ref_name == "B2M":
                 mhcbs.append(test)
-                mhc_class = 1
+                b2m_found = True
             else:
                 fil_name = ref_name.split("*")[0]
                 fil_name = ''.join([i for i in fil_name if i.isalpha()])
@@ -319,7 +320,11 @@ def  _get_mhc_pep(alpha, beta, none_tcr, fasta):
                     mhcas.append(test)
                 if letter is "B":
                     mhcbs.append(test)
-                mhc_class = 2
+
+    if b2m_found:
+        mhc_class = 1
+    else:
+        mhc_class = 2
 
     return peptides, mhcas, mhcbs, mhc_class
 
@@ -459,11 +464,11 @@ def get_default_residues(pdb_list, chain):
     for line in pdb_list:
         if chain == line[21]:
             if started is False:
-                start = int(line[22:27].strip())
+                start = line[22:27].strip()
                 started = True
 
             if line[22:27].isalpha() == False:
-                number = int(line[22:27].strip())
+                number = line[22:27].strip()
                 numbers.add(number)
     return len(numbers), start
 
@@ -484,7 +489,7 @@ def renumber(pdb_list, chain, residue_nums, start):
 
     for line in pdb_list:
         if chain == line[21]:
-            current = int(line[22:27].strip())
+            current = line[22:27].strip()
             if current == previous:
                 line = list(line)
                 size = len(str(new_residue))
