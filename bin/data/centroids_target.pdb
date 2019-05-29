@@ -6,10 +6,11 @@ REMARK   1
 REMARK   1  This PDB File contains two arbitrary atoms:                         
 REMARK   1      MHCA at the origin - Chain M (Leucine CA)                                        
 REMARK   1      MHCB sitting on the x axis - Chain B (ALA N)                                        
+REMARK   1	
 REMARK   1                                
 REMARK   1  It is used to rotate/transform the MHC and TCR vectors generated
 REMARK   1  to this common position for calculation of the TCR-pMHC crossing
 REMARK   1  angle.                   
 REMARK   1                                                                     
-ATOM      1  CA  LEU M   1      0.0000  0.0000  0.0000  1.00  1.00           S
-ATOM      2  N   ALA N   1      20.000  0.0000  0.0000  1.00  1.00           S
+ATOM      1  CA  LEU M   1      20.000  0.0000  0.0000  1.00  1.00           S
+ATOM      2  N   ALA M   2      0.0000  0.0000  0.0000  1.00  1.00           S

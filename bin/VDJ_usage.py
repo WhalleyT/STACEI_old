@@ -344,8 +344,9 @@ def add_cdr3_annot(tcr_header, tcr_imgt, annotation, where_idx):
 
 def extract_gene(tcr_entry):
    # print tcr_entry
-    trv = tcr_entry[4].rsplit("*")[0].replace("-", "_")
-    trj = tcr_entry[6].rsplit("*")[0].replace("-", "_")
+   #some confusion annotating delta genes that are otherwise correct alpha genes
+    trv = tcr_entry[4].rsplit("*")[0].replace("-", "_").replace("/", "_").replace("TRD", "TRA")
+    trj = tcr_entry[6].rsplit("*")[0].replace("-", "_").replace("/", "_").replace("TRD", "TRA")
    # print trv, trj
     return trv, trj
 
@@ -417,7 +418,7 @@ def parse_anarci(chains, fasta, anarci):
     except KeyError as e:
         print e
         print "Trying truncated version of gene"
-        index = extract_gene(tcra_entry)[0]
+        index = extract_gene(tcra_entry)[1]
         index = index.split("_")[0]
         traj = gene_dict.TRAJgenes[index]
 
@@ -435,7 +436,7 @@ def parse_anarci(chains, fasta, anarci):
     except KeyError, e:
         print e
         print "Trying truncated version of gene"
-        index = extract_gene(tcrb_entry)[0]
+        index = extract_gene(tcrb_entry)[1]
         index = index.split("_")[0]
         trbj = gene_dict.TRBJgenes[index]
 

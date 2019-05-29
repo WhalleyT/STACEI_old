@@ -8,7 +8,7 @@ import bin.new_automated_annotation as annotation
 import bin.housekeeping as housekeeping
 import bin.containers as classes
 import bin.VDJ_usage as vdj
-import bin.imgt_pdb as imgt
+import bin.renumber_pdb_clean as imgt
 import bin.contacts as contacts
 import bin.contact_map as con_map
 import bin.new_pisa as pisa
@@ -78,8 +78,10 @@ def main():
     vdj.parse_anarci(full_complex, fasta_files.default, anarci_files.outfile)
 
     print "Renumbering file to IMGT standards"
-    imgt.renumber_ANARCI(fasta_files.annotated, pdb.numbered, full_complex.tcra, full_complex.tcrb,
-                         full_complex.peptide, full_complex.mhca, full_complex.mhcb)
+    imgt.renumber(anarci_files.outfile, pdb.numbered, full_complex.tcra,
+                  full_complex.tcrb, full_complex.mhca, full_complex.mhcb,
+                  full_complex.peptide, pdb.imgt)
+
 
 
     ####################################################################################################################
@@ -119,6 +121,7 @@ def main():
     print "Generating contact maps for TCR to pMHC contacts"
 
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
+        print tcr, pmhc
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, [], pdb.name)
     for tcr, pmhc, smart in zip(tcr_permutations.tcr_safe, tcr_permutations.pmhc_safe, tcr_permutations.safe_calls):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, smart, pdb.name)
@@ -201,17 +204,10 @@ def main():
 
     print "Making Circos plots"
 
-    print pisa_files.pmhc_chains
-    print contact_paths.mhc_to_pep_clean_file
-    print contact_paths.tcr_to_mhc_clean_file
-
     subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name), shell=True)
-
-
-
 
  ###################################################################################################################
     """

@@ -334,7 +334,7 @@ def renumber_chain(pdb, chain, chain_pairs, starting_chain):
 
 def renumber_chain_safe_MET(pdb, chain, chain_pairs, starting_chain):
     chain_iter = iter(chain_pairs)
-    print starting_chain
+    print starting_chain, chain
     out = []
 
     start_found = False
@@ -418,11 +418,6 @@ def renumber_ANARCI(fasta, pdb, tcra, tcrb, peptide, mhca, mhcb):
     b_start_pair = (b_nums[0], b_lets[0])
 
     pdb_list = renumber_chain_safe_MET(pdb_list, tcra, a_pair, a_start_pair)
-
-    for p in pdb_list:
-        if p.split()[3] == "D":
-            #print p
-            pass
     pdb_list = renumber_chain_safe_MET(pdb_list, tcrb, b_pair, b_start_pair)
 
     #pmhc = get_pMHC([peptide, mhca, mhcb], pdb)

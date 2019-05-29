@@ -104,7 +104,7 @@ get_chain <- function(df, string)
 
 make_circos <- function(mat, color_vector, color_name, outname)
 {
-  
+  png(outname, 1000)
   names(color_vector) <- color_name
   
   circos.par(gap.after = c(rep(5, nrow(mat)-1), 15,
@@ -112,7 +112,8 @@ make_circos <- function(mat, color_vector, color_name, outname)
   
   chordDiagram(mat, grid.col = color_vector, directional = 2, grid.border = NA,
                annotationTrack = c("grid", "name"))
-  ggsave(outname)
+  
+  dev.off()
   circos.clear()
 }
 
@@ -366,7 +367,7 @@ casted_contacts                 <- casted_contacts[rownames(casted_contacts) %in
 
 
 
-cdr_circos <- paste(sub_dir, "/cdr_loop_circos.tiff", sep = "")
+cdr_circos <- paste(sub_dir, "/cdr_loop_circos.png", sep = "")
 make_circos(casted_contacts, colour_hex, colour_name, cdr_circos)
 
 no_loop_contacts <- TCR %>%
@@ -381,5 +382,5 @@ rownames(casted_contacts_2)   <- casted_contacts_2$Donor_Chain
 casted_contacts_2$Donor_Chain <- NULL
 casted_contacts_2             <- as.matrix(casted_contacts_2)
 
-TCR_circos <- paste(sub_dir, "/TCR_circos.tiff", sep = "")
+TCR_circos <- paste(sub_dir, "/TCR_circos.png", sep = "")
 make_circos(casted_contacts_2, colour_hex, colour_name, TCR_circos)

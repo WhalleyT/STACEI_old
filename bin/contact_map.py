@@ -502,7 +502,7 @@ def generate_mhc(seqFile, MHCclass, fileName) :
     seqInFile = readFile(seqFile, "txt")
 
 
-    mapPath = fileName + "/maps"
+    mapPath = fileName + "/contacts/maps"
 
     # Openers #
     if type(fileName) != str:

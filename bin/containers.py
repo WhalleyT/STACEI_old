@@ -53,14 +53,13 @@ class ChainInformation:
 
 
 class Paths:
-    def __init__(self, seq_path, contact_path, pisa_path, sc_path, xing_path, map_path,
+    def __init__(self, seq_path, contact_path, pisa_path, sc_path, xing_path,
                  pdb_path, vis_path, session_path, fasta_path):
         self.sequence_path = seq_path
         self.contact_path = contact_path
         self.sc_path = sc_path
         self.pisa_path = pisa_path
         self.crossing_path = xing_path
-        self.map_path = map_path
         self.vis_path = vis_path
         self.pdb_path = pdb_path
         self.session_path = session_path

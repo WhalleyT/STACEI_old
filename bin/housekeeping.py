@@ -2,7 +2,6 @@ import argparse
 import sys
 import os
 import containers
-import pymol
 import glob
 
 
@@ -27,7 +26,7 @@ def _parse_args():
     parser.add_argument('--suppress', '-S', dest='suppress', action='store_true',
                         help='Flag. If provided stdout output will be suppressed (inc. CCP4, Pymol and ANARCI)')
     parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, type=str,
-                        help='The MTZ file to be analysed, if None is supplied it will skip',
+                        help='The MTZ file to be analysed, if None (default) is supplied it will skipped',
                         default="None")
     args = parser.parse_args()
     return args
@@ -95,16 +94,15 @@ def create_paths(file_name):
     pisa_path = file_name + "/buried_surface"
     sc_path = file_name + "/surface_complementarity"
     xing_path = file_name + "/crossingAngle"
-    map_path = file_name + "/maps"
     pdb_path = file_name + "/pdbs"
-    vis_path = file_name + "/pymol_visualisation"
+    vis_path = file_name + "/visualisation"
     session_path = file_name + "/sessions"
     fasta_path = file_name + "/FASTAs"
     table_path = contact_path + "/contact_tables"
     mhc_table = table_path + "/MHC_to_pep"
     tcr_table = table_path + "/TCR_to_pMHC"
 
-    paths = [seq_path, contact_path, pisa_path, sc_path, xing_path, map_path,
+    paths = [seq_path, contact_path, pisa_path, sc_path, xing_path,
              pdb_path, vis_path, session_path, fasta_path, table_path, mhc_table, tcr_table]
 
     for path in paths:
@@ -112,7 +110,7 @@ def create_paths(file_name):
             os.makedirs(path)
 
     return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path,
-                            map_path, pdb_path, vis_path, session_path, fasta_path)
+                            pdb_path, vis_path, session_path, fasta_path)
 
 
 def disable_print(suppress):
@@ -179,5 +177,3 @@ def clean_namespace(name, paths, original):
 
     for file in glob.glob(name + "*sequence*"):
         os.rename(file, paths.sequence_path + "/" + file)
-
-    pymol.cmd.quit()
