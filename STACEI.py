@@ -63,7 +63,7 @@ def main():
     So now we have our basic chain information and a (hopefully) clean PDB file.
     So now we can begin to IMGT number our file
     """
-
+    
     print "Generating FASTA paths"
     anarci_files = classes.AnarciFiles(pdb.name)
     fasta_files = classes.FastaFiles(pdb.name)
@@ -90,7 +90,7 @@ def main():
     Complex now should be completely clean! From here we can begin analysis.
     As it is arguably the most important let's start with contacts.
     """
-
+    
     print "Generating contact and sequence paths"
     contact_paths = classes.ContactPaths(pdb.name)
     sequences = classes.LinearSequences(pdb.name)
@@ -135,7 +135,7 @@ def main():
 
     print "Generating contact maps for p to MHC"
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
-
+    
 
     ####################################################################################################################
 
@@ -143,7 +143,7 @@ def main():
     Now let's call PISA. This will calculate the BSA for the whole TCR-pMHC complex and label it according to CDR loop.
     Then we can do the same, but just for pMHC.
     """
-
+    
     pisa_files = classes.PisaOutputs(pdb.name, full_complex.mhca, full_complex.mhcb, full_complex.peptide,
                                      full_complex.tcra, full_complex.tcrb)
 
@@ -161,7 +161,7 @@ def main():
     pisa.call_pisa(pdb.imgt, "full_complex")
     for i,j in zip(pisa_files.order, pisa_files.monomers):
         BSA, ASA = pisa.extract_pisa("full_complex", j, i)
-
+    
 
  ####################################################################################################################
 
@@ -169,13 +169,13 @@ def main():
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
 
-
+    
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex, pdb.name)
 
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
-
+    
     #buried surface area viz
 
 
@@ -198,7 +198,7 @@ def main():
     """
     Run the R code for BSA, and the circos plots/pies (static).
     """
-
+    
     print "Calling R for BSA of peptide"
     subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pmhc_chains, shell=True)
 
@@ -208,19 +208,19 @@ def main():
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name), shell=True)
-
+    
  ###################################################################################################################
     """
     Surface complementarity
     """
 
     print "Calling SC"
-
+    
     sc.write_SC_pipe(full_complex.mhca, full_complex.mhcb, full_complex.peptide,
                      full_complex.tcra, full_complex.tcrb)
 
     sc.run_SC(pdb.clean_imgt)
-
+    
 
 
  ###################################################################################################################

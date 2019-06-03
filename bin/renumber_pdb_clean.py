@@ -113,6 +113,29 @@ def get_pdb_list(pdb_file):
     return pdb
 
 
+def get_end_of_constant(pdb_nums, anarci_nums):
+    #convert to int
+    check_range = map(int, pdb_nums)
+    anarci_ints = map(int, anarci_nums)
+
+    #get last variable ANARCI annotation
+    final_variable = max(anarci_ints)
+
+    #get number of AA past Anarci
+    num_aa = len(list(filter(lambda x: x > final_variable, check_range)))
+
+
+    #make a range from end of constant -> end of sequence
+    start_constant = final_variable + 1
+    end_constant = start_constant + num_aa
+
+    constant_list = range(start_constant, end_constant)
+    constant_list = map(str, constant_list)
+
+    return constant_list
+
+
+
 def renumber_chain(anarci_num, pdb_num, aa, current_chain, pdb_list):
     #make a dictionary that the key is the original residue number and amino acid, and the value is the new number,
     #if a tuple of resnum and aa in dictionary, replace the number and add to a new list, return list twice in
@@ -120,6 +143,10 @@ def renumber_chain(anarci_num, pdb_num, aa, current_chain, pdb_list):
     
     reference = {}
     out = []
+
+    constant_list = get_end_of_constant(pdb_num, anarci_num)
+    anarci_num = anarci_num + constant_list
+
     for x, y, z in zip(anarci_num, pdb_num, aa):
         reference[(y, z)] = x
 
