@@ -116,7 +116,11 @@ def get_pdb_list(pdb_file):
 def get_end_of_constant(pdb_nums, anarci_nums):
     #convert to int
     check_range = map(int, pdb_nums)
-    anarci_ints = map(int, anarci_nums)
+
+    #convert to int, for ANARCI files we need to remove AB conformations in CDR loops
+    repls = ("A", ""), ("B", "")
+    anarci_ints = [x.replace("A", "") for x in anarci_nums]
+    anarci_ints = map(int, anarci_ints)
 
     #get last variable ANARCI annotation
     final_variable = max(anarci_ints)
