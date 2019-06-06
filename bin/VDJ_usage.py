@@ -244,7 +244,7 @@ def strip_annotation_from_block(block):
 
 
 def cheatsblastp(query, imgt_seq):
-   # print "\nWhere does " + imgt_seq + " fit?"
+       # print "\nWhere does " + imgt_seq + " fit?"
    # print "\nQuerying against " + query + "\n"
     alignment = SMITH_WATERMAN.align(query, imgt_seq)
     cigar = alignment.cigar
@@ -314,7 +314,6 @@ def add_germline_annotations(tcr_header, tcr_imgt, annotation):
     output += "\"" + concat_seq(tcr_imgt, locations) + "\""
     output += concat_locations(locations)
 
-   # print output
     return output
 
 

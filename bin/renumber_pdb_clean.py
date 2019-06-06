@@ -80,8 +80,7 @@ def grab_pdb_numbers(pdb_file, alpha_chain, beta_chain):
                 if chain == alpha_chain:
                     amino_acid = three2one[line[17:20].strip()]
                     res_num = line[22:26].strip()
-                    print line[27]
-                    
+
                     if res_num not in alpha_num:
                         alpha_num.append(res_num)
                         alpha_seq += amino_acid

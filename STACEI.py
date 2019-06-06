@@ -8,6 +8,7 @@ import bin.new_automated_annotation as annotation
 import bin.housekeeping as housekeeping
 import bin.containers as classes
 import bin.VDJ_usage as vdj
+import bin.insertion_aware_VDJ_usage as vdj_out
 import bin.renumber_pdb_clean as imgt
 import bin.contacts as contacts
 import bin.contact_map as con_map
@@ -74,13 +75,14 @@ def main():
     print "Calling ANARCI"
     vdj.run_anarci(anarci_files.infile, anarci_files.outfile)
 
-    print "Parsing ANARCI"
-    vdj.parse_anarci(full_complex, fasta_files.default, anarci_files.outfile)
-
     print "Renumbering file to IMGT standards"
     imgt.renumber(anarci_files.outfile, pdb.numbered, full_complex.tcra,
                   full_complex.tcrb, full_complex.mhca, full_complex.mhcb,
                   full_complex.peptide, pdb.imgt)
+    
+    print "Parsing ANARCI"
+    vdj_out.anarci_to_imgt_fasta(pdb.imgt, tcra, tcrb, peptide, mhca, mhcb, anarci_files.outfile, 
+                                 pdb.name, fasta_files.linear, fasta_files.annotated)
 
 
 
