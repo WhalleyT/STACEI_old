@@ -179,21 +179,22 @@ def find_tcr_pair_atom(pair_location, atom_matrix):
 
     coordinate1, coordinate2 = None, None
 
-    print pair_location
     chain = pair_location[0]
     cys_residue1 = pair_location[1]
     cys_residue2 = pair_location[3]
+
     for atoms in atom_matrix:
         if atoms[5] is chain:
-            if atoms[6] is cys_residue1:
+            if str(atoms[6]) == cys_residue1:
                 if "SG" in atoms[2]:
-                    if atoms[3] is '' or 'A':
+                    if atoms[3] == '' or 'A':
                         coordinate1 = atoms
+    
     for atoms in atom_matrix:
         if atoms[5] is chain:
-            if atoms[6] is cys_residue2:
+            if str(atoms[6]) == cys_residue2:
                 if "SG" in atoms[2]:
-                    if atoms[3] is '' or 'A':
+                    if atoms[3] == '' or 'A':
                         coordinate2 = atoms
     
     if coordinate1 is not None and coordinate2 is not None:
@@ -259,7 +260,7 @@ def depack_locations(sub_entries):
     for col in sub_entries:
         location = [col.rsplit("=", 1)[0]]
         location_string = (col.partition('[')[-1].rpartition(']')[0])
-        location += map(int, location_string.split(','))
+        location += location_string.split(',')
         locations.append(location)
     return locations
 

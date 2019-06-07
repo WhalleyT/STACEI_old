@@ -98,7 +98,7 @@ def depackLocations(subentries):
         location = []
         location.append(col.rsplit("=", 1)[0])
         locationstring = (col.partition('[')[-1].rpartition(']')[0])
-        location += map(int, locationstring.split(','))
+        location += locationstring.split(',')
         locations.append(location)
     return locations
 

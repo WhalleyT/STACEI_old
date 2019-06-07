@@ -115,6 +115,7 @@ def main():
     print "Cleaning and generating TCR to pMHC contacts"
     # TCR -> pMHC contacts
     contacts.clean_contacts(contact_paths.tcr_to_mhc_file, full_complex.string, fasta_files.annotated)
+    import sys; sys.exit()
     contacts.residue_only_contacts(contact_paths.tcr_to_mhc_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.tcr_to_mhc_residues)
     contacts.stats(contact_paths.tcr_to_mhc_clean_file, pdb.name)
@@ -171,12 +172,13 @@ def main():
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
 
-    
+    """
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex, pdb.name)
 
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
+    """
     
     #buried surface area viz
 
@@ -210,6 +212,8 @@ def main():
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name), shell=True)
+
+    import sys; sys.exit()
     
  ###################################################################################################################
     """

@@ -110,8 +110,7 @@ def depack_locations(subentries):
     for col in subentries:
         location = [col.rsplit("=", 1)[0]]
         locationstring = (col.partition('[')[-1].rpartition(']')[0])
-        print locationstring
-        location += map(int, locationstring.split(','))
+        location += locationstring.split(',')
         locations.append(location)
     return locations
 
@@ -184,9 +183,15 @@ def contact_matrix_row(line, tcr_a_locations, tcr_b_locations, mhc_a_chain,
                 if loc == int(line[6:10]):
                     annotation1 = loop[0]
     annotation2 = ''
-    print line
-    contact_row = [line[4], s_new_name, int(line[6:10]), annotation1, line[11:14], line[19:22], line[24], line[32],
+    
+    if ".A" == line[15:17]:
+        residue = int(line[6:10].strip()) + 0.5
+    else:
+        residue = int(line[6:10].strip())
+
+    contact_row = [line[4], s_new_name, residue, annotation1, line[11:14], line[19:22], line[24], line[32],
                    t_new_name, int(line[34:38]), annotation2, line[39:42], line[47:50], line[52], float(line[-4:])]
+    print contact_row
     return contact_row
 
 
@@ -202,7 +207,21 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
             contact_matrix.append(contact_matrix_row(lines, tcr_a_locations, tcr_b_locations, mhc_a_chain,
                                                      mhc_b_chain, peptide_chain, tcr_a_chain, tcr_b_chain))
     print str(omit_counter) + ' contacts were omitted due to water "HOH"'
-    return sorted(contact_matrix, key=lambda items: (items[0], items[2]))
+    
+    sorted_contacts = sorted(contact_matrix, key=lambda items: (items[0], items[2]))
+
+    #hacky way of sorting with our inserts:
+    #   if inserts are present convert to residue + 0.5 for sorting as the come afterwards
+    #   then string replace the 0.5 back to A later
+
+    contacts_with_inserts = []
+    for i in sorted_contacts:
+        if float(i[2]).is_integer() == False:
+            res = str(i[2]).replace(".5", "A")
+            i[2] = res
+        contacts_with_inserts.append(i)
+    
+    return contacts_with_inserts
 
 
 def is_hydrogen_bond(contact_row):
@@ -319,6 +338,8 @@ def clean_contacts(ncont, chains, fasta):
     contact_lines = fill_line(contact_lines)
     contact_matrix = make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations,
                                          mhc_a_chain, mhc_b_chain, peptide_chain, tcr_a_chain, tcr_b_chain)
+    
+
     contact_matrix = annotate_all_wrapper(contact_matrix)
 
     out_file = open(str(in_file_name) + '_clean.txt', 'w')
@@ -547,7 +568,7 @@ def add_index_code_seq_all(seqMatrix):
 def add_index_code_contact(line):
     index = ''
     index += line[4] + line[6] + line[7]
-   ### print line
+
     line.append(index)
     return line
 
@@ -569,10 +590,7 @@ def pairContacts2parents2(contactMatrix,fullSeqMatrix):
         for y in contactMatrix:
             if x[4] == y[11]:
                 newSeqLine=[]
-#                ### print "seq matrix in:"
-#                ### print x
-#                ### print "contact matrix goes in:"
-#                ### print y
+
                 hitCount+=1
                 for terms in x:
                     newSeqLine.append(terms)
@@ -586,11 +604,7 @@ def pairContacts2parents2(contactMatrix,fullSeqMatrix):
                 newSeqLine.append(y[11])
                 newSeqLine.append(y[12])
                 y[11],y[12] = "Done", "Done"
-#                ### print "after done:"
-#                ### print y
-#                ### print "output line:"
-#                ### print newSeqLine
-#                ### print "\n\n"
+
                 newFullSeqMatrix.append(newSeqLine)
         if hitCount == 0:
             newSeqLine=[]
@@ -632,6 +646,7 @@ def remove_index(seq_matrix):
 def annotate_sequence_list(sequence_file, contact_file):
     seq_in_file = read_file(sequence_file, "txt")
     seq_in_file_name = sequence_file.rsplit('.', 1)[0]
+    print seq_in_file_name
 
     contact_in_file = read_file(contact_file, "txt")
     contactInFileName = contact_file.rsplit('.', 1)[0]
@@ -654,7 +669,7 @@ def annotate_sequence_list(sequence_file, contact_file):
     allContactLines = everything_parser(contact_in_file)
     contactList = matrix_parser(allContactLines)
     contact_matrix = contactList[1:]
-    contac_matrix = add_index_code_to_contact_all(contact_matrix)
+    contact_matrix = add_index_code_to_contact_all(contact_matrix)
    ### print "Done!\n"
 
     # Find pairs#
