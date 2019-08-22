@@ -10,6 +10,18 @@ import bin.data.viewSet as viewSet
 
 import numpy as np
 
+def find_tcr_no_cys(cys, atoms, index):
+    if index == 1:
+        chain = cys[0]
+        resi = cys[1]
+    else:
+        chain = cys[2]
+        resi = cys[3]
+
+    for x in atoms:
+        if chain == x[5] and resi == str(x[6]):
+            return x       
+
 
 def read_file(filename, file_type):
     if filename is None:
@@ -534,7 +546,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     atom_matrix = make_atom_matrix(atom_list)
 
     if fasta is not None:
-        print "Perfect! an annotated fasta file was provided to flag where the cysteine pair residues are!"
+        print "An annotated fasta file was provided to flag where the cysteine pair residues are"
         fasta_entries = parse_fasta(fasta)
         fasta_entries = unpack_id(fasta_entries)
 
@@ -561,6 +573,8 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
         TCRaCys1, TCRaCys2 = find_tcr_pair_atom(TCRaCys, atom_matrix)
         TCRbCys1, TCRbCys2 = find_tcr_pair_atom(TCRbCys, atom_matrix)
 
+        print TCRaCys1, TCRaCys2
+
     else:
         print "Determining the TCR axis via locating the cys pair atom coordinates...\n"
         TCRaCys1, TCRaCys2, TCRbCys1, TCRbCys2 = cys_from_ss_bond_wrapper(else_list, atom_matrix, TCRachain, TCRbchain)
@@ -576,6 +590,19 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     if(not x for x in cysCheck):
         warnings.warn("Missing cysteine found in one of the TCR coordinates.This may be because your PDB file does not have a cysteine at the relevant location.The tool will proceed to calculate crossing angle from where this cysteine should be so proceed with caution and check to see if the result is sensible.")
 
+    if TCRaCys1 is None:
+        print "Finding replacement for TCR alpha chain Cys 1"
+        TCRaCys1 = find_tcr_no_cys(TCRaCys, atom_matrix, 1)
+    if TCRaCys2 is None:
+        print "Finding replacement for TCR alpha chain Cys 2"
+        TCRaCys2 = find_tcr_no_cys(TCRaCys, atom_matrix, 2)
+    if TCRbCys1 is None:
+        print "Finding replacement for TCR beta chain Cys 1"
+        TCRbCys1 = find_tcr_no_cys(TCRbCys, atom_matrix, 1)
+    if TCRbCys2 is None:
+        print "Finding replacement for TCR beta chain Cys 2"
+        TCRbCys2 = find_tcr_no_cys(TCRbCys, atom_matrix, 2)
+        
     print "\nTCRa and TCRb cysteine pair SG atoms are:\n"
     print TCRaCys1
     print TCRaCys2
@@ -1174,18 +1201,39 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     name = "MHCa2"
     locs = '+'.join(str(x) for x in MHCa2h[1:])
     pymol.cmd.select(name, selection=MHCa2h[0] + " and resi " + locs)
-
-    pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCa")
-    pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCb")
+    
+    
+    # Bruce edited here 16/06/19
+    # pMHC surface
+    if MHCclass == "I":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi " + '+'.join(str(x) for x in range(1,176)))
+    if MHCclass == "II":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi "+ '+'.join(str(x) for x in range(1,78))+" or MHCb and resi "+ '+'.join(str(x) for x in range(1,91)))
+    
+    pymol.cmd.extract("MHCgroove", "MHCgrooves")
+    pymol.cmd.delete("MHCgrooves")
+    pymol.cmd.show("surface", "MHCgroove")
+    
+    if MHCclass == "I":
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+    
+    if MHCclass == "II": 
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+        pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCgroove and chain "+MHCbchain)
+        
+#    pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCa")
+#    pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCb")
     pymol.cmd.color(colourSet.generalColourSet["p"], "p")
     pymol.cmd.set("transparency", 0.5)
     pymol.cmd.hide("lines", "all")
-    pymol.cmd.show("surface", "MHCa")
-    pymol.cmd.show("surface", "MHCb")
+#    pymol.cmd.show("surface", "MHCa")
+#    pymol.cmd.show("surface", "MHCb")
     pymol.cmd.show("surface", "p")
     pymol.cmd.show("cartoon", "MHCa1")
     pymol.cmd.show("cartoon", "MHCa2")
     pymol.cmd.set("cartoon_transparency", 0.5)
+    
+    # End Bruce edit 16/06/19
 
     # set view
     pymol.cmd.set_view(viewSet.birdsEyeView)
@@ -1233,9 +1281,13 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="angle", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_angle.png"
-        ray_tracer(scene_name)
+    
+    scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_angle.png"
+    
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     # save session
     pymol.cmd.save(file_name + "/sessions/" + file_name + "_crossing_angle.pse")
@@ -1523,14 +1575,16 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     pymol.cmd.show("dashes", "plane3")
     pymol.cmd.show("dashes", "plane4")
 
-    # Photo op here
-    pymol.cmd.orient("mobile")
+    # Bruce edited here 16/06/19
+    # Photo op here   
+    pymol.cmd.orient("mobile or corner3 or corner4")
     pymol.cmd.zoom("center", 80)
-    pymol.cmd.turn("x", -45)
-    if rangeLow is 0 or rangeLow is 90:
-        pymol.cmd.turn("x", -45)
+    pymol.cmd.turn("x", +90)
+    
     if rangeLow is 180 or rangeLow is 270:
-        pymol.cmd.turn("x", +45)
+        pymol.cmd.turn("x", +180)
+    
+    # Bruce edited here 16/06/19 END
 
     pymol.cmd.scene(key="tilt_angle_TCR_pMHC_2", action="store")
 

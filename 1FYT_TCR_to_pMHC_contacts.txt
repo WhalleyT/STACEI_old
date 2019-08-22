@@ -1,0 +1,152 @@
+ 
+ ###############################################################
+ ###############################################################
+ ###############################################################
+ ### CCP4 7.0.071: NCONT            version 7.0.071 :         ##
+ ###############################################################
+ User: tom  Run date: 21/ 8/2019 Run time: 15:15:46 
+
+
+ Please reference: Collaborative Computational Project, Number 4. 2011.
+ "Overview of the CCP4 suite and current developments". Acta Cryst. D67, 235-242.
+ as well as any specific reference in the program write-up.
+
+
+ ------------------------------------------------------------------------------
+
+ PDB file 1FYT_clean_numbered_imgt.pdb has been read in.
+
+ ------------------------------------------------------------------------------
+  Input cards
+
+ Data line--- source /*/D
+ Data line--- source /*/E
+ Data line--- target /*/A
+ Data line--- target /*/B
+ Data line--- target /*/C
+ Data line--- mindist 0.0
+ Data line--- maxdist 4.0
+
+ ------------------------------------------------------------------------------
+
+ Selected  3233  source atoms
+ Selected  3056  target atoms
+
+ ------------------------------------------------------------------------------
+
+  104 contacts found:
+
+      SOURCE ATOMS               TARGET ATOMS         DISTANCE
+
+ /1/E/  67(GLU). / OE2[ O]:  /1/A/  38(LYS). / CG [ C]:   3.99
+ /1/E/  67(GLU). / CD [ C]:  /1/A/  38(LYS). / CD [ C]:   3.99
+ /1/E/  67(GLU). / OE2[ O]:  /1/A/  38(LYS). / CD [ C]:   2.84
+                             /1/A/  38(LYS). / CE [ C]:   3.63
+ /1/E/  66(LYS). / O  [ O]:  /1/A/  38(LYS). / CE [ C]:   3.97
+ /1/E/  65(MET). / CG [ C]:  /1/A/  38(LYS). / NZ [ N]:   3.75
+ /1/E/  67(GLU). / CG [ C]:  /1/A/  38(LYS). / NZ [ N]:   3.79
+ /1/E/  67(GLU). / CD [ C]:  /1/A/  38(LYS). / NZ [ N]:   3.76
+ /1/E/  67(GLU). / OE2[ O]:  /1/A/  38(LYS). / NZ [ N]:   3.22
+ /1/E/  66(LYS). / N  [ N]:  /1/A/  38(LYS). / NZ [ N]:   3.74
+ /1/E/  66(LYS). / C  [ C]:  /1/A/  38(LYS). / NZ [ N]:   3.63
+ /1/E/  66(LYS). / O  [ O]:  /1/A/  38(LYS). / NZ [ N]:   2.61
+ /1/E/  57(TYR). / CD1[ C]:  /1/A/  56(GLN). / O  [ O]:   3.45
+ /1/E/  57(TYR). / CE1[ C]:  /1/A/  56(GLN). / O  [ O]:   3.92
+                             /1/A/  56(GLN). / CB [ C]:   3.95
+ /1/E/  67(GLU). / CD [ C]:  /1/A/  56(GLN). / CG [ C]:   3.97
+ /1/E/  55(PHE). / CZ [ C]:  /1/A/  56(GLN). / CD [ C]:   3.82
+                             /1/A/  56(GLN). / OE1[ O]:   3.62
+                             /1/A/  56(GLN). / NE2[ N]:   3.75
+ /1/E/  67(GLU). / CG [ C]:  /1/A/  56(GLN). / NE2[ N]:   3.98
+ /1/E/  67(GLU). / CD [ C]:  /1/A/  56(GLN). / NE2[ N]:   3.52
+ /1/E/  67(GLU). / OE1[ O]:  /1/A/  56(GLN). / NE2[ N]:   3.09
+ /1/D/ 114(GLU). / OE1[ O]:  /1/A/  57(GLY). / CA [ C]:   3.72
+ /1/D/ 114(GLU). / CD [ C]:  /1/A/  60(ALA). / CB [ C]:   3.94
+ /1/D/ 114(GLU). / OE2[ O]:  /1/A/  60(ALA). / CB [ C]:   3.17
+ /1/E/ 109(THR). / OG1[ O]:  /1/A/  60(ALA). / CB [ C]:   3.42
+ /1/E/  57(TYR). / CG [ C]:  /1/A/  60(ALA). / CB [ C]:   3.91
+ /1/E/  57(TYR). / CD1[ C]:  /1/A/  60(ALA). / CB [ C]:   3.72
+ /1/E/ 109(THR). / CG2[ C]:  /1/A/  61(ASN). / OD1[ O]:   3.69
+ /1/E/  58(ASP). / OD1[ O]:  /1/A/  63(ALA). / CA [ C]:   3.81
+ /1/E/  37(GLU). / CG [ C]:  /1/A/  63(ALA). / O  [ O]:   3.93
+ /1/E/  57(TYR). / O  [ O]:  /1/A/  63(ALA). / CB [ C]:   3.36
+ /1/E/  37(GLU). / CG [ C]:  /1/A/  63(ALA). / CB [ C]:   3.87
+ /1/E/  58(ASP). / OD2[ O]:  /1/A/  63(ALA). / CB [ C]:   3.78
+ /1/E/  58(ASP). / CB [ C]:  /1/A/  63(ALA). / CB [ C]:   3.59
+ /1/E/  58(ASP). / CG [ C]:  /1/A/  63(ALA). / CB [ C]:   3.40
+ /1/E/  58(ASP). / OD1[ O]:  /1/A/  63(ALA). / CB [ C]:   3.57
+ /1/E/ 110(GLY). / N  [ N]:  /1/A/  64(VAL). / CG2[ C]:   3.78
+ /1/E/  37(GLU). / OE1[ O]:  /1/A/  64(VAL). / CG2[ C]:   3.84
+ /1/E/  58(ASP). / OD1[ O]:  /1/A/  66(LYS). / CD [ C]:   3.44
+                             /1/A/  66(LYS). / CE [ C]:   3.33
+ /1/E/  58(ASP). / CG [ C]:  /1/A/  66(LYS). / NZ [ N]:   3.82
+ /1/E/  58(ASP). / OD1[ O]:  /1/A/  66(LYS). / NZ [ N]:   2.67
+ /1/E/  37(GLU). / OE2[ O]:  /1/A/  67(ALA). / CB [ C]:   3.72
+ /1/D/  29(VAL). / CG2[ C]:  /1/C/   2(LYS). / O  [ O]:   4.00
+ /1/D/ 108(GLU). / OE1[ O]:  /1/C/   2(LYS). / CE [ C]:   3.56
+ /1/D/ 108(GLU). / OE2[ O]:  /1/C/   2(LYS). / CE [ C]:   3.86
+ /1/D/ 108(GLU). / CD [ C]:  /1/C/   2(LYS). / NZ [ N]:   3.41
+ /1/D/ 108(GLU). / OE1[ O]:  /1/C/   2(LYS). / NZ [ N]:   3.27
+ /1/D/ 108(GLU). / OE2[ O]:  /1/C/   2(LYS). / NZ [ N]:   2.83
+ /1/D/  29(VAL). / CG2[ C]:  /1/C/   4(VAL). / CG2[ C]:   3.19
+ /1/D/ 114(GLU). / CD [ C]:  /1/C/   5(LYS). / NZ [ N]:   3.42
+ /1/D/ 114(GLU). / OE2[ O]:  /1/C/   5(LYS). / NZ [ N]:   3.21
+ /1/E/ 109(THR). / CG2[ C]:  /1/C/   5(LYS). / NZ [ N]:   3.79
+ /1/D/ 114(GLU). / OE1[ O]:  /1/C/   5(LYS). / NZ [ N]:   3.55
+ /1/E/ 109(THR). / O  [ O]:  /1/C/   7(ASN). / CB [ C]:   3.54
+ /1/E/ 109(THR). / CG2[ C]:  /1/C/   7(ASN). / CB [ C]:   3.49
+ /1/E/ 109(THR). / O  [ O]:  /1/C/   7(ASN). / CG [ C]:   3.64
+ /1/D/ 111(PHE). / CE1[ C]:  /1/C/   7(ASN). / OD1[ O]:   3.61
+                             /1/C/   7(ASN). / ND2[ N]:   3.97
+ /1/E/ 109(THR). / O  [ O]:  /1/C/   7(ASN). / ND2[ N]:   2.89
+                             /1/C/   8(THR). / O  [ O]:   3.24
+ /1/E/ 109(THR). / C  [ C]:  /1/C/   8(THR). / O  [ O]:   3.72
+ /1/E/ 110(GLY). / N  [ N]:  /1/C/   8(THR). / O  [ O]:   3.71
+ /1/E/ 110(GLY). / CA [ C]:  /1/C/   8(THR). / O  [ O]:   3.13
+                             /1/C/   9(LEU). / CA [ C]:   3.96
+ /1/E/ 110(GLY). / O  [ O]:  /1/C/   9(LEU). / CA [ C]:   3.93
+                             /1/C/   9(LEU). / C  [ C]:   3.98
+ /1/E/ 110(GLY). / C  [ C]:  /1/C/  10(LYS). / N  [ N]:   3.77
+ /1/E/ 110(GLY). / CA [ C]:  /1/C/  10(LYS). / N  [ N]:   3.62
+ /1/E/ 110(GLY). / O  [ O]:  /1/C/  10(LYS). / N  [ N]:   3.08
+                             /1/C/  10(LYS). / CA [ C]:   3.93
+                             /1/C/  10(LYS). / CB [ C]:   3.60
+ /1/E/  28(ASP). / OD1[ O]:  /1/C/  10(LYS). / CE [ C]:   3.98
+ /1/E/  37(GLU). / CD [ C]:  /1/C/  10(LYS). / CE [ C]:   3.71
+ /1/E/  37(GLU). / OE1[ O]:  /1/C/  10(LYS). / CE [ C]:   3.66
+ /1/E/  37(GLU). / OE2[ O]:  /1/C/  10(LYS). / CE [ C]:   2.97
+ /1/E/ 108(SER). / OG [ O]:  /1/C/  10(LYS). / NZ [ N]:   3.95
+ /1/E/  28(ASP). / O  [ O]:  /1/C/  10(LYS). / NZ [ N]:   2.90
+ /1/E/  28(ASP). / OD1[ O]:  /1/C/  10(LYS). / NZ [ N]:   3.07
+ /1/E/  37(GLU). / CD [ C]:  /1/C/  10(LYS). / NZ [ N]:   3.24
+ /1/E/  37(GLU). / OE1[ O]:  /1/C/  10(LYS). / NZ [ N]:   3.12
+ /1/E/  37(GLU). / OE2[ O]:  /1/C/  10(LYS). / NZ [ N]:   2.66
+ /1/E/ 113(PRO). / CG [ C]:  /1/B/  62(GLN). / CD [ C]:   3.83
+ /1/E/ 113(PRO). / CB [ C]:  /1/B/  62(GLN). / OE1[ O]:   3.93
+ /1/E/ 113(PRO). / CG [ C]:  /1/B/  62(GLN). / OE1[ O]:   3.35
+ /1/E/ 113(PRO). / CD [ C]:  /1/B/  62(GLN). / OE1[ O]:   3.92
+ /1/D/ 111(PHE). / CE2[ C]:  /1/B/  64(ASP). / O  [ O]:   3.67
+ /1/D/  59(ALA). / CB [ C]:  /1/B/  67(GLU). / OE2[ O]:   3.48
+ /1/D/ 111(PHE). / CE2[ C]:  /1/B/  68(GLN). / CB [ C]:   3.77
+ /1/D/ 111(PHE). / CZ [ C]:  /1/B/  68(GLN). / CB [ C]:   3.36
+ /1/D/ 110(PRO). / CB [ C]:  /1/B/  68(GLN). / CG [ C]:   3.34
+ /1/D/ 111(PHE). / CE1[ C]:  /1/B/  68(GLN). / CG [ C]:   3.86
+ /1/D/ 111(PHE). / CZ [ C]:  /1/B/  68(GLN). / CG [ C]:   3.55
+ /1/D/ 110(PRO). / CB [ C]:  /1/B/  68(GLN). / NE2[ N]:   3.89
+ /1/D/ 110(PRO). / CG [ C]:  /1/B/  68(GLN). / NE2[ N]:   3.65
+ /1/D/  38(TYR). / OH [ O]:  /1/B/  75(THR). / CB [ C]:   3.73
+ /1/D/  58(SER). / OG [ O]:  /1/B/  75(THR). / CG2[ C]:   3.91
+ /1/D/  38(TYR). / OH [ O]:  /1/B/  75(THR). / CG2[ C]:   3.93
+ /1/D/  36(PRO). / CG [ C]:  /1/B/  79(HIS). / ND1[ N]:   3.80
+ /1/D/  36(PRO). / CD [ C]:  /1/B/  79(HIS). / ND1[ N]:   3.76
+                             /1/B/  79(HIS). / CE1[ C]:   3.61
+                             /1/B/  79(HIS). / NE2[ N]:   3.89
+ /1/D/  29(VAL). / CG2[ C]:  /1/B/  79(HIS). / NE2[ N]:   3.84
+
+
+  Total 104 contacts
+
+--------------------------------------------------------------------------
+
+ NCONT:  Normal termination
+Times: User:       0.0s System:    0.0s Elapsed:     0:00  

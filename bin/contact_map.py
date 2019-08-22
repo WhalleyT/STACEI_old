@@ -305,6 +305,7 @@ def generate_tcr(seqFile, donors, acceptors, smart, fileName):
     sequenceList = matrixParser(allSeqLines)
     sequenceMatrix = sequenceList[1:]
     workingMatrix = simplifiedMatrix(sequenceMatrix)
+
     #print "Done!\n"
 
     # Is donors or acceptors longer?

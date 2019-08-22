@@ -98,7 +98,7 @@ def depackLocations(subentries):
         location = []
         location.append(col.rsplit("=", 1)[0])
         locationstring = (col.partition('[')[-1].rpartition(']')[0])
-        location += locationstring.split(',')
+        location += map(int, locationstring.split(','))
         locations.append(location)
     return locations
 
@@ -196,7 +196,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
 
-    # Find the MHC helices
+    # Find the MHC helices and groove
     if MHCclass == "I":
         a1locs = range(50, 86)
         MHCa1 = ["MHCa"] + a1locs
@@ -317,9 +317,26 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     else:
         rayTime(CDRloopsImage, 0)
 
+    # Bruce edited here 16/06/19
     # pMHC surface
-    pymol.cmd.show("surface", "MHCa")
-    pymol.cmd.show("surface", "MHCb")
+    if MHCclass == "I":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi " + '+'.join(str(x) for x in range(1,176)))
+    if MHCclass == "II":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi "+ '+'.join(str(x) for x in range(1,78))+" or MHCb and resi "+ '+'.join(str(x) for x in range(1,91)))
+    
+    pymol.cmd.extract("MHCgroove", "MHCgrooves")
+    pymol.cmd.delete("MHCgrooves")
+    pymol.cmd.show("surface", "MHCgroove")
+    
+    if MHCclass == "I":
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+    
+    if MHCclass == "II": 
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+        pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCgroove and chain "+MHCbchain)
+        
+    # End Bruce edit 16/06/19
+    
     pymol.cmd.show("surface", "p")
     pymol.cmd.set("transparency", 0.5)
     pymol.cmd.color("gray40", "p")

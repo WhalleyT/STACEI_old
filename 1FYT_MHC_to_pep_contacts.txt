@@ -1,0 +1,274 @@
+ 
+ ###############################################################
+ ###############################################################
+ ###############################################################
+ ### CCP4 7.0.071: NCONT            version 7.0.071 :         ##
+ ###############################################################
+ User: tom  Run date: 21/ 8/2019 Run time: 15:15:46 
+
+
+ Please reference: Collaborative Computational Project, Number 4. 2011.
+ "Overview of the CCP4 suite and current developments". Acta Cryst. D67, 235-242.
+ as well as any specific reference in the program write-up.
+
+
+ ------------------------------------------------------------------------------
+
+ PDB file 1FYT_clean_numbered_imgt.pdb has been read in.
+
+ ------------------------------------------------------------------------------
+  Input cards
+
+ Data line--- source /*/A
+ Data line--- source /*/B
+ Data line--- target /*/C
+ Data line--- mindist 0.0
+ Data line--- maxdist 4.0
+
+ ------------------------------------------------------------------------------
+
+ Selected  2950  source atoms
+ Selected  106  target atoms
+
+ ------------------------------------------------------------------------------
+
+  228 contacts found:
+
+      SOURCE ATOMS               TARGET ATOMS         DISTANCE
+
+ /1/A/  50(PHE). / O  [ O]:  /1/C/   1(PRO). / N  [ N]:   3.78
+ /1/A/  52(SER). / OG [ O]:  /1/C/   1(PRO). / C  [ C]:   3.98
+ /1/A/  51(ALA). / CA [ C]:  /1/C/   1(PRO). / O  [ O]:   3.36
+ /1/A/  51(ALA). / C  [ C]:  /1/C/   1(PRO). / O  [ O]:   3.53
+ /1/A/  51(ALA). / CB [ C]:  /1/C/   1(PRO). / O  [ O]:   3.95
+ /1/A/  52(SER). / N  [ N]:  /1/C/   1(PRO). / O  [ O]:   2.94
+ /1/A/  52(SER). / OG [ O]:  /1/C/   1(PRO). / O  [ O]:   3.19
+ /1/A/  52(SER). / CA [ C]:  /1/C/   1(PRO). / O  [ O]:   3.94
+ /1/A/  52(SER). / CB [ C]:  /1/C/   1(PRO). / O  [ O]:   3.99
+ /1/B/  83(VAL). / CG1[ C]:  /1/C/   1(PRO). / CB [ C]:   3.60
+ /1/B/  83(VAL). / CG2[ C]:  /1/C/   1(PRO). / CB [ C]:   3.76
+ /1/A/  50(PHE). / O  [ O]:  /1/C/   1(PRO). / CD [ C]:   3.19
+ /1/A/  52(SER). / OG [ O]:  /1/C/   2(LYS). / CA [ C]:   3.63
+ /1/A/  52(SER). / O  [ O]:  /1/C/   2(LYS). / CA [ C]:   3.61
+                             /1/C/   2(LYS). / C  [ C]:   3.77
+ /1/B/  79(HIS). / CD2[ C]:  /1/C/   2(LYS). / O  [ O]:   3.59
+ /1/B/  79(HIS). / CE1[ C]:  /1/C/   2(LYS). / O  [ O]:   3.89
+ /1/B/  79(HIS). / NE2[ N]:  /1/C/   2(LYS). / O  [ O]:   2.82
+ /1/B/  83(VAL). / CG2[ C]:  /1/C/   2(LYS). / O  [ O]:   3.54
+ /1/A/  52(SER). / OG [ O]:  /1/C/   2(LYS). / CB [ C]:   3.65
+                             /1/C/   2(LYS). / CG [ C]:   3.70
+ /1/A/  54(GLU). / N  [ N]:  /1/C/   2(LYS). / CE [ C]:   3.98
+ /1/A/  54(GLU). / CB [ C]:  /1/C/   2(LYS). / CE [ C]:   3.79
+                             /1/C/   2(LYS). / NZ [ N]:   3.84
+ /1/A/  52(SER). / O  [ O]:  /1/C/   3(TYR). / N  [ N]:   2.94
+ /1/B/  80(ASN). / OD1[ O]:  /1/C/   3(TYR). / CA [ C]:   3.38
+ /1/A/  52(SER). / O  [ O]:  /1/C/   3(TYR). / CA [ C]:   3.85
+ /1/B/  80(ASN). / OD1[ O]:  /1/C/   3(TYR). / C  [ C]:   3.54
+ /1/A/  53(PHE). / CD1[ C]:  /1/C/   3(TYR). / C  [ C]:   3.93
+                             /1/C/   3(TYR). / O  [ O]:   3.52
+ /1/A/  53(PHE). / CE1[ C]:  /1/C/   3(TYR). / O  [ O]:   3.98
+ /1/B/  80(ASN). / OD1[ O]:  /1/C/   3(TYR). / CB [ C]:   3.94
+ /1/A/  53(PHE). / CD1[ C]:  /1/C/   3(TYR). / CB [ C]:   3.61
+ /1/A/  52(SER). / O  [ O]:  /1/C/   3(TYR). / CB [ C]:   3.61
+ /1/B/  80(ASN). / CG [ C]:  /1/C/   3(TYR). / CD1[ C]:   3.69
+ /1/B/  80(ASN). / OD1[ O]:  /1/C/   3(TYR). / CD1[ C]:   3.44
+ /1/B/  80(ASN). / CB [ C]:  /1/C/   3(TYR). / CD1[ C]:   3.78
+ /1/B/  83(VAL). / CG1[ C]:  /1/C/   3(TYR). / CD2[ C]:   3.90
+ /1/A/  31(PHE). / CE2[ C]:  /1/C/   3(TYR). / CD2[ C]:   3.86
+ /1/A/  42(TRP). / CH2[ C]:  /1/C/   3(TYR). / CD2[ C]:   3.72
+ /1/A/  52(SER). / O  [ O]:  /1/C/   3(TYR). / CD2[ C]:   3.70
+ /1/B/  80(ASN). / O  [ O]:  /1/C/   3(TYR). / CE1[ C]:   3.67
+ /1/B/  80(ASN). / CB [ C]:  /1/C/   3(TYR). / CE1[ C]:   3.98
+ /1/B/  83(VAL). / CG1[ C]:  /1/C/   3(TYR). / CE2[ C]:   3.80
+ /1/A/  51(ALA). / CB [ C]:  /1/C/   3(TYR). / CE2[ C]:   3.98
+ /1/A/  42(TRP). / CZ3[ C]:  /1/C/   3(TYR). / CE2[ C]:   3.79
+ /1/A/  42(TRP). / CH2[ C]:  /1/C/   3(TYR). / CE2[ C]:   3.76
+ /1/B/  83(VAL). / CG1[ C]:  /1/C/   3(TYR). / CZ [ C]:   3.90
+ /1/B/  84(GLY). / N  [ N]:  /1/C/   3(TYR). / OH [ O]:   3.83
+ /1/A/  30(ILE). / CD1[ C]:  /1/C/   3(TYR). / OH [ O]:   3.97
+ /1/B/  84(GLY). / CA [ C]:  /1/C/   3(TYR). / OH [ O]:   3.54
+ /1/A/  30(ILE). / CG2[ C]:  /1/C/   3(TYR). / OH [ O]:   3.81
+ /1/B/  87(PHE). / CE1[ C]:  /1/C/   3(TYR). / OH [ O]:   3.66
+ /1/B/  87(PHE). / CZ [ C]:  /1/C/   3(TYR). / OH [ O]:   3.48
+ /1/B/  80(ASN). / CG [ C]:  /1/C/   4(VAL). / N  [ N]:   3.69
+ /1/B/  80(ASN). / ND2[ N]:  /1/C/   4(VAL). / N  [ N]:   3.91
+ /1/B/  80(ASN). / OD1[ O]:  /1/C/   4(VAL). / N  [ N]:   2.75
+                             /1/C/   4(VAL). / CA [ C]:   3.73
+ /1/B/  80(ASN). / ND2[ N]:  /1/C/   4(VAL). / C  [ C]:   3.93
+ /1/B/  76(TYR). / CD1[ C]:  /1/C/   4(VAL). / O  [ O]:   3.30
+ /1/B/  80(ASN). / CG [ C]:  /1/C/   4(VAL). / O  [ O]:   3.70
+ /1/B/  80(ASN). / ND2[ N]:  /1/C/   4(VAL). / O  [ O]:   2.90
+ /1/B/  76(TYR). / CE1[ C]:  /1/C/   4(VAL). / O  [ O]:   3.02
+ /1/B/  80(ASN). / OD1[ O]:  /1/C/   4(VAL). / O  [ O]:   3.67
+ /1/A/  23(PHE). / CZ [ C]:  /1/C/   4(VAL). / O  [ O]:   3.76
+ /1/B/  80(ASN). / OD1[ O]:  /1/C/   4(VAL). / CB [ C]:   3.88
+ /1/B/  79(HIS). / CD2[ C]:  /1/C/   4(VAL). / CG2[ C]:   3.75
+ /1/B/  79(HIS). / NE2[ N]:  /1/C/   4(VAL). / CG2[ C]:   3.99
+ /1/A/  53(PHE). / CE1[ C]:  /1/C/   5(LYS). / N  [ N]:   3.92
+ /1/A/   8(GLN). / OE1[ O]:  /1/C/   5(LYS). / CA [ C]:   3.39
+ /1/B/  76(TYR). / CE1[ C]:  /1/C/   5(LYS). / C  [ C]:   3.85
+ /1/A/   8(GLN). / OE1[ O]:  /1/C/   5(LYS). / C  [ C]:   3.45
+                             /1/C/   5(LYS). / CB [ C]:   3.84
+ /1/A/  21(PHE). / CZ [ C]:  /1/C/   5(LYS). / CB [ C]:   3.98
+ /1/A/  53(PHE). / CE1[ C]:  /1/C/   5(LYS). / CB [ C]:   3.82
+ /1/A/  53(PHE). / CZ [ C]:  /1/C/   5(LYS). / CB [ C]:   3.80
+ /1/A/  57(GLY). / C  [ C]:  /1/C/   5(LYS). / CD [ C]:   3.58
+ /1/A/  57(GLY). / O  [ O]:  /1/C/   5(LYS). / CD [ C]:   3.22
+ /1/A/  61(ASN). / ND2[ N]:  /1/C/   5(LYS). / CD [ C]:   3.79
+ /1/A/  57(GLY). / CA [ C]:  /1/C/   5(LYS). / CD [ C]:   3.96
+ /1/A/  57(GLY). / C  [ C]:  /1/C/   5(LYS). / CE [ C]:   3.71
+ /1/A/  57(GLY). / O  [ O]:  /1/C/   5(LYS). / CE [ C]:   2.89
+ /1/A/  61(ASN). / CG [ C]:  /1/C/   5(LYS). / CE [ C]:   3.31
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   5(LYS). / CE [ C]:   3.33
+ /1/A/  61(ASN). / ND2[ N]:  /1/C/   5(LYS). / CE [ C]:   3.20
+ /1/A/  57(GLY). / O  [ O]:  /1/C/   5(LYS). / NZ [ N]:   3.81
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   5(LYS). / NZ [ N]:   3.88
+ /1/B/  76(TYR). / CE1[ C]:  /1/C/   6(GLN). / N  [ N]:   3.79
+ /1/A/   8(GLN). / CD [ C]:  /1/C/   6(GLN). / N  [ N]:   3.59
+ /1/A/   8(GLN). / OE1[ O]:  /1/C/   6(GLN). / N  [ N]:   2.69
+ /1/A/   8(GLN). / NE2[ N]:  /1/C/   6(GLN). / N  [ N]:   3.78
+ /1/A/   8(GLN). / OE1[ O]:  /1/C/   6(GLN). / CA [ C]:   3.62
+ /1/B/  11(PHE). / CE2[ C]:  /1/C/   6(GLN). / O  [ O]:   3.64
+ /1/A/   8(GLN). / CD [ C]:  /1/C/   6(GLN). / O  [ O]:   4.00
+ /1/A/   8(GLN). / OE1[ O]:  /1/C/   6(GLN). / O  [ O]:   3.86
+ /1/A/   8(GLN). / NE2[ N]:  /1/C/   6(GLN). / O  [ O]:   3.26
+ /1/A/  61(ASN). / CG [ C]:  /1/C/   6(GLN). / O  [ O]:   3.83
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   6(GLN). / O  [ O]:   3.88
+ /1/A/  61(ASN). / ND2[ N]:  /1/C/   6(GLN). / O  [ O]:   2.95
+ /1/B/  11(PHE). / CG [ C]:  /1/C/   6(GLN). / CB [ C]:   3.78
+ /1/B/  11(PHE). / CD1[ C]:  /1/C/   6(GLN). / CB [ C]:   3.78
+ /1/B/  11(PHE). / CD2[ C]:  /1/C/   6(GLN). / CB [ C]:   3.79
+ /1/B/  11(PHE). / CE1[ C]:  /1/C/   6(GLN). / CB [ C]:   3.80
+ /1/B/  11(PHE). / CE2[ C]:  /1/C/   6(GLN). / CB [ C]:   3.82
+ /1/B/  11(PHE). / CZ [ C]:  /1/C/   6(GLN). / CB [ C]:   3.82
+ /1/B/  76(TYR). / CE1[ C]:  /1/C/   6(GLN). / CB [ C]:   3.94
+ /1/B/  76(TYR). / CZ [ C]:  /1/C/   6(GLN). / CB [ C]:   3.98
+ /1/A/   8(GLN). / OE1[ O]:  /1/C/   6(GLN). / CB [ C]:   3.49
+ /1/B/  69(ARG). / NH1[ N]:  /1/C/   6(GLN). / CG [ C]:   3.63
+ /1/B/  11(PHE). / CD1[ C]:  /1/C/   6(GLN). / CG [ C]:   3.53
+ /1/B/  11(PHE). / CE1[ C]:  /1/C/   6(GLN). / CG [ C]:   3.35
+ /1/B/  11(PHE). / CZ [ C]:  /1/C/   6(GLN). / CG [ C]:   3.74
+ /1/B/  68(GLN). / NE2[ N]:  /1/C/   6(GLN). / CD [ C]:   3.82
+ /1/B/  69(ARG). / NH1[ N]:  /1/C/   6(GLN). / CD [ C]:   3.63
+ /1/B/  68(GLN). / OE1[ O]:  /1/C/   6(GLN). / OE1[ O]:   3.58
+ /1/B/  69(ARG). / CD [ C]:  /1/C/   6(GLN). / OE1[ O]:   3.86
+ /1/B/  72(ALA). / CB [ C]:  /1/C/   6(GLN). / OE1[ O]:   3.34
+ /1/B/  68(GLN). / CD [ C]:  /1/C/   6(GLN). / OE1[ O]:   3.83
+ /1/B/  68(GLN). / NE2[ N]:  /1/C/   6(GLN). / OE1[ O]:   3.23
+ /1/B/  69(ARG). / NH1[ N]:  /1/C/   6(GLN). / OE1[ O]:   3.22
+ /1/B/  69(ARG). / CZ [ C]:  /1/C/   6(GLN). / OE1[ O]:   3.99
+ /1/B/  76(TYR). / CB [ C]:  /1/C/   6(GLN). / NE2[ N]:   3.70
+ /1/B/  68(GLN). / NE2[ N]:  /1/C/   6(GLN). / NE2[ N]:   3.88
+ /1/B/  76(TYR). / CD1[ C]:  /1/C/   6(GLN). / NE2[ N]:   3.54
+ /1/B/  76(TYR). / CG [ C]:  /1/C/   6(GLN). / NE2[ N]:   3.54
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   7(ASN). / CA [ C]:   3.45
+                             /1/C/   7(ASN). / C  [ C]:   3.63
+ /1/B/  69(ARG). / NH1[ N]:  /1/C/   7(ASN). / O  [ O]:   3.66
+ /1/B/  11(PHE). / CZ [ C]:  /1/C/   7(ASN). / O  [ O]:   3.73
+ /1/B/  69(ARG). / CZ [ C]:  /1/C/   7(ASN). / O  [ O]:   3.69
+ /1/B/  69(ARG). / NH2[ N]:  /1/C/   7(ASN). / O  [ O]:   2.85
+ /1/B/  69(ARG). / NH1[ N]:  /1/C/   7(ASN). / CG [ C]:   3.88
+                             /1/C/   7(ASN). / OD1[ O]:   2.99
+ /1/B/  69(ARG). / CZ [ C]:  /1/C/   7(ASN). / OD1[ O]:   3.93
+ /1/A/  61(ASN). / CG [ C]:  /1/C/   8(THR). / N  [ N]:   3.66
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   8(THR). / N  [ N]:   2.89
+ /1/B/   9(LEU). / CD2[ C]:  /1/C/   8(THR). / CA [ C]:   3.87
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   8(THR). / CA [ C]:   3.91
+ /1/A/  65(ASP). / OD1[ O]:  /1/C/   8(THR). / CB [ C]:   3.76
+ /1/B/   9(LEU). / CD2[ C]:  /1/C/   8(THR). / CB [ C]:   3.26
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   8(THR). / CB [ C]:   3.82
+ /1/A/  65(ASP). / OD1[ O]:  /1/C/   8(THR). / OG1[ O]:   3.78
+ /1/A/  64(VAL). / CB [ C]:  /1/C/   8(THR). / OG1[ O]:   3.24
+ /1/A/  64(VAL). / CG1[ C]:  /1/C/   8(THR). / OG1[ O]:   3.12
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   8(THR). / OG1[ O]:   3.83
+ /1/A/  61(ASN). / O  [ O]:  /1/C/   8(THR). / OG1[ O]:   3.70
+ /1/A/  65(ASP). / OD1[ O]:  /1/C/   8(THR). / CG2[ C]:   3.64
+ /1/B/   9(LEU). / CD2[ C]:  /1/C/   8(THR). / CG2[ C]:   3.25
+ /1/A/  10(GLU). / CD [ C]:  /1/C/   8(THR). / CG2[ C]:   3.64
+ /1/A/  10(GLU). / OE1[ O]:  /1/C/   8(THR). / CG2[ C]:   3.23
+ /1/A/  10(GLU). / OE2[ O]:  /1/C/   8(THR). / CG2[ C]:   3.65
+ /1/A/  61(ASN). / CB [ C]:  /1/C/   8(THR). / CG2[ C]:   3.45
+ /1/A/  61(ASN). / CG [ C]:  /1/C/   8(THR). / CG2[ C]:   3.04
+ /1/A/  61(ASN). / OD1[ O]:  /1/C/   8(THR). / CG2[ C]:   3.10
+ /1/A/  61(ASN). / ND2[ N]:  /1/C/   8(THR). / CG2[ C]:   3.43
+ /1/A/  68(ASN). / ND2[ N]:  /1/C/   9(LEU). / C  [ C]:   3.88
+ /1/B/  59(TRP). / CZ2[ C]:  /1/C/   9(LEU). / O  [ O]:   3.74
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/   9(LEU). / O  [ O]:   3.67
+ /1/A/  68(ASN). / ND2[ N]:  /1/C/   9(LEU). / O  [ O]:   2.91
+ /1/A/  68(ASN). / CG [ C]:  /1/C/   9(LEU). / O  [ O]:   3.67
+ /1/B/  59(TRP). / NE1[ N]:  /1/C/   9(LEU). / CB [ C]:   3.68
+ /1/B/  59(TRP). / CE2[ C]:  /1/C/   9(LEU). / CB [ C]:   3.59
+ /1/B/  59(TRP). / CZ2[ C]:  /1/C/   9(LEU). / CB [ C]:   3.55
+ /1/B/  69(ARG). / NH2[ N]:  /1/C/   9(LEU). / CG [ C]:   3.24
+ /1/B/  65(LEU). / CD1[ C]:  /1/C/   9(LEU). / CD1[ C]:   3.33
+ /1/B/  26(GLU). / OE2[ O]:  /1/C/   9(LEU). / CD1[ C]:   3.78
+ /1/B/  45(TYR). / CZ [ C]:  /1/C/   9(LEU). / CD1[ C]:   3.72
+ /1/B/  45(TYR). / OH [ O]:  /1/C/   9(LEU). / CD1[ C]:   2.96
+ /1/B/  65(LEU). / CD2[ C]:  /1/C/   9(LEU). / CD1[ C]:   3.86
+ /1/B/  59(TRP). / CD2[ C]:  /1/C/   9(LEU). / CD1[ C]:   3.99
+ /1/B/  69(ARG). / CZ [ C]:  /1/C/   9(LEU). / CD1[ C]:   3.98
+ /1/B/  69(ARG). / NH2[ N]:  /1/C/   9(LEU). / CD1[ C]:   3.35
+ /1/B/  65(LEU). / CD1[ C]:  /1/C/   9(LEU). / CD2[ C]:   3.73
+ /1/B/  69(ARG). / NH2[ N]:  /1/C/   9(LEU). / CD2[ C]:   3.90
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  10(LYS). / CA [ C]:   3.34
+ /1/A/  68(ASN). / ND2[ N]:  /1/C/  10(LYS). / CA [ C]:   3.99
+ /1/B/  59(TRP). / CZ2[ C]:  /1/C/  10(LYS). / C  [ C]:   3.97
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  10(LYS). / C  [ C]:   3.41
+ /1/B/  58(TYR). / CE2[ C]:  /1/C/  10(LYS). / O  [ O]:   3.66
+ /1/B/  59(TRP). / NE1[ N]:  /1/C/  10(LYS). / O  [ O]:   2.97
+ /1/B/  59(TRP). / CE2[ C]:  /1/C/  10(LYS). / O  [ O]:   3.51
+ /1/B/  59(TRP). / CZ2[ C]:  /1/C/  10(LYS). / O  [ O]:   3.42
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  10(LYS). / CG [ C]:   3.99
+                             /1/C/  11(LEU). / N  [ N]:   2.64
+ /1/A/  68(ASN). / CG [ C]:  /1/C/  11(LEU). / N  [ N]:   3.69
+ /1/B/  55(ASP). / OD1[ O]:  /1/C/  11(LEU). / CA [ C]:   3.69
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  11(LEU). / CA [ C]:   3.57
+ /1/B/  55(ASP). / OD1[ O]:  /1/C/  11(LEU). / C  [ C]:   3.86
+                             /1/C/  11(LEU). / CB [ C]:   3.56
+ /1/A/  75(ARG). / NH2[ N]:  /1/C/  11(LEU). / CB [ C]:   3.89
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  11(LEU). / CB [ C]:   3.37
+ /1/A/  71(ILE). / CG2[ C]:  /1/C/  11(LEU). / CB [ C]:   3.94
+ /1/A/  71(ILE). / CD1[ C]:  /1/C/  11(LEU). / CB [ C]:   3.98
+ /1/B/  55(ASP). / CG [ C]:  /1/C/  11(LEU). / CG [ C]:   3.82
+ /1/B/  55(ASP). / OD1[ O]:  /1/C/  11(LEU). / CG [ C]:   3.33
+ /1/B/  55(ASP). / OD2[ O]:  /1/C/  11(LEU). / CG [ C]:   3.91
+ /1/A/  75(ARG). / NH2[ N]:  /1/C/  11(LEU). / CG [ C]:   3.94
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  11(LEU). / CG [ C]:   3.77
+ /1/B/  55(ASP). / CG [ C]:  /1/C/  11(LEU). / CD1[ C]:   3.69
+ /1/B/  55(ASP). / OD1[ O]:  /1/C/  11(LEU). / CD1[ C]:   3.48
+ /1/B/  55(ASP). / OD2[ O]:  /1/C/  11(LEU). / CD1[ C]:   3.94
+ /1/B/  59(TRP). / CZ2[ C]:  /1/C/  11(LEU). / CD1[ C]:   3.36
+ /1/B/   7(TRP). / CH2[ C]:  /1/C/  11(LEU). / CD1[ C]:   3.95
+ /1/B/  59(TRP). / CH2[ C]:  /1/C/  11(LEU). / CD1[ C]:   3.38
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  11(LEU). / CD1[ C]:   3.97
+ /1/B/   7(TRP). / CZ3[ C]:  /1/C/  11(LEU). / CD2[ C]:   3.79
+ /1/B/   7(TRP). / CH2[ C]:  /1/C/  11(LEU). / CD2[ C]:   3.64
+ /1/A/  68(ASN). / O  [ O]:  /1/C/  11(LEU). / CD2[ C]:   3.42
+ /1/A/  68(ASN). / OD1[ O]:  /1/C/  11(LEU). / CD2[ C]:   3.44
+ /1/A/  72(MET). / CG [ C]:  /1/C/  11(LEU). / CD2[ C]:   3.58
+ /1/A/  68(ASN). / CA [ C]:  /1/C/  11(LEU). / CD2[ C]:   3.74
+ /1/A/  68(ASN). / C  [ C]:  /1/C/  11(LEU). / CD2[ C]:   3.92
+ /1/A/  68(ASN). / CB [ C]:  /1/C/  11(LEU). / CD2[ C]:   3.37
+ /1/A/  68(ASN). / CG [ C]:  /1/C/  11(LEU). / CD2[ C]:   3.57
+ /1/B/  58(TYR). / CD2[ C]:  /1/C/  12(ALA). / N  [ N]:   3.89
+ /1/B/  55(ASP). / OD1[ O]:  /1/C/  12(ALA). / N  [ N]:   3.05
+ /1/A/  75(ARG). / NH2[ N]:  /1/C/  12(ALA). / N  [ N]:   3.80
+ /1/B/  58(TYR). / CD2[ C]:  /1/C/  12(ALA). / CA [ C]:   3.77
+ /1/B/  55(ASP). / OD1[ O]:  /1/C/  12(ALA). / CA [ C]:   3.96
+ /1/A/  75(ARG). / NH2[ N]:  /1/C/  12(ALA). / C  [ C]:   3.98
+                             /1/C/  12(ALA). / O  [ O]:   3.05
+ /1/A/  71(ILE). / CG2[ C]:  /1/C/  12(ALA). / O  [ O]:   3.64
+ /1/B/  58(TYR). / CB [ C]:  /1/C/  12(ALA). / CB [ C]:   3.75
+ /1/B/  58(TYR). / CG [ C]:  /1/C/  12(ALA). / CB [ C]:   3.88
+ /1/B/  58(TYR). / CD2[ C]:  /1/C/  12(ALA). / CB [ C]:   3.74
+ /1/B/  54(PRO). / C  [ C]:  /1/C/  12(ALA). / CB [ C]:   3.92
+ /1/B/  54(PRO). / O  [ O]:  /1/C/  12(ALA). / CB [ C]:   3.67
+ /1/B/  55(ASP). / OD1[ O]:  /1/C/  12(ALA). / CB [ C]:   3.76
+
+
+  Total 228 contacts
+
+--------------------------------------------------------------------------
+
+ NCONT:  Normal termination
+Times: User:       0.0s System:    0.0s Elapsed:     0:00  

@@ -174,24 +174,25 @@ def contact_matrix_row(line, tcr_a_locations, tcr_b_locations, mhc_a_chain,
     if s_new_name == "TCRa":
         for loop in tcr_a_locations:
             for loc in loop[1:]:
-                if loc == int(line[6:10]):
+                if loc == line[6:10].strip():
                     annotation1 = loop[0]
 
     if s_new_name == "TCRb":
         for loop in tcr_b_locations:
             for loc in loop[1:]:
-                if loc == int(line[6:10]):
+                if loc == line[6:10].strip():
                     annotation1 = loop[0]
     annotation2 = ''
     
     if ".A" == line[15:17]:
         residue = int(line[6:10].strip()) + 0.5
-    else:
+    elif ".B" == line[15:17]:
+        residue = int(line[6:10].strip()) + 0.25
+    else:       
         residue = int(line[6:10].strip())
 
     contact_row = [line[4], s_new_name, residue, annotation1, line[11:14], line[19:22], line[24], line[32],
                    t_new_name, int(line[34:38]), annotation2, line[39:42], line[47:50], line[52], float(line[-4:])]
-    print contact_row
     return contact_row
 
 
@@ -217,7 +218,10 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
     contacts_with_inserts = []
     for i in sorted_contacts:
         if float(i[2]).is_integer() == False:
-            res = str(i[2]).replace(".5", "A")
+            if ".5" in str(i[2]):
+                res = str(i[2]).replace(".5", "A")
+            if ".5" in str(i[2]):
+                res = str(i[2]).replace(".25", "B")
             i[2] = res
         contacts_with_inserts.append(i)
     
@@ -547,7 +551,7 @@ def matrix_parser(allLines):
     matrix = []
     for lines in allLines:
         split_line = lines.split('\t')
-        matrix.append(split_line[:-1])
+        matrix.append(split_line)
     return matrix
 
 
@@ -583,43 +587,19 @@ def add_index_code_to_contact_all(con_matrix):
 
 
 def pairContacts2parents2(contactMatrix,fullSeqMatrix):
+    #Chain Annotation ResNum ResCode Chain Annotation tResNum tResCode tvdW HB SB
     newFullSeqMatrix=[]
-    for x in fullSeqMatrix:
+    for seq in fullSeqMatrix:
         newSeqLine=[]
         hitCount=0
-        for y in contactMatrix:
-            if x[4] == y[11]:
-                newSeqLine=[]
-
-                hitCount+=1
-                for terms in x:
-                    newSeqLine.append(terms)
-                newSeqLine.append(y[4])
-                newSeqLine.append(y[5])
-                newSeqLine.append(y[6])
-                newSeqLine.append(y[7])
-                newSeqLine.append(y[8])
-                newSeqLine.append(y[9])
-                newSeqLine.append(y[10])
-                newSeqLine.append(y[11])
-                newSeqLine.append(y[12])
-                y[11],y[12] = "Done", "Done"
-
-                newFullSeqMatrix.append(newSeqLine)
+        for cont in contactMatrix:
+            if seq[5] == cont[12]:
+                out = [seq[0], seq[1], seq[2], seq[3], cont[4], cont[5], cont[6], cont[7], cont[8], cont[9], cont[10]]
+                newFullSeqMatrix.append(out)
+        
         if hitCount == 0:
-            newSeqLine=[]
-            for terms in x:
-                newSeqLine.append(terms)
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newSeqLine.append('')
-            newFullSeqMatrix.append(newSeqLine)
+            out = [seq[0], seq[1], seq[2], seq[3], "", "", "", "", "", "", ""]
+            newFullSeqMatrix.append(out)
 
     return newFullSeqMatrix
 
@@ -646,7 +626,6 @@ def remove_index(seq_matrix):
 def annotate_sequence_list(sequence_file, contact_file):
     seq_in_file = read_file(sequence_file, "txt")
     seq_in_file_name = sequence_file.rsplit('.', 1)[0]
-    print seq_in_file_name
 
     contact_in_file = read_file(contact_file, "txt")
     contactInFileName = contact_file.rsplit('.', 1)[0]
@@ -657,32 +636,31 @@ def annotate_sequence_list(sequence_file, contact_file):
         raise IOError('No file was loaded. Please view usage and provide a valid file to be processed')
 
     # Prep sequence file#
-   ### print "\nParsing sequence information.."
+
     all_seq_lines = everything_parser(seq_in_file)
     sequence_list = matrix_parser(all_seq_lines)
     sequence_matrix = sequence_list[1:]
     sequence_matrix = add_index_code_seq_all(sequence_matrix)
-   ### print "Done!\n"
 
     # Prep contact file#
-   ### print "Parsing contact information.."
     allContactLines = everything_parser(contact_in_file)
     contactList = matrix_parser(allContactLines)
+
     contact_matrix = contactList[1:]
     contact_matrix = add_index_code_to_contact_all(contact_matrix)
-   ### print "Done!\n"
 
     # Find pairs#
     paired_seq_matrix = pairContacts2parents2(contact_matrix, sequence_matrix)
-    paired_seq_matrix = fill_acceptor_annotation(paired_seq_matrix)
-    output_contact_matrix = remove_index(paired_seq_matrix)
+    
+    #output_contact_matrix = remove_index(paired_seq_matrix)
+
 
     outFile = open(str(contactInFileName) + '_contacts_residues_full.txt', 'w')
 
     output2 = ''
     output2 += 'Chain \tAnnotation \tResNum \tResCode \tChain \tAnnotation \tResNum \tResCode \tvdW \tHB \tSB \n'
 
-    for x in output_contact_matrix:
+    for x in paired_seq_matrix:
         for y in x:
             output2 += str(y) + '\t'
         output2 += '\n'
@@ -749,7 +727,52 @@ def PDB_to_list(PDB_resi, chain_name, chain, MHCclass):
     return outTxt
 
 
+def new_PDB_to_list(PDB_resi, PDB_letter, chain, chain_name, MHCclass, outname):
+    for i, j in zip(PDB_resi, PDB_letter):
+        annotation = ""
+
+        if chain == 'MHCA' and MHCclass == 1:
+            if 50 <= int(i.replace("A", "").strip()) <= 86:
+                annotation = 'MHCa1'
+            if 140 <= int(i.replace("A", "").strip()) <= 176:
+                annotation = 'MHCa2'
+
+        if chain == 'MHCA' and MHCclass == 2:
+            if 46 <= int(i.replace("A", "").strip()) <= 78:
+                annotation = 'MHCa1'
+        if chain == 'MHCB' and MHCclass == 2:
+            if 54 <= int(i.replace("A", "").strip()) <= 91:
+                annotation = 'MHCb1'
+        
+        line = chain + "\t" + annotation + "\t" + i + "\t" + j
+        outname.write(line + "\n")
+
+    
+
+def extract_sequence(chain, pdb):
+    pairs = []
+
+    d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+         'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+         'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+    with open(pdb) as f:
+        for line in f:
+            if chain == line[21]:
+                amino_acid = d[line[17:20].strip()]
+                res_num = line[22:27].strip()
+
+                pair = (amino_acid, res_num)
+
+                if pair not in pairs:
+                    pairs.append(pair)
+
+    return [i[0] for i in pairs], [i[1] for i in pairs]
+
+
 def pdb_to_sequence(pdb, chains, mhc_class, pdb_name):
+    
     origPDB = read_file(pdb, "pdb")
     fileName = pdb.rsplit('.', 1)[0]
 
@@ -766,45 +789,22 @@ def pdb_to_sequence(pdb, chains, mhc_class, pdb_name):
     filtered_file = read_file(pdb, "pdb")
 
     # Sort chains
-    mhca_a, mhc_b, pep, tcr_a, tcr_b = chains[0], chains[1], chains[2], chains[3], chains[4]
-
-    # create a parser object
-    parser = pdb_parser()
-
-    # N.B. PDBParser is set to allow for buggy PDB structures by a defaut PERMISSIVE=1
-    # can change this to =0 to throw an error outright. I have kept it to allow errors
-    # as they often don't impact anything.
-
-    struct = parser.get_structure(filtered_file, pdb)
-
-   #### print "The warnings re: discontinous sequences are fine, ignore."
-
-    mhca_chain = struct[0][mhca_a]
-    mhcb_chain = struct[0][mhc_b]
-    pep_chain = struct[0][pep]
-    tcra_chain = struct[0][tcr_a]
-    tcrb_chain = struct[0][tcr_b]
-
-    # get residues
-    mhca_residues = list(pdb_select.unfold_entities(mhca_chain, 'R'))
-    mhcb_residues = list(pdb_select.unfold_entities(mhcb_chain, 'R'))
-    pep_residues = list(pdb_select.unfold_entities(pep_chain, 'R'))
-    tcra_residues = list(pdb_select.unfold_entities(tcra_chain, 'R'))
-    tcrb_residues = list(pdb_select.unfold_entities(tcrb_chain, 'R'))
-
-    out_txt = "Chain \tAnnotation \tResNum \tResCode\n"
-
-    mhca_txt = PDB_to_list(mhca_residues, 'MHCA', 'MHCA', mhc_class)
-    mchb_txt = PDB_to_list(mhcb_residues, 'MHCB', 'MHCB', mhc_class)
-    peptide_txt = PDB_to_list(pep_residues, 'peptide', 'none', mhc_class)
-    tcra_txt = PDB_to_list(tcra_residues, 'TCRA', 'alpha', mhc_class)
-    tcrb_txt = PDB_to_list(tcrb_residues, 'TCRB', 'beta', mhc_class)
-
-    out_txt += mhca_txt + mchb_txt + peptide_txt + tcra_txt + tcrb_txt
+    mhc_a, mhc_b, pep, tcr_a, tcr_b = chains[0], chains[1], chains[2], chains[3], chains[4]
 
     outfile = open(pdb_name + '_sequence.txt', 'w')
-    outfile.write(out_txt)
-    outfile.close()
+    outfile.write("Chain\tAnnotation\tResNum\tResCode\n")
+
+    mhca_amino, mhca_residues = extract_sequence(mhc_a, pdb)
+    mhcb_amino, mhcb_residues = extract_sequence(mhc_b, pdb)   
+    pep_amino, pep_residues = extract_sequence(pep, pdb)
+    tcra_amino, tcra_residues = extract_sequence(tcr_a, pdb)
+    tcrb_amino, tcrb_residues = extract_sequence(tcr_b, pdb)
+            
+    new_PDB_to_list(mhca_residues, mhca_amino, 'MHCA', 'MHCA', mhc_class, outfile)
+    new_PDB_to_list(mhcb_residues, mhcb_amino, 'MHCB', 'MHCB', mhc_class, outfile)
+    new_PDB_to_list(pep_residues, pep_amino, 'peptide', 'none', mhc_class, outfile)   
+    new_PDB_to_list(tcra_residues, tcra_amino,  'TCRA', 'alpha', mhc_class, outfile)
+    new_PDB_to_list(tcrb_residues, tcrb_amino,  'TCRB', 'beta', mhc_class, outfile)
 
 
 def find_term_from_id(data, chain, term):

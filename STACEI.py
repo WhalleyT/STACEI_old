@@ -34,6 +34,7 @@ def main():
 
     print "Collecting parse arguments"
     args, auto = housekeeping.check_parse()
+    housekeeping.check_install()
 
 
     if args.suppress:
@@ -115,20 +116,22 @@ def main():
     print "Cleaning and generating TCR to pMHC contacts"
     # TCR -> pMHC contacts
     contacts.clean_contacts(contact_paths.tcr_to_mhc_file, full_complex.string, fasta_files.annotated)
-    import sys; sys.exit()
     contacts.residue_only_contacts(contact_paths.tcr_to_mhc_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.tcr_to_mhc_residues)
+    
+    #compute statistics for CDR loops to major chains
     contacts.stats(contact_paths.tcr_to_mhc_clean_file, pdb.name)
 
 
     print "Generating contact maps for TCR to pMHC contacts"
 
+    
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
         print tcr, pmhc
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, [], pdb.name)
     for tcr, pmhc, smart in zip(tcr_permutations.tcr_safe, tcr_permutations.pmhc_safe, tcr_permutations.safe_calls):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, smart, pdb.name)
-
+    
 
     print "Cleaning and generating p to MHC contacts"
     # MHC -> peptide contacts
@@ -137,6 +140,7 @@ def main():
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.mhc_to_pep_residues)
 
     print "Generating contact maps for p to MHC"
+    
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
     
 
@@ -172,13 +176,13 @@ def main():
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
 
-    """
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex, pdb.name)
 
+    
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
-    """
+    
     
     #buried surface area viz
 
@@ -212,8 +216,6 @@ def main():
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name), shell=True)
-
-    import sys; sys.exit()
     
  ###################################################################################################################
     """

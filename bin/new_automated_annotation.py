@@ -5,6 +5,7 @@ import os
 import swalign
 import sys
 import re
+import shutil
 
 from Bio.SeqIO import convert
 from itertools import product
@@ -407,8 +408,8 @@ def _map_peptide(tcra, tcrb, peptides, pdb):
 
     for peptide in peptides:
         command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
-                  "source /*/%s/100-120\n" \
-                  "source /*/%s/100-120\n" \
+                  "source /*/%s/95-120\n" \
+                  "source /*/%s/95-120\n" \
                   "target /*/%s\n" \
                   "mindist 0.0\n" \
                   "maxdist 4.0" %(pdb, tcra, tcrb, peptide)
@@ -419,7 +420,7 @@ def _map_peptide(tcra, tcrb, peptides, pdb):
             for line in f:
                 if "Total" in line:
                     contacts.append(line.split()[1])
-
+                    print peptide, tcra, tcrb, line
     pep = peptides[contacts.index(max(contacts))]
     return pep
 
@@ -621,8 +622,8 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
     print "PDB contains %i chains" %len(chains)
 
     if len(chains) < 5:
-
-        os.remove(numbered_name)
+        outdir = pdb_file.split("/")[-1].replace(".pdb", "")
+        shutil.rmtree(outdir)
         sys.exit("Not enough chains")
 
 
@@ -630,6 +631,9 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
 
     convert(numbered_name, "pdb-atom", "clean.fasta", "fasta")
     alphas, betas = _call_ANARCI("clean.fasta", chains)
+
+    removable = alphas + betas
+
     not_tcrs = _non_tcr_chains(chains, alphas, betas)
     tcr_pairs = _pair_tcrs(alphas, betas, numbered_name)
 
@@ -641,10 +645,21 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
         betas = list(tcr_pairs[1])
         tcr_pairs = [tcr_pairs]
 
-    none_tcr = list(set(chains) - set(alphas + betas))
+    none_tcr = list(set(chains) - set(removable))
     peps, mhcas, mhcbs, mhc_class =_get_mhc_pep(none_tcr, "clean.fasta")
 
     #now let's pair our mhca and bs then see if they map to the tcr
+
+    if not mhcas or not mhcbs:
+        os.remove(numbered_name)
+        os.remove("ANARCI.txt")
+        os.remove("ab_contact.txt")
+        os.remove("clean.fasta")
+
+        outdir = pdb_file.split("/")[-1].replace(".pdb", "")
+        shutil.rmtree(outdir)
+        sys.exit("One of MHCa or MHCb could not be identified")
+        
     if mhc_class == 1:
         print "Pairing MHC class I"
         alpha_range = "14-16"

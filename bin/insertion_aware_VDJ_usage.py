@@ -112,6 +112,19 @@ def anarci_to_imgt_fasta(pdb, tcra, tcrb, peptide, mhca, mhcb, anarci,
     alpha = zip(alpha_pdb_num, alpha_pdb_seq)
     beta = zip(beta_pdb_num, beta_pdb_seq)
 
+    for i in alpha:
+        num = i[0]
+        let = i[1]
+
+        if num == "104":
+            cys_alpha = let
+
+    for i in beta:
+        num = i[0]
+        let = i[1]
+
+        if num == "104":
+            cys_beta = let
     #CDR1
     cdr1a = grab_cdr_loops(alpha, 27, 39, "CDR1a")
     cdr1b = grab_cdr_loops(beta, 27, 39, "CDR1b")   
@@ -133,10 +146,10 @@ def anarci_to_imgt_fasta(pdb, tcra, tcrb, peptide, mhca, mhcb, anarci,
     pep_name = ">" + name + "|" + peptide + "|peptide|"
     
     tcra_name = ">" + name + "|"  + gene_keys["A_species"] + "|" + tcra + "|TCRA|" + gene_keys["TRAV"] + "|" + gene_keys["A_score"] + "|" + cdr1a + \
-        "|" + cdr2a + "|" + fwa + "|" + cdr3a + '|Cys1b="C"[23]|Cys2b="C"[104]|'
+        "|" + cdr2a + "|" + fwa + "|" + cdr3a + '|Cys1b="C"[23]|Cys2b="' + cys_alpha + '"[104]|'
 
     tcrb_name = ">" + name + "|" + gene_keys["B_species"] + "|" + tcrb + "|TCRB|" + gene_keys["TRBV"] + "|" + gene_keys["B_score"] + "|" + cdr1b + \
-        "|" + cdr2b + "|" + fwb + "|" + cdr3b + '|Cys1b="C"[23]|Cys2b="C"[104]|'
+        "|" + cdr2b + "|" + fwb + "|" + cdr3b + '|Cys1b="C"[23]|Cys2b="' + cys_beta + '"[104]|'
     
     names = [mhca_name, mhcb_name, pep_name, tcra_name, tcrb_name]
     seqs = []
@@ -151,3 +164,4 @@ def anarci_to_imgt_fasta(pdb, tcra, tcrb, peptide, mhca, mhcb, anarci,
         outfile.write(name + "\n" + seq + "\n")
     
     print "Gene usage is as follows:\n\t-%s\n\t-%s\n\t-%s\n\t-%s" %(gene_keys["TRAV"], gene_keys["TRAJ"], gene_keys["TRBV"], gene_keys["TRBJ"])
+    return gene_keys["TRAV"], gene_keys["TRAJ"], gene_keys["TRBV"], gene_keys["TRBJ"]

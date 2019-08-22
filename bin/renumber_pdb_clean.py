@@ -41,8 +41,8 @@ def grab_anarci_numbers(anarci_file):
                 aa     = split_line[2]
 
                 if aa is not "-":
-                    if number == previous_number:
-                        number += "A"
+                    if len(split_line) == 4:
+                        number += split_line[2]
                     alpha_num.append(number)
                     alpha_seq += aa
                 
@@ -55,13 +55,12 @@ def grab_anarci_numbers(anarci_file):
                 aa     = split_line[2]
 
                 if aa is not "-":
-                    if number == previous_number:
-                        number += "A"
+                    if len(split_line) == 4:
+                        number += split_line[2]
                     beta_num.append(number)
                     beta_seq += aa
                     
                 previous_number = number
-    
     return alpha_num, beta_num, alpha_seq, beta_seq
 
 
@@ -98,7 +97,12 @@ def grab_pdb_numbers(pdb_file, alpha_chain, beta_chain):
 
 def filter_alignment(anarci, pdb):
     swout = SMITH_WATERMAN.align(anarci, pdb)
-    offset = swout.r_offset
+    swout.dump()
+    offset = swout.q_pos - swout.r_pos
+    
+    attrs = vars(swout)
+    print ', '.join("%s: %s" % item for item in attrs.items())
+
     return offset
 
 
@@ -119,6 +123,7 @@ def get_end_of_constant(pdb_nums, anarci_nums):
     #convert to int, for ANARCI files we need to remove AB conformations in CDR loops
     repls = ("A", ""), ("B", "")
     anarci_ints = [x.replace("A", "") for x in anarci_nums]
+    anarci_ints = [x.replace("B", "") for x in anarci_ints]
     anarci_ints = map(int, anarci_ints)
 
     #get last variable ANARCI annotation
@@ -198,14 +203,14 @@ def renumber(anarci_file, pdb_file, alpha_chain, beta_chain, mhca_chain, mhcb_ch
     alpha_offset = filter_alignment(alpha_anarci_seq, alpha_pdb_seq)
     beta_offset = filter_alignment(beta_anarci_seq, beta_pdb_seq)
 
-    alpha_anarci_num = alpha_anarci_num[alpha_offset:]
-    alpha_anarci_seq = alpha_anarci_seq[alpha_offset:]
+    #alpha_anarci_num = alpha_anarci_num[alpha_offset:]
+    #alpha_anarci_seq = alpha_anarci_seq[alpha_offset:]
 
     alpha_pdb_num = alpha_pdb_num[alpha_offset:]
     alpha_pdb_seq = alpha_pdb_seq[alpha_offset:]
 
-    beta_anarci_num = beta_anarci_num[beta_offset:]
-    beta_anarci_seq = beta_anarci_seq[beta_offset:]
+    #beta_anarci_num = beta_anarci_num[beta_offset:]
+    #beta_anarci_seq = beta_anarci_seq[beta_offset:]
 
     beta_pdb_num = beta_pdb_num[beta_offset:]
     beta_pdb_seq = beta_pdb_seq[beta_offset:]

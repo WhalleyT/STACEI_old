@@ -1,0 +1,830 @@
+Chain 	Annotation 	ResNum 	ResCode 	Chain 	Annotation 	ResNum 	ResCode 	vdW 	HB 	SB 
+MHCA		1	D								
+MHCA		2	I								
+MHCA		3	E								
+MHCA		4	A								
+MHCA		5	D								
+MHCA		6	H								
+MHCA		7	V								
+MHCA		8	G								
+MHCA		9	F								
+MHCA		10	Y								
+MHCA		11	G	MHCA		G	peptide	L	True	False	
+MHCA		11	G								
+MHCA		12	T								
+MHCA		13	T								
+MHCA		14	V								
+MHCA		15	Y								
+MHCA		16	Q								
+MHCA		17	S								
+MHCA		18	P								
+MHCA		19	G								
+MHCA		20	D								
+MHCA		21	I								
+MHCA		22	G								
+MHCA		23	Q								
+MHCA		24	Y	MHCA		Y	peptide	G	True	False	
+MHCA		24	Y								
+MHCA		25	T								
+MHCA		26	H	MHCA		H	peptide	R	True	False	
+MHCA		26	H	MHCA		H	peptide	H	True	False	
+MHCA		26	H	MHCA		H	peptide	G	True	False	
+MHCA		26	H								
+MHCA		27	E								
+MHCA		28	F								
+MHCA		29	D								
+MHCA		30	G								
+MHCA		31	D								
+MHCA		32	E								
+MHCA		33	L	MHCA		L	peptide	R	True	False	
+MHCA		33	L								
+MHCA		34	F								
+MHCA		35	Y								
+MHCA		36	V								
+MHCA		37	D								
+MHCA		38	L								
+MHCA		39	D								
+MHCA		40	K								
+MHCA		41	K								
+MHCA		42	K								
+MHCA		43	T								
+MHCA		44	V								
+MHCA		45	W	MHCA		W	peptide	R	True	False	
+MHCA		45	W								
+MHCA	MHCa1	46	R								
+MHCA	MHCa1	47	L								
+MHCA	MHCa1	48	P								
+MHCA	MHCa1	49	E								
+MHCA	MHCa1	50	F								
+MHCA	MHCa1	51	G								
+MHCA	MHCa1	52	Q								
+MHCA	MHCa1	53	L								
+MHCA	MHCa1	54	I	MHCA		I	peptide	M	True	False	
+MHCA	MHCa1	54	I	MHCA		I	peptide	R	True	False	
+MHCA	MHCa1	54	I								
+MHCA	MHCa1	55	L	MHCA		L	peptide	K	True	False	
+MHCA	MHCa1	55	L	MHCA		L	peptide	R	True	True	
+MHCA	MHCa1	55	L								
+MHCA	MHCa1	56	F	MHCA		F	peptide	R	True	False	
+MHCA	MHCa1	56	F								
+MHCA	MHCa1	57	E								
+MHCA	MHCa1	58	P								
+MHCA	MHCa1	59	Q								
+MHCA	MHCa1	60	G								
+MHCA	MHCa1	61	G								
+MHCA	MHCa1	62	L								
+MHCA	MHCa1	63	Q								
+MHCA	MHCa1	64	N	MHCA		N	peptide	L	True	True	
+MHCA	MHCa1	64	N	MHCA		N	peptide	D	True	False	
+MHCA	MHCa1	64	N	MHCA		N	peptide	N	True	True	
+MHCA	MHCa1	64	N								
+MHCA	MHCa1	65	I								
+MHCA	MHCa1	66	A								
+MHCA	MHCa1	67	A	MHCA		A	peptide	N	True	False	
+MHCA	MHCa1	67	A	MHCA		A	peptide	R	True	False	
+MHCA	MHCa1	67	A								
+MHCA	MHCa1	68	E	MHCA		E	peptide	N	True	False	
+MHCA	MHCa1	68	E								
+MHCA	MHCa1	69	K								
+MHCA	MHCa1	70	H	MHCA		H	peptide	R	True	False	
+MHCA	MHCa1	70	H	MHCA		H	peptide	G	True	False	
+MHCA	MHCa1	70	H	MHCA		H	peptide	S	True	False	
+MHCA	MHCa1	70	H								
+MHCA	MHCa1	71	N	MHCA		N	peptide	N	True	False	
+MHCA	MHCa1	71	N	MHCA		N	peptide	Y	True	True	
+MHCA	MHCa1	71	N	MHCA		N	peptide	R	True	False	
+MHCA	MHCa1	71	N	MHCA		N	peptide	G	False	True	
+MHCA	MHCa1	71	N								
+MHCA	MHCa1	72	L								
+MHCA	MHCa1	73	G								
+MHCA	MHCa1	74	I	MHCA		I	peptide	G	True	False	
+MHCA	MHCa1	74	I	MHCA		I	peptide	Y	True	False	
+MHCA	MHCa1	74	I								
+MHCA	MHCa1	75	L								
+MHCA	MHCa1	76	T								
+MHCA	MHCa1	77	K								
+MHCA	MHCa1	78	R								
+MHCA		79	S								
+MHCA		80	N								
+MHCA		81	F								
+MHCA		82	T								
+MHCA		83	P								
+MHCA		84	A								
+MHCA		85	T								
+MHCA		86	N								
+MHCA		87	E								
+MHCA		88	A								
+MHCA		89	P								
+MHCA		90	Q								
+MHCA		91	A								
+MHCA		92	T								
+MHCA		93	V								
+MHCA		94	F								
+MHCA		95	P								
+MHCA		96	K								
+MHCA		97	S								
+MHCA		98	P								
+MHCA		99	V								
+MHCA		100	L								
+MHCA		101	L								
+MHCA		102	G								
+MHCA		103	Q								
+MHCA		104	P								
+MHCA		105	N								
+MHCA		106	T								
+MHCA		107	L								
+MHCA		108	I								
+MHCA		109	C								
+MHCA		110	F								
+MHCA		111	V								
+MHCA		112	D								
+MHCA		113	N								
+MHCA		114	I								
+MHCA		115	F								
+MHCA		116	P								
+MHCA		117	P								
+MHCA		118	V								
+MHCA		119	I								
+MHCA		120	N								
+MHCA		121	I								
+MHCA		122	T								
+MHCA		123	W								
+MHCA		124	L								
+MHCA		125	R								
+MHCA		126	N								
+MHCA		127	S								
+MHCA		128	K								
+MHCA		129	S								
+MHCA		130	V								
+MHCA		131	T								
+MHCA		132	D								
+MHCA		133	G								
+MHCA		134	V								
+MHCA		135	Y								
+MHCA		136	E								
+MHCA		137	T								
+MHCA		138	S								
+MHCA		139	F								
+MHCA		140	L								
+MHCA		141	V								
+MHCA		142	N								
+MHCA		143	R								
+MHCA		144	D								
+MHCA		145	H								
+MHCA		146	S								
+MHCA		147	F								
+MHCA		148	H								
+MHCA		149	K								
+MHCA		150	L								
+MHCA		151	S								
+MHCA		152	Y								
+MHCA		153	L								
+MHCA		154	T								
+MHCA		155	F								
+MHCA		156	I								
+MHCA		157	P								
+MHCA		158	S								
+MHCA		159	D								
+MHCA		160	D								
+MHCA		161	D								
+MHCA		162	I								
+MHCA		163	Y								
+MHCA		164	D								
+MHCA		165	C								
+MHCA		166	K								
+MHCA		167	V								
+MHCA		168	E								
+MHCA		169	H								
+MHCA		170	W								
+MHCA		171	G								
+MHCA		172	L								
+MHCA		173	E								
+MHCA		174	E								
+MHCA		175	P								
+MHCA		176	V								
+MHCA		177	L								
+MHCA		178	K								
+MHCA		179	H								
+MHCA		180	W								
+MHCA		181	S								
+MHCA		182	S								
+MHCA		183	A								
+MHCA		184	D								
+MHCB		1	R								
+MHCB		2	H								
+MHCB		3	F								
+MHCB		4	V								
+MHCB		5	H								
+MHCB		6	Q								
+MHCB		7	F	MHCB		F	peptide	D	True	False	
+MHCB		7	F	MHCB		F	peptide	N	True	False	
+MHCB		7	F								
+MHCB		8	K								
+MHCB		9	G	MHCB		G	peptide	L	True	False	
+MHCB		9	G								
+MHCB		10	E								
+MHCB		11	C								
+MHCB		12	Y								
+MHCB		13	F								
+MHCB		14	T								
+MHCB		15	N								
+MHCB		16	G								
+MHCB		17	T								
+MHCB		18	Q								
+MHCB		19	R								
+MHCB		20	I								
+MHCB		21	R								
+MHCB		22	L	MHCB		L	peptide	L	True	False	
+MHCB		22	L								
+MHCB		23	V								
+MHCB		24	T								
+MHCB		25	R								
+MHCB		26	Y	MHCB		Y	peptide	Y	True	False	
+MHCB		26	Y								
+MHCB		27	I								
+MHCB		28	Y								
+MHCB		29	N								
+MHCB		30	R								
+MHCB		31	E								
+MHCB		32	E								
+MHCB		33	Y								
+MHCB		34	L								
+MHCB		35	R								
+MHCB		36	F								
+MHCB		37	D								
+MHCB		38	S								
+MHCB		39	D								
+MHCB		40	V								
+MHCB		41	G								
+MHCB		42	E								
+MHCB		43	Y	MHCB		Y	peptide	Y	True	False	
+MHCB		43	Y								
+MHCB		44	R								
+MHCB		45	A								
+MHCB		46	V								
+MHCB		47	T								
+MHCB		48	E								
+MHCB		49	L								
+MHCB		50	G								
+MHCB		51	R								
+MHCB		52	H								
+MHCB		53	S								
+MHCB	MHCb1	54	A								
+MHCB	MHCb1	55	E								
+MHCB	MHCb1	56	Y	MHCB		Y	peptide	R	True	False	
+MHCB	MHCb1	56	Y	MHCB		Y	peptide	G	True	False	
+MHCB	MHCb1	56	Y	MHCB		Y	peptide	Y	True	False	
+MHCB	MHCb1	56	Y								
+MHCB	MHCb1	57	Y	MHCB		Y	peptide	Y	True	True	
+MHCB	MHCb1	57	Y	MHCB		Y	peptide	R	True	False	
+MHCB	MHCb1	57	Y	MHCB		Y	peptide	G	True	False	
+MHCB	MHCb1	57	Y								
+MHCB	MHCb1	58	N								
+MHCB	MHCb1	59	K								
+MHCB	MHCb1	60	Q								
+MHCB	MHCb1	61	Y	MHCB		Y	peptide	Y	True	False	
+MHCB	MHCb1	61	Y	MHCB		Y	peptide	R	True	True	
+MHCB	MHCb1	61	Y								
+MHCB	MHCb1	62	L								
+MHCB	MHCb1	63	E								
+MHCB	MHCb1	64	R	MHCB		R	peptide	D	True	False	
+MHCB	MHCb1	64	R	MHCB		R	peptide	Y	True	False	
+MHCB	MHCb1	64	R								
+MHCB	MHCb1	65	T	MHCB		T	peptide	Y	True	False	
+MHCB	MHCb1	65	T								
+MHCB	MHCb1	66	R								
+MHCB	MHCb1	67	A								
+MHCB	MHCb1	68	E	MHCB		E	peptide	D	True	True	
+MHCB	MHCb1	68	E	MHCB		E	peptide	Y	True	False	
+MHCB	MHCb1	68	E								
+MHCB	MHCb1	69	L								
+MHCB	MHCb1	70	D								
+MHCB	MHCb1	71	T	MHCB		T	peptide	H	True	True	
+MHCB	MHCb1	71	T								
+MHCB	MHCb1	72	A	MHCB		A	peptide	L	True	False	
+MHCB	MHCb1	72	A								
+MHCB	MHCb1	73	C								
+MHCB	MHCb1	74	R								
+MHCB	MHCb1	75	H	MHCB		H	peptide	M	True	False	
+MHCB	MHCb1	75	H	MHCB		H	peptide	K	True	True	
+MHCB	MHCb1	75	H	MHCB		H	peptide	H	True	False	
+MHCB	MHCb1	75	H								
+MHCB	MHCb1	76	N	MHCB		N	peptide	R	True	False	
+MHCB	MHCb1	76	N	MHCB		N	peptide	H	True	True	
+MHCB	MHCb1	76	N								
+MHCB	MHCb1	77	Y								
+MHCB	MHCb1	78	E								
+MHCB	MHCb1	79	E	MHCB		E	peptide	M	True	False	
+MHCB	MHCb1	79	E								
+MHCB	MHCb1	80	T	MHCB		T	peptide	K	True	False	
+MHCB	MHCb1	80	T	MHCB		T	peptide	R	True	True	
+MHCB	MHCb1	80	T								
+MHCB	MHCb1	81	E	MHCB		E	peptide	R	True	False	
+MHCB	MHCb1	81	E								
+MHCB	MHCb1	82	V								
+MHCB	MHCb1	83	P								
+MHCB	MHCb1	84	T	MHCB		T	peptide	R	True	False	
+MHCB	MHCb1	84	T								
+MHCB	MHCb1	85	S								
+MHCB	MHCb1	86	L								
+MHCB	MHCb1	87	R								
+MHCB	MHCb1	88	R								
+MHCB	MHCb1	89	L								
+MHCB	MHCb1	90	E								
+MHCB	MHCb1	91	Q								
+MHCB		92	P								
+MHCB		93	N								
+MHCB		94	V								
+MHCB		95	A								
+MHCB		96	I								
+MHCB		97	S								
+MHCB		98	L								
+MHCB		99	S								
+MHCB		100	R								
+MHCB		101	H								
+MHCB		102	N								
+MHCB		103	T								
+MHCB		104	L								
+MHCB		105	V								
+MHCB		106	C								
+MHCB		107	S								
+MHCB		108	V								
+MHCB		109	T								
+MHCB		110	D								
+MHCB		111	F								
+MHCB		112	Y								
+MHCB		113	P								
+MHCB		114	A								
+MHCB		115	K								
+MHCB		116	I								
+MHCB		117	K								
+MHCB		118	V								
+MHCB		119	R								
+MHCB		120	W								
+MHCB		121	F								
+MHCB		122	R								
+MHCB		123	N								
+MHCB		124	G								
+MHCB		125	Q								
+MHCB		126	E								
+MHCB		127	E								
+MHCB		128	T								
+MHCB		129	V								
+MHCB		130	G								
+MHCB		131	V								
+MHCB		132	S								
+MHCB		133	S								
+MHCB		134	T								
+MHCB		135	Q								
+MHCB		136	L								
+MHCB		137	I								
+MHCB		138	R								
+MHCB		139	N								
+MHCB		140	G								
+MHCB		141	D								
+MHCB		142	W								
+MHCB		143	T								
+MHCB		144	F								
+MHCB		145	Q								
+MHCB		146	V								
+MHCB		147	L								
+MHCB		148	V								
+MHCB		149	M								
+MHCB		150	L								
+MHCB		151	E								
+MHCB		152	M								
+MHCB		153	T								
+MHCB		154	P								
+MHCB		155	H								
+MHCB		156	Q								
+MHCB		157	G								
+MHCB		158	E								
+MHCB		159	V								
+MHCB		160	Y								
+MHCB		161	T								
+MHCB		162	C								
+MHCB		163	H								
+MHCB		164	V								
+MHCB		165	E								
+MHCB		166	H								
+MHCB		167	P								
+MHCB		168	S								
+MHCB		169	L								
+MHCB		170	K								
+MHCB		171	S								
+MHCB		172	P								
+MHCB		173	I								
+MHCB		174	T								
+MHCB		175	V								
+MHCB		176	E								
+MHCB		177	W								
+MHCB		178	S								
+peptide		1	G								
+peptide		2	A								
+peptide		3	M								
+peptide		4	K								
+peptide		5	R								
+peptide		6	H								
+peptide		7	G								
+peptide		8	L								
+peptide		9	D								
+peptide		10	N								
+peptide		11	Y								
+peptide		12	R								
+peptide		13	G								
+peptide		14	Y								
+peptide		15	S								
+peptide		16	L								
+peptide		17	G								
+TCRA		3	P								
+TCRA		4	V								
+TCRA		5	E								
+TCRA		6	Q								
+TCRA		7	N								
+TCRA		8	P								
+TCRA		9	P								
+TCRA		10	A								
+TCRA		11	L								
+TCRA		12	S								
+TCRA		13	L								
+TCRA		14	Y								
+TCRA		15	E								
+TCRA		16	G								
+TCRA		17	A								
+TCRA		18	D								
+TCRA		19	S								
+TCRA		20	G								
+TCRA		21	L								
+TCRA		22	R								
+TCRA		23	C								
+TCRA		24	N								
+TCRA		25	F								
+TCRA		26	S								
+TCRA	CDR1a	27	T								
+TCRA	CDR1a	28	T								
+TCRA	CDR1a	29	M								
+TCRA	CDR1a	37	K								
+TCRA	CDR1a	38	S								
+TCRA	CDR1a	39	V								
+TCRA		40	Q								
+TCRA		41	W								
+TCRA		42	F								
+TCRA		43	Q								
+TCRA		44	Q								
+TCRA		45	N								
+TCRA		46	H								
+TCRA		47	R								
+TCRA		48	G								
+TCRA		49	R								
+TCRA		50	L								
+TCRA		51	I								
+TCRA		52	T								
+TCRA		53	L								
+TCRA		54	F								
+TCRA		55	Y								
+TCRA	CDR2a	56	L								
+TCRA	CDR2a	57	A								
+TCRA	CDR2a	58	Q								
+TCRA	CDR2a	64	G								
+TCRA	CDR2a	65	T								
+TCRA		66	K								
+TCRA		67	E								
+TCRA		68	N								
+TCRA		74	G								
+TCRA		75	R								
+TCRA		76	L								
+TCRA		77	K								
+TCRA		78	S								
+TCRA		79	T								
+TCRA		80	F								
+TCRA	FWa	81	N								
+TCRA	FWa	82	S								
+TCRA	FWa	83	K								
+TCRA	FWa	84	E								
+TCRA	FWa	85	R								
+TCRA	FWa	86	Y								
+TCRA		87	S								
+TCRA		88	T								
+TCRA		89	L								
+TCRA		90	H								
+TCRA		91	I								
+TCRA		92	K								
+TCRA		93	D								
+TCRA		94	A								
+TCRA		95	Q								
+TCRA		96	L								
+TCRA		97	E								
+TCRA		98	D								
+TCRA		99	S								
+TCRA		100	G								
+TCRA		101	T								
+TCRA		102	Y								
+TCRA		103	F								
+TCRA	CDR3a	104	C								
+TCRA	CDR3a	105	A								
+TCRA	CDR3a	106	A								
+TCRA	CDR3a	107	E								
+TCRA	CDR3a	108	D								
+TCRA	CDR3a	109	G								
+TCRA	CDR3a	110	G								
+TCRA	CDR3a	112	S								
+TCRA	CDR3a	113	G								
+TCRA	CDR3a	114	N								
+TCRA	CDR3a	115	K								
+TCRA	CDR3a	116	L								
+TCRA	CDR3a	117	I								
+TCRA	CDR3a	118	F								
+TCRA		119	G								
+TCRA		120	T								
+TCRA		121	G								
+TCRA		122	T								
+TCRA		123	L								
+TCRA		124	L								
+TCRA		125	S								
+TCRA		126	V								
+TCRA		127	K								
+TCRA		128	P								
+TCRA		129	N								
+TCRA		130	I								
+TCRA		131	Q								
+TCRA		132	N								
+TCRA		133	P								
+TCRA		134	E								
+TCRA		135	P								
+TCRA		136	A								
+TCRA		137	V								
+TCRA		138	Y								
+TCRA		139	Q								
+TCRA		140	L								
+TCRA		141	K								
+TCRA		142	D								
+TCRA		143	P								
+TCRA		144	R								
+TCRA		145	S								
+TCRA		146	Q								
+TCRA		147	D								
+TCRA		148	S								
+TCRA		149	T								
+TCRA		150	L								
+TCRA		151	C								
+TCRA		152	L								
+TCRA		153	F								
+TCRA		154	T								
+TCRA		155	D								
+TCRA		156	F								
+TCRA		157	D								
+TCRA		158	S								
+TCRA		159	Q								
+TCRA		160	I								
+TCRA		161	N								
+TCRA		162	V								
+TCRA		163	P								
+TCRA		164	K								
+TCRA		165	T								
+TCRA		166	M								
+TCRA		167	E								
+TCRA		168	S								
+TCRA		169	G								
+TCRA		170	T								
+TCRA		171	F								
+TCRA		172	I								
+TCRA		173	T								
+TCRA		174	D								
+TCRA		175	K								
+TCRA		176	C								
+TCRA		177	V								
+TCRA		178	L								
+TCRA		179	D								
+TCRA		180	M								
+TCRA		181	K								
+TCRA		182	A								
+TCRA		183	M								
+TCRA		184	D								
+TCRA		185	S								
+TCRA		186	K								
+TCRA		187	S								
+TCRA		188	N								
+TCRA		189	G								
+TCRA		190	A								
+TCRA		191	I								
+TCRA		192	A								
+TCRB		3	A								
+TCRB		4	V								
+TCRB		5	T								
+TCRB		6	Q								
+TCRB		7	S								
+TCRB		8	P								
+TCRB		9	R								
+TCRB		10	S								
+TCRB		11	K								
+TCRB		12	V								
+TCRB		13	A								
+TCRB		14	V								
+TCRB		15	T								
+TCRB		16	G								
+TCRB		17	G								
+TCRB		18	K								
+TCRB		19	V								
+TCRB		20	T								
+TCRB		21	L								
+TCRB		22	S								
+TCRB		23	C								
+TCRB		24	H								
+TCRB		25	Q								
+TCRB		26	T								
+TCRB	CDR1b	27	N								
+TCRB	CDR1b	28	N								
+TCRB	CDR1b	29	H								
+TCRB	CDR1b	37	D								
+TCRB	CDR1b	38	Y								
+TCRB	CDR1b	39	M								
+TCRB		40	Y								
+TCRB		41	W								
+TCRB		42	Y								
+TCRB		43	R								
+TCRB		44	Q								
+TCRB		45	D								
+TCRB		46	T								
+TCRB		47	G								
+TCRB		48	H								
+TCRB		49	G								
+TCRB		50	L								
+TCRB		51	R								
+TCRB		52	L								
+TCRB		53	I								
+TCRB		54	H								
+TCRB		55	Y								
+TCRB	CDR2b	56	S								
+TCRB	CDR2b	57	Y								
+TCRB	CDR2b	58	V								
+TCRB	CDR2b	63	A								
+TCRB	CDR2b	64	D								
+TCRB	CDR2b	65	S								
+TCRB		66	T								
+TCRB		67	E								
+TCRB		68	K								
+TCRB		69	G								
+TCRB		70	D								
+TCRB		71	I								
+TCRB		72	P								
+TCRB		74	D								
+TCRB		75	G								
+TCRB		76	Y								
+TCRB		77	K								
+TCRB		78	A								
+TCRB	FWb	79	S								
+TCRB	FWb	80	R								
+TCRB	FWb	81	P								
+TCRB	FWb	83	S								
+TCRB	FWb	84	Q								
+TCRB	FWb	85	E								
+TCRB	FWb	86	N								
+TCRB	FWb	87	F								
+TCRB	FWb	88	S								
+TCRB		89	L								
+TCRB		90	I								
+TCRB		91	L								
+TCRB		92	E								
+TCRB		93	L								
+TCRB		94	A								
+TCRB		95	S								
+TCRB		96	L								
+TCRB		97	S								
+TCRB		98	Q								
+TCRB		99	T								
+TCRB		100	A								
+TCRB		101	V								
+TCRB		102	Y								
+TCRB		103	F								
+TCRB	CDR3b	104	C								
+TCRB	CDR3b	105	A								
+TCRB	CDR3b	106	S								
+TCRB	CDR3b	107	S								
+TCRB	CDR3b	108	W								
+TCRB	CDR3b	109	D								
+TCRB	CDR3b	110	R								
+TCRB	CDR3b	112	A								
+TCRB	CDR3b	113	G								
+TCRB	CDR3b	114	N								
+TCRB	CDR3b	115	T								
+TCRB	CDR3b	116	L								
+TCRB	CDR3b	117	Y								
+TCRB	CDR3b	118	F								
+TCRB		119	G								
+TCRB		120	E								
+TCRB		121	G								
+TCRB		122	S								
+TCRB		123	R								
+TCRB		124	L								
+TCRB		125	I								
+TCRB		126	V								
+TCRB		127	V								
+TCRB		128	E								
+TCRB		129	D								
+TCRB		130	L								
+TCRB		131	R								
+TCRB		132	N								
+TCRB		133	V								
+TCRB		134	T								
+TCRB		135	P								
+TCRB		136	P								
+TCRB		137	K								
+TCRB		138	V								
+TCRB		139	S								
+TCRB		140	L								
+TCRB		141	F								
+TCRB		142	E								
+TCRB		143	P								
+TCRB		144	S								
+TCRB		145	K								
+TCRB		146	A								
+TCRB		147	E								
+TCRB		148	I								
+TCRB		149	A								
+TCRB		150	N								
+TCRB		151	K								
+TCRB		152	Q								
+TCRB		153	K								
+TCRB		154	A								
+TCRB		155	T								
+TCRB		156	L								
+TCRB		157	V								
+TCRB		158	C								
+TCRB		159	L								
+TCRB		160	A								
+TCRB		161	R								
+TCRB		162	G								
+TCRB		163	F								
+TCRB		164	F								
+TCRB		165	P								
+TCRB		166	D								
+TCRB		167	H								
+TCRB		168	V								
+TCRB		169	E								
+TCRB		170	L								
+TCRB		171	S								
+TCRB		172	W								
+TCRB		173	W								
+TCRB		174	V								
+TCRB		175	N								
+TCRB		176	G								
+TCRB		177	K								
+TCRB		178	E								
+TCRB		179	V								
+TCRB		180	H								
+TCRB		181	S								
+TCRB		182	G								
+TCRB		183	V								
+TCRB		184	C								
+TCRB		185	T								
+TCRB		186	D								
+TCRB		187	P								
+TCRB		188	Q								
+TCRB		189	A								
+TCRB		190	Y								
+TCRB		191	K								
+TCRB		192	E								
+TCRB		193	S								
+TCRB		194	N								
+TCRB		195	Y								
+TCRB		196	S								
+TCRB		197	Y								
+TCRB		198	S								
+TCRB		199	L								
+TCRB		200	S								
+TCRB		201	S								
+TCRB		202	R								
+TCRB		203	L								
+TCRB		204	R								
+TCRB		205	V								
+TCRB		206	S								
+TCRB		207	A								
+TCRB		208	T								
+TCRB		209	F								
+TCRB		210	W								
+TCRB		211	H								
+TCRB		212	N								
+TCRB		213	P								
+TCRB		214	R								
+TCRB		215	N								
+TCRB		216	H								
+TCRB		217	F								
+TCRB		218	R								
+TCRB		219	C								
+TCRB		220	Q								
+TCRB		221	V								
+TCRB		222	Q								
+TCRB		223	F								
+TCRB		224	H								
+TCRB		225	G								
+TCRB		226	L								
+TCRB		227	S								
+TCRB		228	E								
+TCRB		229	E								
+TCRB		230	D								
+TCRB		231	K								
+TCRB		232	W								
+TCRB		233	P								
+TCRB		234	E								
+TCRB		235	G								
+TCRB		236	S								

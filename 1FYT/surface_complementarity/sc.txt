@@ -1,0 +1,1 @@
+ Shape complementarity statistic Sc =    0.560

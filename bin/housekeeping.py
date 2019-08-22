@@ -4,6 +4,7 @@ import os
 import containers
 import glob
 
+from distutils.spawn import find_executable
 
 def _parse_args():
     """
@@ -161,7 +162,6 @@ def clean_namespace(name, paths, original):
             os.rename(file, paths.pdb_path + "/" + file.split("/")[-1])
 
     os.rename("sc.txt", paths.sc_path + "/" + "sc.txt")
-    os.rename("BSA.png", paths.pisa_path + "/BSA.png")
     os.rename(name + "_statistics.txt", paths.contact_path + "/contact_tables/" + name + "_statistics.txt")
     os.rename(name + "_ANARCI.txt", paths.sequence_path + "/" + name + "_ANARCI.txt")
 
@@ -177,3 +177,10 @@ def clean_namespace(name, paths, original):
 
     for file in glob.glob(name + "*sequence*"):
         os.rename(file, paths.sequence_path + "/" + file)
+
+def check_install():
+    commands = ["ncont", "pymol", "sc", "ncont", "ANARCI"]
+
+    for comm in commands:
+        if find_executable(comm) == False:
+            sys.exit("Could not find executable for %s" %comm)
