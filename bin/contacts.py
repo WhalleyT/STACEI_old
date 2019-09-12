@@ -185,11 +185,12 @@ def contact_matrix_row(line, tcr_a_locations, tcr_b_locations, mhc_a_chain,
     annotation2 = ''
     
     if ".A" == line[15:17]:
-        residue = int(line[6:10].strip()) + 0.5
+        residue = int(line[6:10].strip()) - 0.5
     elif ".B" == line[15:17]:
-        residue = int(line[6:10].strip()) + 0.25
+        residue = int(line[6:10].strip()) - 0.75
     else:       
         residue = int(line[6:10].strip())
+
 
     contact_row = [line[4], s_new_name, residue, annotation1, line[11:14], line[19:22], line[24], line[32],
                    t_new_name, int(line[34:38]), annotation2, line[39:42], line[47:50], line[52], float(line[-4:])]
@@ -217,12 +218,16 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
 
     contacts_with_inserts = []
     for i in sorted_contacts:
+        
         if float(i[2]).is_integer() == False:
             if ".5" in str(i[2]):
-                res = str(i[2]).replace(".5", "A")
-            if ".5" in str(i[2]):
-                res = str(i[2]).replace(".25", "B")
+                res = str(i[2] + 1).replace(".5", "A")
+                print res
+            if ".75" in str(i[2]):
+                res = str(i[2] + 1).replace(".75", "B")
+
             i[2] = res
+
         contacts_with_inserts.append(i)
     
     return contacts_with_inserts

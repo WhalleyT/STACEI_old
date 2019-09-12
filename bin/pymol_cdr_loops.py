@@ -98,7 +98,7 @@ def depackLocations(subentries):
         location = []
         location.append(col.rsplit("=", 1)[0])
         locationstring = (col.partition('[')[-1].rpartition(']')[0])
-        location += map(int, locationstring.split(','))
+        location += locationstring.split(',')
         locations.append(location)
     return locations
 
@@ -181,6 +181,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     for entry in fastaEntries:
         if "TCRA" in entry:
             TCRA = entry
+
     TCRAlocations = findLocations(TCRA)
     TCRAlocations = depackLocations(TCRAlocations)
     TCRAlocations = purgeCysLocs(TCRAlocations)
@@ -189,6 +190,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     for entry in fastaEntries:
         if "TCRB" in entry:
             TCRB = entry
+    
     TCRBlocations = findLocations(TCRB)
     TCRBlocations = depackLocations(TCRBlocations)
     TCRBlocations = purgeCysLocs(TCRBlocations)
@@ -199,15 +201,15 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     # Find the MHC helices and groove
     if MHCclass == "I":
         a1locs = range(50, 86)
-        MHCa1 = ["MHCa"] + a1locs
+        MHCa1 = ["chain " + MHCachain ] + a1locs
         a2locs = range(140, 176)
-        MHCa2 = ["MHCa"] + a2locs
+        MHCa2 = ["chain " + MHCachain ] + a2locs
 
     if MHCclass == "II":
         a1locs = range(46, 78)
-        MHCa1 = ["MHCa"] + a1locs
+        MHCa1 = ["chain " + MHCachain ] + a1locs
         a2locs = range(54, 91)
-        MHCa2 = ["MHCb"] + a2locs
+        MHCa2 = ["chain " + MHCbchain ] + a2locs
 
     # Let's get started
 
@@ -263,12 +265,18 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
 
     # Select the MHCa helices
 
-    name = "MHCa1"
+
     locs = '+'.join(str(x) for x in MHCa1[1:])
-    pymol.cmd.select(name, selection=MHCa1[0] + " and resi " + locs)
-    name = "MHCa2"
+    sele = MHCa1[0] + " and resi " + locs
+    pymol.cmd.select("MHCa1", sele)
+
     locs = '+'.join(str(x) for x in MHCa2[1:])
-    pymol.cmd.select(name, selection=MHCa2[0] + " and resi " + locs)
+    sele = MHCa2[0] + " and resi " + locs
+    pymol.cmd.select("MHCa2", sele)
+
+
+    pymol.cmd.show("cartoon", "MHCa1")
+    pymol.cmd.show("cartoon", "MHCa2")
 
     # General front scene
     pymol.cmd.set_view(viewSet.frontView)
@@ -411,7 +419,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     if ray:
         rayTime(CDRfootprint, 1)
     else:
-        rayTime(CDRfootprint, 0)      
+        rayTime(CDRfootprint, 0)
 
     # Now let's just view the pMHC surface as this might be useful for overlays
 
@@ -443,6 +451,16 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         rayTime(pMHCsurface, 0)       
 
     # MHC helices cos pymol is being a pain
+
+    locs = '+'.join(str(x) for x in MHCa1[1:])
+    sele = MHCa1[0] + " and resi " + locs
+    pymol.cmd.select("MHCa1", sele)
+    
+
+    locs = '+'.join(str(x) for x in MHCa2[1:])
+    sele = MHCa2[0] + " and resi " + locs
+    pymol.cmd.select("MHCa2", sele)
+    
     pymol.cmd.hide("all")
     pymol.cmd.show("cartoon", "MHCa1")
     pymol.cmd.show("cartoon", "MHCa2")
@@ -496,9 +514,13 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     ## Photo op here
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRCOM", action="store")
+
+    CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
+    
     if ray:
-        CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
-        rayTime(CDRCOMimage)
+        rayTime(CDRCOMimage, 1)
+    else:
+        rayTime(CDRCOMimage, 0)
 
     # Save the session
     pymol.cmd.save(fileName + "/sessions/" + fileName + "_autoCDRloops.pse")
