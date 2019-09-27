@@ -1,6 +1,9 @@
 # STACEI
 STACEI: STructural Analysis of TCR-pEptide-MHC Interactions
 
+
+![](https://github.com/WhalleyT/STACEI/blob/master/repo_files/logo.png?raw=true "logo")
+
 STACEI is a tool, primarily written in Python and R designed for the analysis and exploration of T-cell receptor (TCR) to peptide:major histocompatibility complex (pMHC) crystal structures. For more information about the specific functionality please see the publication referenced in the authors section. The simplified summary of STACEI is shown below:
 
 ![](https://github.com/WhalleyT/STACEI/blob/master/repo_files/workflow.png?raw=true "STACEI workflow")
@@ -37,6 +40,23 @@ ANARCI must be downloaded by following the link manually.
 To install, simply clone this repository or download it. Cloning it can be done with:
 
 `git clone github.com/whalleyt/STACEI`
+
+The cd into the STACEI directory and run `bash install.sh`, this will install the STACEI python package, as well as the dependent R packages. This will not download the pre-requisite software.
+
+### Docker
+A Docker build of the tool is also available. Run `bash build_docker.sh` to pull the docker repo and label it.
+
+To run your data in a Docker image do the following:
+
+<to add in >
+  
+### Singularity
+
+Although the tool does not require a HPC setup, should the user want to run STACEI on a cluster then run the `bash build_singularity.sh` script. This will pull the Docker image into a Singularity image file.
+
+To run your data in the singularity image do the following:
+
+<to add in>
 
 ## Authors
 Manuscript in  progress
