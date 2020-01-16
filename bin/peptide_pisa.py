@@ -1,5 +1,6 @@
 import subprocess
 import pandas as pd
+
 def make_pmhc_pdb(infile, outfile, pmhc):
     writer = open(outfile, "w")
 
@@ -9,19 +10,18 @@ def make_pmhc_pdb(infile, outfile, pmhc):
                 if line.split()[4] in pmhc:
                     writer.write(line)
 
-
 def call_pisa(pdb, session):
     subprocess.call("pisa %s -analyse %s" % (session, pdb), shell=True)
 
 
-def extract_pisa(session, chain, outfile):
+def extract_pmhc_pisa(session, chain, outfile):
 
     d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
          'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
          'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
          'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
 
-    subprocess.call("pisa %s -list monomers > session.txt" % session, shell=True)
+    subprocess.call("pisa %s -list interfaces > session.txt" % session, shell=True)
 
     with open("session.txt") as f:
         for line in f:
@@ -64,3 +64,4 @@ def extract_pisa(session, chain, outfile):
     data.to_csv(outfile, sep="\t")
 
     return BSA, ASA
+
