@@ -12,7 +12,8 @@ import bin.insertion_aware_VDJ_usage as vdj_out
 import bin.renumber_pdb_clean as imgt
 import bin.contacts as contacts
 import bin.contact_map as con_map
-import bin.new_pisa as pisa
+import bin.peptide_pisa as peptide_pisa
+import bin.full_pisa as full_pisa
 import bin.planar_crossing_angle as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
 import bin.peptide_MHC_visualise as electrostatic
@@ -155,19 +156,21 @@ def main():
                                      full_complex.tcra, full_complex.tcrb)
 
     print "Making a pMHC only PDB file for PISA"
-    pisa.make_pmhc_pdb(pdb.clean_imgt, pdb.pmhc, full_complex.pMHC)
+    peptide_pisa.make_pmhc_pdb(pdb.clean_imgt, pdb.pmhc, full_complex.pMHC)
 
     print "Calling PISA on pMHC complex"
-    pisa.call_pisa(pdb.pmhc, "pMHC_only")
-    pepBSA, pepASA = pisa.extract_pisa("pMHC_only", full_complex.peptide, pisa_files.pmhc_chains)
+    peptide_pisa.call_pisa(pdb.pmhc, "pMHC_only")
+    pepBSA, pepASA = peptide_pisa.extract_pmhc_pisa("pMHC_only", full_complex.peptide, pisa_files.pmhc_chains)
 
-    print "Calling PISA on full complex"
-    total_complex_bsa = []
+    #Now for the full complex chains
+    full_pisa.call_pisa(pdb.imgt, "full")
+
+    for i, j in zip(pisa_files.order, pisa_files.monomers):
+        print i,j
+        full_pisa.extract_pisa("full_complex", j, full_complex.complex_list, i, full_complex.annotation_dictionary)
 
 
-    pisa.call_pisa(pdb.imgt, "full_complex")
-    for i,j in zip(pisa_files.order, pisa_files.monomers):
-        BSA, ASA = pisa.extract_pisa("full_complex", j, i)
+
     
 
  ####################################################################################################################
@@ -183,6 +186,8 @@ def main():
     
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
+    
+
     
     
     #buried surface area viz

@@ -32,6 +32,7 @@ class ChainInformation:
         self.mhca = mhca
         self.mhcb = mhcb
         self.complex = mhca + mhcb + peptide + tcra + tcrb
+        self.complex_list = list(self.complex)
         if mhc_class == 1:
             self.class_string = "MHC beta chain"
         elif mhc_class == 2:
@@ -40,6 +41,12 @@ class ChainInformation:
         self.pMHC = [peptide, mhca, mhcb]
         self.TCR = [tcra, tcrb]
         self.string = mhca + mhcb + peptide + tcra + tcrb
+
+        self.annotation_dictionary = {tcra: "TCRa",
+                                      tcrb: "TCRb",
+                                      peptide: "peptide",
+                                      mhca: "MHCa",
+                                      mhcb: "MHCb"}
 
     def print_chains(self):
         print ""
