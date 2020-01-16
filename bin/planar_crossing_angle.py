@@ -3,21 +3,39 @@ import pymol
 import sys
 import time
 import math
+import warnings
 
 import bin.data.colourSet as colourSet
 import bin.data.viewSet as viewSet
-
+ 
 import numpy as np
+
+def empty_file(filename):
+    if filename is None:
+        sys.exit('No file to read')
 
 
 def read_file(filename, file_type):
-    if filename is None:
-        sys.exit('No file to read')
+    empty_file(filename)
+
     if filename.split('.')[-1].lower() != str(file_type):
         sys.exit("\nFile extension must be of type ." + str(file_type) + "\n")
     else:
         print 'Reading file: ' + str(filename)
         return open(filename, "r")
+
+
+def find_tcr_no_cys(cys, atoms, index):
+    if index == 1:
+        chain = cys[0]
+        residue = cys[1]
+    else:
+        chain = cys[2]
+        residue = cys[3]
+
+    for x in atoms:
+        if chain == x[5] and residue == str(x[6]):
+            return x       
 
 
 def file_to_list(infile):
@@ -29,7 +47,7 @@ def file_to_list(infile):
 
 def init_pymol():
     print "\nInitialising pymol...\n"
-    pymol.finish_launching(['pymol', '-n'])
+    pymol.finish_launching(['pymol', '-nqc'])
     pymol.cmd.reinitialize()
     # set PyMOL parameters
     pymol.cmd.set("ray_shadows", "0")
@@ -51,7 +69,7 @@ def align_to_template(pdb, file_name, mhc_class):
     return None
 
 
-def SSParser(inFile):
+def disulphide_parser(inFile):
     print "Finding SSBOND Lines..."
     outSS = []
     for line in inFile:
@@ -85,21 +103,19 @@ def title_parser(infile):
 
 
 def wait4ray(query):
-    counter = 0
+    print "Waiting for image to render..."
     while not os.path.exists(query):
-        print ("=" * counter) + "| " + str(counter)
         time.sleep(1)
-        counter += 1
     return None
 
 
-def ray_tracer(saveas):
+def ray_tracer(saveas, tracing):
     print "Outputting image.. This may take a few seconds.."
     if os.path.exists(saveas):
         print "Removing " + saveas + " as it already exists!"
         os.remove(saveas)
     time.sleep(10)
-    pymol.cmd.png(saveas, ray=1, width=3000, height=3000, dpi=300)
+    pymol.cmd.png(saveas, ray=tracing, width=3000, height=3000, dpi=300)
     wait4ray(saveas)
     print "Done! " + str(saveas) + " was outputted"
 
@@ -176,23 +192,40 @@ def tcr_pair_finder(ss_bond_list, a_chain, b_chain):
 def find_tcr_pair_atom(pair_location, atom_matrix):
     print "Finding SG atoms..."
 
-    print pair_location
-    coordinate1 = []
-    coordinate2 = []
+    coordinate1, coordinate2 = None, None
+
     chain = pair_location[0]
     cys_residue1 = pair_location[1]
     cys_residue2 = pair_location[3]
+
     for atoms in atom_matrix:
         if atoms[5] is chain:
-            if atoms[6] is cys_residue1:
+            if str(atoms[6]) == cys_residue1:
                 if "SG" in atoms[2]:
-                    if atoms[3] is '' or 'A':
+                    if atoms[3] == '' or 'A':
                         coordinate1 = atoms
+
     for atoms in atom_matrix:
         if atoms[5] is chain:
-            if atoms[6] is cys_residue2:
+            if str(atoms[6]) == cys_residue2:
                 if "SG" in atoms[2]:
-                    if atoms[3] is '' or 'A':
+                    if atoms[3] == '' or 'A':
+                        coordinate2 = atoms
+
+    if coordinate1 is not None and coordinate2 is not None:
+        return coordinate1, coordinate2
+    else:
+        print "Attempting to find replacement Cys values for missing Cys"
+        for atoms in atom_matrix:
+            if atoms[5] is chain:
+                if atoms[6] is cys_residue1:
+                    if coordinate1 is None:
+                        coordinate1 = atoms
+
+        for atoms in atom_matrix:
+            if atoms[5] is chain:
+                if atoms[6] is cys_residue2:
+                    if coordinate2 is None:
                         coordinate2 = atoms
     return coordinate1, coordinate2
 
@@ -237,17 +270,17 @@ def find_locations(entries):
     return locations
 
 
-def depack_locations(sub_entries):
+def unpack_locations(sub_entries):
     locations = []
     for col in sub_entries:
         location = [col.rsplit("=", 1)[0]]
         location_string = (col.partition('[')[-1].rpartition(']')[0])
-        location += map(int, location_string.split(','))
+        location += location_string.split(',')
         locations.append(location)
     return locations
 
 
-def findCysLocs(locations):
+def find_cysteine_locations(locations):
     cys1, cys2 = None, None
 
     for locs in locations:
@@ -344,15 +377,16 @@ def get_mhc_ii_axis(atomMatrix, MHCachain, MHCbchain):
 
 def MHCaxisCoords(helixCalphas):
     print "Extracting MHC axis coordinates..."
-    MHCx = []
-    MHCy = []
-    MHCz = []
+    mhc_x = []
+    mhc_y = []
+    mhc_z = []
+
     for row in helixCalphas:
-        MHCx.append(row[8])
-        MHCy.append(row[9])
-        MHCz.append(row[10])
-    MHCcoords = [MHCx, MHCy, MHCz]
-    return MHCcoords
+        mhc_x.append(row[8])
+        mhc_y.append(row[9])
+        mhc_z.append(row[10])
+    mhc_coords = [mhc_x, mhc_y, mhc_z]
+    return mhc_coords
 
 
 def findMHCaxisCoords(atomMatrix, MHCclass, MHCachain, MHCbchain):
@@ -380,10 +414,13 @@ def project_points(x, y, z, a, b, c):
 
     points = np.column_stack((x, y, z))
     points_from_point_in_plane = points - point_in_plane
-    proj_onto_normal_vector = np.dot(points_from_point_in_plane,
-                                     normal_vector)
+
+    #dot product
+    projection_vector = np.dot(points_from_point_in_plane, normal_vector)
+
+
     proj_onto_plane = (points_from_point_in_plane -
-                       proj_onto_normal_vector[:, None] * normal_vector)
+                       projection_vector[:, None] * normal_vector)
 
     return point_in_plane + proj_onto_plane
 
@@ -430,20 +467,20 @@ def whichQuadrant(TCR):
 
 
 def whichCrossingAngle(crossingAngle, rangeLow):
-    if rangeLow is 0 or rangeLow is 90:
+    if rangeLow == 0 or rangeLow == 90:
         print "TCR binds with canonical polarity\n"
         return crossingAngle
-    if rangeLow is 180 or rangeLow is 270:
+    if rangeLow == 180 or rangeLow == 270:
         print "TCR binds with reverse polarity\n"
         return 360 - crossingAngle
 
 
-def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
+def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name):
 
-    if MHCclass == 1:
-        MHCclass = "I"
-    elif MHCclass == 2:
-        MHCclass = "II"
+    if mhc_class == 1:
+        mhc_class = "I"
+    elif mhc_class == 2:
+        mhc_class = "II"
 
     origPDB = read_file(pdb, "pdb")
 
@@ -452,8 +489,6 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
 
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
-
-    # Make output folder #
 
     if not os.path.exists(file_name):
         print "Creating Directory " + file_name
@@ -465,7 +500,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
 
     # Align input.pdb to template #
     init_pymol()
-    align_to_template(pdb, file_name, MHCclass)
+    align_to_template(pdb, file_name, mhc_class)
     print "Opening aligned PDB file"
     alignedPDBnoMeta = read_file(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb", "pdb")
 
@@ -476,16 +511,16 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     alignedPDBnoMeta.close()
 
     print "Transfering metadata from " + file_name + ".pdb to " + file_name + "_aligned_noMeta\n"
-    metatitle = title_parser(origall_lines)
-    metaheader = headerParser(origall_lines)
-    MetaSS = SSParser(origall_lines)
+    meta_title = title_parser(origall_lines)
+    meta_header = headerParser(origall_lines)
+    meta_disulphide = disulphide_parser(origall_lines)
     working_file = open(file_name + "/crossingAngle/" + file_name + '_aligned.pdb', 'w')
-    outTxtMeta = ''
-    outTxtMeta += "         " + str(1) + "         " + str(2) + "         " + str(3) + "         " + str(4) + \
+    output_metadata = ''
+    output_metadata += "         " + str(1) + "         " + str(2) + "         " + str(3) + "         " + str(4) + \
                   "         " + str(5) + "         " + str(6) + "         " + str(7) + "         " + str(8) + "\n"
 
-    outTxtMeta += str(12345678901234567890123456789012345678901234567890123456789012345678901234567890) + "\n"
-    outTxtMeta += "REMARK   1                                                                      \n\
+    output_metadata += str(12345678901234567890123456789012345678901234567890123456789012345678901234567890) + "\n"
+    output_metadata += "REMARK   1                                                                      \n\
     REMARK   1  ~~~~ Metadata generated by crossingAngle_v2.0.py     ~~~~ \n\
     REMARK   1                                                                      \n\
     REMARK   1  This metadata contains :           \n\
@@ -494,15 +529,15 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     REMARK   1      This REMARK \n\
     REMARK   1      SSBOND lines required for crossing angle calculations    \n\
     REMARK   1\n"
-    for Metax in metaheader:
-        outTxtMeta += Metax
-    for Metax in metatitle:
-        outTxtMeta += Metax
-    for Metax in MetaSS:
-        outTxtMeta += Metax
+    for Metax in meta_header:
+        output_metadata += Metax
+    for Metax in meta_title:
+        output_metadata += Metax
+    for Metax in meta_disulphide:
+        output_metadata += Metax
     for Metax in aligned_all_lines:
-        outTxtMeta += Metax
-    working_file.write(outTxtMeta)
+        output_metadata += Metax
+    working_file.write(output_metadata)
     print "Metadata added to " + file_name + "/crossingAngle/" + file_name + "_aligned.pdb\n"
 
     # Load the working PDB file #
@@ -516,7 +551,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     atom_matrix = make_atom_matrix(atom_list)
 
     if fasta is not None:
-        print "Perfect! an annotated fasta file was provided to flag where the cysteine pair residues are!"
+        print "An annotated fasta file was provided to flag where the cysteine pair residues are"
         fasta_entries = parse_fasta(fasta)
         fasta_entries = unpack_id(fasta_entries)
 
@@ -525,56 +560,70 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
             if "TCRA" in entry:
                 TCRAflag = entry
         TCRAflaglocations = find_locations(TCRAflag)
-        TCRAflaglocations = depack_locations(TCRAflaglocations)
+        TCRAflaglocations = unpack_locations(TCRAflaglocations)
 
-        aCys1, aCys2 = findCysLocs(TCRAflaglocations)
-        print aCys1
-        TCRaCys = [TCRachain, aCys1[1], TCRachain, aCys2[1]]
+        aCys1, aCys2 = find_cysteine_locations(TCRAflaglocations)
+        TCRaCys = [TCRachain, aCys1[1], TCRachain, aCys2[1]] #here is cysX and the residue
 
         TCRBflag = []
         for entry in fasta_entries:
             if "TCRB" in entry:
                 TCRBflag = entry
         TCRBflaglocations = find_locations(TCRBflag)
-        TCRBflaglocations = depack_locations(TCRBflaglocations)
+        TCRBflaglocations = unpack_locations(TCRBflaglocations)
 
-        bCys1, bCys2 = findCysLocs(TCRBflaglocations)
+        bCys1, bCys2 = find_cysteine_locations(TCRBflaglocations)
         TCRbCys = [TCRbchain, bCys1[1], TCRbchain, bCys2[1]]
 
-        TCRaCys1, TCRaCys2 = find_tcr_pair_atom(TCRaCys, atom_matrix)
-        TCRbCys1, TCRbCys2 = find_tcr_pair_atom(TCRbCys, atom_matrix)
-
+        tcra_cys1, tcra_cys2 = find_tcr_pair_atom(TCRaCys, atom_matrix)
+        tcrb_cys1, tcrb_cys2 = find_tcr_pair_atom(TCRbCys, atom_matrix)
     else:
         print "Determining the TCR axis via locating the cys pair atom coordinates...\n"
-        TCRaCys1, TCRaCys2, TCRbCys1, TCRbCys2 = cys_from_ss_bond_wrapper(else_list, atom_matrix, TCRachain, TCRbchain)
+        tcra_cys1, tcra_cys2, tcrb_cys1, tcrb_cys2 = cys_from_ss_bond_wrapper(else_list, atom_matrix, TCRachain, TCRbchain)
 
-    cysCheck = [TCRaCys1, TCRaCys2, TCRbCys1, TCRbCys2]
+    cysCheck = [tcra_cys1, tcra_cys2, tcrb_cys1, tcrb_cys2]
     if any(x is False for x in cysCheck):
         pymol.cmd.quit()
         sys.exit("Could not find the TCR disulphide bridge in the TCR residues. \
-                 Please ensure the PDB file contains SSBOND list in header or"
-                 " provide an annotated fasta file generated by complexSequenceTools.py\
-                 See Usage for more details.")
+                 Please ensure the PDB file contains SSBOND list in header or \
+                 ensure there is an annotated FASTA file")
+
+
+    if tcra_cys1 is None:
+        print "Finding replacement for TCR alpha chain Cys 1"
+        tcra_cys1 = find_tcr_no_cys(TCRaCys, atom_matrix, 1)
+    if tcra_cys2 is None:
+        print "Finding replacement for TCR alpha chain Cys 2"
+        tcra_cys2 = find_tcr_no_cys(TCRaCys, atom_matrix, 2)
+    if tcrb_cys1 is None:
+        print "Finding replacement for TCR beta chain Cys 1"
+        tcrb_cys1 = find_tcr_no_cys(TCRbCys, atom_matrix, 1)
+    if tcrb_cys2 is None:
+        print "Finding replacement for TCR beta chain Cys 2"
+        tcrb_cys2 = find_tcr_no_cys(TCRbCys, atom_matrix, 2)
 
     print "\nTCRa and TCRb cysteine pair SG atoms are:\n"
-    print TCRaCys1
-    print TCRaCys2
-    print TCRbCys1
-    print TCRbCys2
-    cysAlpha1 = make_sg_coords(TCRaCys1)
-    cysAlpha2 = make_sg_coords(TCRaCys2)
-    cysBeta1 = make_sg_coords(TCRbCys1)
-    cysBeta2 = make_sg_coords(TCRbCys2)
+    print tcra_cys1
+    print tcra_cys2
+    print tcrb_cys1
+    print tcrb_cys2
+
+    cys_alpha_1 = make_sg_coords(tcra_cys1)
+    cys_alpha_2 = make_sg_coords(tcra_cys2)
+
+    cys_beta_1 = make_sg_coords(tcrb_cys1)
+    cys_beta_2 = make_sg_coords(tcrb_cys2)
+
     print "\nTCRa and TCRb cysteine pair SG coordinates are [x,y,z]:\n"
-    print cysAlpha1
-    print cysAlpha2
-    print cysBeta1
-    print cysBeta1
-    TCRA = [(cysAlpha1[0] + cysAlpha2[0]) / 2, (cysAlpha1[1] + cysAlpha2[1]) / 2, (cysAlpha1[2] + cysAlpha2[2]) / 2]
+    print cys_alpha_1
+    print cys_alpha_2
+    print cys_beta_1
+    print cys_beta_1
+    TCRA = [(cys_alpha_1[0] + cys_alpha_2[0]) / 2, (cys_alpha_1[1] + cys_alpha_2[1]) / 2, (cys_alpha_1[2] + cys_alpha_2[2]) / 2]
 
     TCRA = np.array(TCRA)
 
-    TCRB = [(cysBeta1[0] + cysBeta2[0]) / 2, (cysBeta1[1] + cysBeta2[1]) / 2, (cysBeta1[2] + cysBeta2[2]) / 2]
+    TCRB = [(cys_beta_1[0] + cys_beta_2[0]) / 2, (cys_beta_1[1] + cys_beta_2[1]) / 2, (cys_beta_1[2] + cys_beta_2[2]) / 2]
 
     TCRB = np.array(TCRB)
 
@@ -590,16 +639,16 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     print type(TCR), "shape = ", TCR.shape
     print TCR, "\n"
 
-    MHCcoords = findMHCaxisCoords(atom_matrix, MHCclass, MHCachain, MHCbchain)
-    MHCdata = np.array(MHCcoords)
-    MHCdata = MHCdata.T
-    print "Data is stored as a ", MHCdata.shape, "numpy array."
+    MHCcoords = findMHCaxisCoords(atom_matrix, mhc_class, MHCachain, MHCbchain)
+    mhc_data = np.array(MHCcoords)
+    mhc_data = mhc_data.T
+    print "Data is stored as a ", mhc_data.shape, "numpy array."
 
     # Calculate the mean of the points, i.e. the 'center' of the cloud
     print "Finding mean of MHC datapoints..."
-    MHCdata2 = MHCdata
+    mhc_data_2 = mhc_data
 
-    MHCdata2mean = MHCdata2.mean(axis=0)
+    mhc_data_2_mean = mhc_data_2.mean(axis=0)
 
     print "\nGot the TCR and MHC coordinate data. Beginnning line and plane fitting..\n"
 
@@ -608,7 +657,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     print "Generating a line of best fit through the MHC datapoints..."
     print "NB This uses the np.linalg.svd algorithm which is a more stable " \
           "alternative to the largest eigenvalue method used previous."
-    uu, dd, vv = np.linalg.svd(MHCdata2 - MHCdata2mean)
+    uu, dd, vv = np.linalg.svd(mhc_data_2 - mhc_data_2_mean)
 
     # Now generate some points along this best fit line, for plotting.
     # A scale factor (sf) is used to determine the arbitary length of this line
@@ -619,7 +668,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
 
     # shift by the mean to get the line in the right place
     print "Shifting best fit line to the mean.. "
-    MHC += MHCdata2mean
+    MHC += mhc_data_2_mean
     MHC = np.flipud(MHC)
 
     print "\nMHC is..."
@@ -637,12 +686,12 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
 
     # Create plane datapoints in X,Y
     print "\nCreating a plane of best fit through the MHC to which we can project MHC LOBF and TCR centroids onto..\n"
-    mn = np.min(MHCdata, axis=0)  # used to set range of the plane
-    mx = np.max(MHCdata, axis=0)  # used to set range of the plane
+    mn = np.min(mhc_data, axis=0)  # used to set range of the plane
+    mx = np.max(mhc_data, axis=0)  # used to set range of the plane
     X, Y = np.meshgrid(np.linspace(mn[0] - 20, mx[0] + 20, 20),
                        np.linspace(mn[1] - 20, mx[1] + 20, 20))  # min/max +/- 20 seems to capture a good area
     print "Calculating plane.."
-    projectionPlane = calc_plane_bis(MHCdata[:, 0], MHCdata[:, 1], MHCdata[:, 2])
+    projectionPlane = calc_plane_bis(mhc_data[:, 0], mhc_data[:, 1], mhc_data[:, 2])
     # this creates the coefficients of the plane in form ax + by +cz = d where d = 1
     # projectionPlane is a numpy array of shape (3,) i.e. 3 x 1 storing coeffcients a,b,c
 
@@ -922,15 +971,19 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     pymol.cmd.color("black", "MHCline")
     pymol.cmd.set("dash_gap", 0)
 
-    # Photo op here   
+    # Photo op here
     # set camera angle
     pymol.cmd.set_view(viewSet.originView)
     # generate images
     print "Generating image.."
 
-    if ray is True:
-        centroidonxaxis = file_name + "/crossingAngle/" + file_name + "_crossingAngleOnAxis.png"
-        ray_tracer(centroidonxaxis)
+    centroidonxaxis = file_name + "/crossingAngle/" + file_name + "_crossingAngleOnAxis.png"
+
+    if ray:
+        ray_tracer(centroidonxaxis, 1)
+    else:
+        ray_tracer(centroidonxaxis, 0)
+
 
     # save the moved centroids
 
@@ -1020,6 +1073,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     print tilt2D, "\n-----------------------\n"
 
     print "\nGenerating output file..\n"
+    print smartCrossingAngle
 
     outTxt = ''
     outTxt += file_name + ".pdb\n\n"
@@ -1087,8 +1141,11 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
         outTxt += "TCR docks with canonical polarity\n\n"
     if rangeHigh is 270 or rangeHigh is 360:
         outTxt += "TCR docks with reverse polarity\n\n"
-    outTxtFile = open(file_name + "/crossingAngle/" + file_name + '_crossingAngle.txt', 'w')
-    outTxtFile.write(outTxt)
+
+
+    #buffering issue here, hence moved to with open to keep from flushing
+    with open(file_name + "/crossingAngle/" + file_name + '_crossingAngle.txt', 'w') as out:
+        out.write(outTxt)
 
     print "Done!"
 
@@ -1132,13 +1189,13 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     # show MHC
     MHCa1h, MHCa2h = None, None
 
-    if MHCclass is "I":
+    if mhc_class is "I":
         a1locs = range(50, 86)
         MHCa1h = ["MHCa"] + a1locs
         a2locs = range(140, 176)
         MHCa2h = ["MHCa"] + a2locs
 
-    if MHCclass is "II":
+    if mhc_class is "II":
         a1locs = range(46, 78)
         MHCa1h = ["MHCa"] + a1locs
         a2locs = range(54, 91)
@@ -1150,58 +1207,92 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     locs = '+'.join(str(x) for x in MHCa2h[1:])
     pymol.cmd.select(name, selection=MHCa2h[0] + " and resi " + locs)
 
-    pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCa")
-    pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCb")
+
+    # Bruce edited here 16/06/19
+    # pMHC surface
+    if mhc_class == "I":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi " + '+'.join(str(x) for x in range(1,176)))
+    if mhc_class == "II":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi "+ '+'.join(str(x) for x in range(1,78))+" or MHCb and resi "+ '+'.join(str(x) for x in range(1,91)))
+
+    pymol.cmd.extract("MHCgroove", "MHCgrooves")
+    pymol.cmd.delete("MHCgrooves")
+    pymol.cmd.show("surface", "MHCgroove")
+
+    if mhc_class == "I":
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+
+    if mhc_class == "II":
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+        pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCgroove and chain "+MHCbchain)
+
+#    pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCa")
+#    pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCb")
     pymol.cmd.color(colourSet.generalColourSet["p"], "p")
     pymol.cmd.set("transparency", 0.5)
     pymol.cmd.hide("lines", "all")
-    pymol.cmd.show("surface", "MHCa")
-    pymol.cmd.show("surface", "MHCb")
+#    pymol.cmd.show("surface", "MHCa")
+#    pymol.cmd.show("surface", "MHCb")
     pymol.cmd.show("surface", "p")
     pymol.cmd.show("cartoon", "MHCa1")
     pymol.cmd.show("cartoon", "MHCa2")
     pymol.cmd.set("cartoon_transparency", 0.5)
 
+    # End Bruce edit 16/06/19
+
     # set view
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="crossing_angle", action="store")
     # generate images
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids_angle_pMHC.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids_angle_pMHC.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("cartoon", "all")
     pymol.cmd.hide("surface", "all")
 
     # photo op
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="centroids_angle", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids_angle.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids_angle.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("dashes", "all")
 
     # photo op
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="centroids", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_centroids.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("spheres", "all")
     pymol.cmd.show("dashes", "TCRline")
 
     # photo op
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="angle", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_angle.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_crossing_angle.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     # save session
     pymol.cmd.save(file_name + "/sessions/" + file_name + "_crossing_angle.pse")
@@ -1243,61 +1334,80 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     pymol.cmd.show("cartoon", "MHCa2")
 
     # Photo op here
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_pMHC_1", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_pMHC.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_pMHC.png"
 
-        # Photo op here
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
+
+    # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_pMHC_2", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_pMHC_2.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_pMHC_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("cartoon", "all")
     pymol.cmd.hide("surface", "all")
 
     # Photo op here
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_centroids_1", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_centroids_1.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_centroids_1.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
         # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_centroids_2", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_centroids_2.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_centroids_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("dashes", "MHCfitPline")
     pymol.cmd.hide("dashes", "TCRPline")
     pymol.cmd.hide("dashes", "MHCfitatTCRPline")
 
     # Photo op here
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_centroids", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_centroids_1.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_centroids_1.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
         # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_centroids_2", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_centroids_2.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_centroids_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("spheres", "all")
     pymol.cmd.show("dashes", "MHCfitPline")
@@ -1305,21 +1415,26 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     pymol.cmd.show("dashes", "MHCfitatTCRPline")
 
     # Photo op here
-    pymol.cmd.set_view(viewSet.crossingBirdsEye)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_1.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_1.png"
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
         # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_2", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_2.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + file_name + "_rotation_angle_2.png"
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
+
     # save session
     pymol.cmd.save(file_name + "/sessions/" + file_name + "_rotation_angle.pse")
     print "\nOutputted PyMOL session file: " + file_name + "/sessions/" + file_name + "_rotation_angle.pse"
@@ -1354,9 +1469,12 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_TCR_pMHC_1", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_TCR_pMHC_1.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_TCR_pMHC_1.png"
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("cartoon", "TCRa")
     pymol.cmd.hide("cartoon", "TCRb")
@@ -1364,9 +1482,13 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_pMHC_1", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_pMHC_1.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_pMHC_1.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("surface", "all")
     pymol.cmd.hide("cartoon", "all")
@@ -1374,18 +1496,26 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_centroids_1", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_centroids_1.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_centroids_1.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("dashes", "all")
 
     # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_centroids_1", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_centroids_1.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_centroids_1.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("spheres", "all")
     pymol.cmd.show("dashes", "planeTCRline")
@@ -1398,11 +1528,15 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_1", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_1.png"
-        ray_tracer(scene_name)
 
-        # save session
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_1.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
+
+    # save session
     pymol.cmd.save(file_name + "/sessions/" + file_name + "_tilt_angle.pse")
     print "\nOutputted PyMOL session file: " + file_name + "/sessions/" + file_name + "_tilt_angle.pse"
 
@@ -1446,45 +1580,63 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     pymol.cmd.show("dashes", "plane3")
     pymol.cmd.show("dashes", "plane4")
 
+    # Bruce edited here 16/06/19
     # Photo op here
-    pymol.cmd.orient("mobile")
+    pymol.cmd.orient("mobile or corner3 or corner4")
     pymol.cmd.zoom("center", 80)
-    pymol.cmd.turn("x", -45)
-    if rangeLow is 0 or rangeLow is 90:
-        pymol.cmd.turn("x", -45)
+    pymol.cmd.turn("x", +90)
+
     if rangeLow is 180 or rangeLow is 270:
-        pymol.cmd.turn("x", +45)
+        pymol.cmd.turn("x", +180)
+
+    # Bruce edited here 16/06/19 END
 
     pymol.cmd.scene(key="tilt_angle_TCR_pMHC_2", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_TCR_pMHC_2.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_TCR_pMHC_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("cartoon", "TCRa")
     pymol.cmd.hide("cartoon", "TCRb")
 
     # Photo op here
     pymol.cmd.scene(key="tilt_angle_pMHC_2", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_pMHC_2.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_pMHC_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("surface", "all")
     pymol.cmd.hide("cartoon", "all")
 
     # Photo op here
     pymol.cmd.scene(key="tilt_angle_centroids_2", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_centroids_2.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_centroids_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("dashes", "all")
 
     # Photo op here
     pymol.cmd.scene(key="tilt_centroids_2", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_centroids_2.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_centroids_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     pymol.cmd.hide("spheres", "all")
     pymol.cmd.show("dashes", "planeTCRline")
@@ -1496,9 +1648,13 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="tilt_angle_2", action="store")
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_2.png"
-        ray_tracer(scene_name)
+
+    scene_name = file_name + "/crossingAngle/" + file_name + "_tilt_angle_2.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
         # save session
     pymol.cmd.save(file_name + "/sessions/" + file_name + "_tilt_angle_2.pse")
@@ -1512,7 +1668,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name):
     print "\nDone!\n"
 
     # Clean up #
-    outTxtFile.close()
+    #outTxtFile.close()
     #pymol.cmd.quit()
     os.remove(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb")
     print "\ncrossingAngle.py created the following files in the directory " + file_name + "/crossingAngle" + ":"

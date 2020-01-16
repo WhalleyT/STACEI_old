@@ -1,37 +1,9 @@
 import os
 import pymol
 import sys
-import argparse
 import time
 import bin.data.colourSet as colourSet
 import bin.data.viewSet as viewSet
-import numpy
-
-description = \
-    "foo"
-
-
-### File loader ###
-
-def parse_args():
-    """parse arguments for command line"""
-    parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('--PDB', dest='pdb', type=str, required=True, help='The PDB file to be analysed')
-    parser.add_argument('--MHCclass', dest='MHCclass', type=str, required=True,
-                        help='The MHC class i.e. class I or II of the complex structure')
-    parser.add_argument('--Fasta', dest='fasta', type=str, required=True, default=None,
-                        help='The fasta file that contains information about where the CDR loops are in the structure to be analysed')
-    parser.add_argument('--Chains', dest='chains', type=str, required=False,
-                        help='Chains of TCR-pMHC complex in order MHCa,MHCb,peptide,TCRa,TCRb', default="ABCDE")
-    parser.add_argument('--Ray', dest='ray', type=str, required=False,
-                        help='Do you want to render images. Set to False for speed and dev. Default = True',
-                        default=True)
-
-    args = parser.parse_args()
-    return args
-
-
-### File loader ###
 
 def readFile(FILE, fileType):
     if FILE == None:
@@ -98,7 +70,7 @@ def depackLocations(subentries):
         location = []
         location.append(col.rsplit("=", 1)[0])
         locationstring = (col.partition('[')[-1].rpartition(']')[0])
-        location += map(int, locationstring.split(','))
+        location += locationstring.split(',')
         locations.append(location)
     return locations
 
@@ -113,7 +85,7 @@ def purgeCysLocs(locations):
 
 def initialisePymol():
     print "\nInitialising pymol...\n"
-    pymol.finish_launching(['pymol', '-qeim'])
+    pymol.finish_launching(['pymol', '-qeimc'])
     pymol.cmd.reinitialize()
     # set PyMOL parameters
     pymol.cmd.set("ray_shadows", "0")
@@ -125,21 +97,18 @@ def initialisePymol():
 
 
 def wait4ray(query):
-    counter = 0
+    print "Waiting for image to render..."
     while not os.path.exists(query):
-        print ("=" * counter) + "| " + str(counter)
         time.sleep(1)
-        counter += 1
     return None
 
-
-def rayTime(saveas):
+def rayTime(saveas, tracing):
     print "Outputting image.. This may take a few seconds.."
     if os.path.exists(saveas):
         print "Removing " + saveas + " as it already exists!"
         os.remove(saveas)
-    time.sleep(10)
-    pymol.cmd.png(saveas, ray=1, width=3000, height=3000, dpi=300)
+    time.sleep(2)
+    pymol.cmd.png(saveas, ray=tracing, width=3000, height=3000, dpi=300)
     wait4ray(saveas)
     print "Done! " + str(saveas) + " was outputted"
 
@@ -181,6 +150,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     for entry in fastaEntries:
         if "TCRA" in entry:
             TCRA = entry
+
     TCRAlocations = findLocations(TCRA)
     TCRAlocations = depackLocations(TCRAlocations)
     TCRAlocations = purgeCysLocs(TCRAlocations)
@@ -189,6 +159,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     for entry in fastaEntries:
         if "TCRB" in entry:
             TCRB = entry
+    
     TCRBlocations = findLocations(TCRB)
     TCRBlocations = depackLocations(TCRBlocations)
     TCRBlocations = purgeCysLocs(TCRBlocations)
@@ -196,18 +167,18 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
 
-    # Find the MHC helices
+    # Find the MHC helices and groove
     if MHCclass == "I":
         a1locs = range(50, 86)
-        MHCa1 = ["MHCa"] + a1locs
+        MHCa1 = ["chain " + MHCachain ] + a1locs
         a2locs = range(140, 176)
-        MHCa2 = ["MHCa"] + a2locs
+        MHCa2 = ["chain " + MHCachain ] + a2locs
 
     if MHCclass == "II":
         a1locs = range(46, 78)
-        MHCa1 = ["MHCa"] + a1locs
+        MHCa1 = ["chain " + MHCachain ] + a1locs
         a2locs = range(54, 91)
-        MHCa2 = ["MHCb"] + a2locs
+        MHCa2 = ["chain " + MHCbchain ] + a2locs
 
     # Let's get started
 
@@ -263,26 +234,40 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
 
     # Select the MHCa helices
 
-    name = "MHCa1"
+
     locs = '+'.join(str(x) for x in MHCa1[1:])
-    pymol.cmd.select(name, selection=MHCa1[0] + " and resi " + locs)
-    name = "MHCa2"
+    sele = MHCa1[0] + " and resi " + locs
+    pymol.cmd.select("MHCa1", sele)
+
     locs = '+'.join(str(x) for x in MHCa2[1:])
-    pymol.cmd.select(name, selection=MHCa2[0] + " and resi " + locs)
+    sele = MHCa2[0] + " and resi " + locs
+    pymol.cmd.select("MHCa2", sele)
+
+
+    pymol.cmd.show("cartoon", "MHCa1")
+    pymol.cmd.show("cartoon", "MHCa2")
 
     # General front scene
-    pymol.cmd.set_view(viewSet.newFrontView)
+    pymol.cmd.set_view(viewSet.frontView)
     pymol.cmd.scene(key="front", action="store")
-    if ray == True:
-        frontViewImage = fileName + "/visualisation/" + "front.png"
-        rayTime(frontViewImage)
+
+    frontViewImage = fileName + "/visualisation/" + "front.png"
+
+    if ray:
+        rayTime(frontViewImage, 1)
+    else:
+        rayTime(frontViewImage, 0)
 
     # General side scene
     pymol.cmd.set_view(viewSet.sideView)
     pymol.cmd.scene(key="side", action="store")
-    if ray == True:
-        sideViewImage = fileName + "/visualisation/" + "side.png"
-        rayTime(sideViewImage)
+
+    sideViewImage = fileName + "/visualisation/" + "side.png"
+
+    if ray:
+        rayTime(sideViewImage, 1)
+    else:
+        rayTime(sideViewImage, 0)
 
     # Birds eye with CDR loops over MHC
 
@@ -299,15 +284,36 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         pymol.cmd.show("ribbon", name)
 
     # Photo op. Let's image just the loops alone
-    pymol.cmd.set_view(viewSet.newBirdsEyeView)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRloops", action="store")
-    if ray == True:
-        CDRloopsImage = fileName + "/visualisation/" + "CDRloops.png"
-        rayTime(CDRloopsImage)
 
+    CDRloopsImage = fileName + "/visualisation/" + "CDRloops.png"
+    
+    if ray:
+        rayTime(CDRloopsImage, 1)
+    else:
+        rayTime(CDRloopsImage, 0)
+
+    # Bruce edited here 16/06/19
     # pMHC surface
-    pymol.cmd.show("surface", "MHCa")
-    pymol.cmd.show("surface", "MHCb")
+    if MHCclass == "I":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi " + '+'.join(str(x) for x in range(1,176)))
+    if MHCclass == "II":
+        pymol.cmd.select("MHCgrooves", selection="MHCa and resi "+ '+'.join(str(x) for x in range(1,78))+" or MHCb and resi "+ '+'.join(str(x) for x in range(1,91)))
+    
+    pymol.cmd.extract("MHCgroove", "MHCgrooves")
+    pymol.cmd.delete("MHCgrooves")
+    pymol.cmd.show("surface", "MHCgroove")
+    
+    if MHCclass == "I":
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+    
+    if MHCclass == "II": 
+        pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
+        pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCgroove and chain "+MHCbchain)
+        
+    # End Bruce edit 16/06/19
+    
     pymol.cmd.show("surface", "p")
     pymol.cmd.set("transparency", 0.5)
     pymol.cmd.color("gray40", "p")
@@ -320,11 +326,15 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
 
     ## Photo op here. CDR birds eye with CDR ribbons on top of surface pMHC shoing cartoon helices
 
-    pymol.cmd.set_view(viewSet.newBirdsEyeView)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRbirdseye", action="store")
-    if ray == True:
-        CDRbirdseyeout = fileName + "/visualisation/" + "CDRloopsBirdsEye.png"
-        rayTime(CDRbirdseyeout)
+
+    CDRbirdseyeout = fileName + "/visualisation/" + "CDRloopsBirdsEye.png"
+    
+    if ray:
+        rayTime(CDRbirdseyeout, 1)
+    else:
+        rayTime(CDRbirdseyeout, 0)    
 
     ## Now let's add some surface to the CDR loops up the birdseye
     for loop in TCRAlocations:
@@ -338,11 +348,16 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
             pymol.cmd.show("surface", name)
 
     ## Photo op here. CDR birds eye with CDR ribbons and surface on top of surface pMHC showing cartoon helices
-    pymol.cmd.set_view(viewSet.newBirdsEyeView)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRsurfaceBirdseye", action="store")
-    if ray == True:
-        CDRsurfaceBirdseye = fileName + "/visualisation/" + "CDRsurfaceBirdseye.png"
-        rayTime(CDRsurfaceBirdseye)
+
+    CDRsurfaceBirdseye = fileName + "/visualisation/" + "CDRsurfaceBirdseye.png"
+
+    if ray:
+        rayTime(CDRsurfaceBirdseye, 1)
+    else:
+        rayTime(CDRsurfaceBirdseye, 0)   
+    
     # Now let's show the surface of pMHC with coloured contacts by the CDR loops
 
     # Hide the loop surfaces
@@ -365,11 +380,15 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         pymol.cmd.color(colourSet.CDRcolourSet[name], name + "_near")
 
     ## Photo op here
-    pymol.cmd.set_view(viewSet.newBirdsEyeView)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRfootprint", action="store")
-    if ray == True:
-        CDRfootprint = fileName + "/visualisation/" + "CDRfootprint.png"
-        rayTime(CDRfootprint)
+    
+    CDRfootprint = fileName + "/visualisation/" + "CDRfootprint.png"
+    
+    if ray:
+        rayTime(CDRfootprint, 1)
+    else:
+        rayTime(CDRfootprint, 0)
 
     # Now let's just view the pMHC surface as this might be useful for overlays
 
@@ -384,29 +403,48 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     # Return the colours back to norman
     for objs in complexObjects:
         pymol.cmd.color(colourSet.generalColourSet[objs], objs)
+
     pymol.cmd.copy("p2", "p")
     pymol.cmd.show("sticks", "p2")
     pymol.cmd.util.cnc("p2")
 
     ## Photo op here
-    pymol.cmd.set_view(viewSet.newBirdsEyeView)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="pMHCsurface", action="store")
-    if ray == True:
-        pMHCsurface = fileName + "/visualisation/" + "pMHCsurface.png"
-        rayTime(pMHCsurface)
+
+    pMHCsurface = fileName + "/visualisation/" + "pMHCsurface.png"
+    
+    if ray:
+        rayTime(pMHCsurface, 1)
+    else:
+        rayTime(pMHCsurface, 0)       
 
     # MHC helices cos pymol is being a pain
+
+    locs = '+'.join(str(x) for x in MHCa1[1:])
+    sele = MHCa1[0] + " and resi " + locs
+    pymol.cmd.select("MHCa1", sele)
+    
+
+    locs = '+'.join(str(x) for x in MHCa2[1:])
+    sele = MHCa2[0] + " and resi " + locs
+    pymol.cmd.select("MHCa2", sele)
+    
     pymol.cmd.hide("all")
     pymol.cmd.show("cartoon", "MHCa1")
     pymol.cmd.show("cartoon", "MHCa2")
     pymol.cmd.set("cartoon_transparency", 0.5)
 
     ## Photo op here
-    pymol.cmd.set_view(viewSet.newBirdsEyeView)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="MHChelices", action="store")
-    if ray == True:
-        MHChelices = fileName + "/visualisation/" + "MHChelices.png"
-        rayTime(MHChelices)
+
+    MHChelices = fileName + "/visualisation/" + "MHChelices.png"
+
+    if ray:
+        rayTime(MHChelices, 1)
+    else:
+        rayTime(MHChelices, 0)   
 
     # CDR (backbone) centre of mass
 
@@ -443,11 +481,15 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         print COM
 
     ## Photo op here
-    pymol.cmd.set_view(viewSet.newBirdsEyeView)
+    pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRCOM", action="store")
-    if ray == True:
-        CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
-        rayTime(CDRCOMimage)
+
+    CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
+    
+    if ray:
+        rayTime(CDRCOMimage, 1)
+    else:
+        rayTime(CDRCOMimage, 0)
 
     # Save the session
     pymol.cmd.save(fileName + "/sessions/" + fileName + "_autoCDRloops.pse")

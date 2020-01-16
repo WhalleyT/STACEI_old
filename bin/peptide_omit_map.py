@@ -67,11 +67,9 @@ def initialisePymol():
 
 
 def wait4ray(query):
-    counter = 0
+    print "Waiting for image to render..."
     while not os.path.exists(query):
-        print ("=" * counter) + "| " + str(counter)
         time.sleep(1)
-        counter += 1
     return None
 
 
@@ -132,14 +130,6 @@ def omit_map():
                 "ERROR! Could not scrape the map.mtz file from the EBI server. Ensure input pdb file is named according to pdb entry name or supply loca mtz file")
 
     mtz = fileName + "/maps/" + fileName + ".mtz"
-
-    ## Use CCP4 to generate map
-
-    # call(["fft", "HKLIN", mtz, "MAPOUT", fileName+"/maps/"+fileName+".map1.tmp", "<", "bin/EDMparam1.tmp"], shell=True)
-    # call(["mapmask", "MAPIN", fileName+"/maps/"+fileName+".map1.tmp", "MAPOUT", fileName+"/maps/"+fileName+".map.ccp4", "XYZIN", pdb, "<", "bin/EDMparam2.tmp"], shell=True)
-    #
-    # call(["fft", "HKLIN", mtz, "MAPOUT", fileName+"/maps/"+fileName+".map3.tmp", "<", "bin/EDMparam3.tmp"], shell=True)
-    # call(["mapmask", "MAPIN", fileName+"/maps/"+fileName+".map3.tmp", "MAPOUT", fileName+"/maps/"+fileName+".difference_map.ccp4", "XYZIN", pdb, "<", "bin/EDMparam4.tmp"], shell=True)
 
     ######### OMIT map specific part ##########################
 

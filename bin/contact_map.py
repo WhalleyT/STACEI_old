@@ -305,6 +305,7 @@ def generate_tcr(seqFile, donors, acceptors, smart, fileName):
     sequenceList = matrixParser(allSeqLines)
     sequenceMatrix = sequenceList[1:]
     workingMatrix = simplifiedMatrix(sequenceMatrix)
+
     #print "Done!\n"
 
     # Is donors or acceptors longer?
@@ -502,7 +503,7 @@ def generate_mhc(seqFile, MHCclass, fileName) :
     seqInFile = readFile(seqFile, "txt")
 
 
-    mapPath = fileName + "/maps"
+    mapPath = fileName + "/contacts/maps"
 
     # Openers #
     if type(fileName) != str:

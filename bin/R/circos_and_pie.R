@@ -1,3 +1,5 @@
+options(show.error.locations = TRUE)
+
 packages <- c("dplyr", "tidyr", "ggplot2", "purrr", "RColorBrewer",
               "circlize", "reshape2")
 
@@ -42,9 +44,11 @@ make_pallete <- function(df)
                     grey80, tv_red, tv_green, purpleblue, 
                     grey90, tv_yellow, lightmagenta, deepblue,
                     grey90)
+  
   colour_name  <- c("TCRa", "TCRb", "peptide", "MHCa", "MHCb",
                     "CDR1a", "CDR2a", "CDR3a", "FWa",
                     "CDR1b", "CDR2b", "CDR3b", "FWb")
+  
   names_in_contact <- unique(as.character(df$Donor_Annotation))
   name_indexes     <- match(sort(names_in_contact), colour_name)
   sub_pallete      <- colour_hex[name_indexes]
@@ -61,23 +65,29 @@ get_start_of_loop <- function(string)
   return(unlist(map(residues, 1)))
 }
 
-substract_CDR <- function(df, list, chain)
+subtract_CDR <- function(df, list, chain)
 {
   #swap the cdrfw and 3 loops arounds
   list     <- list[c(1,2,4,3)]
   loops    <- c("CDR1", "CDR2", "CDR3", "CDR3")
   loops    <- paste(loops, chain, sep = "")
   loops[4] <- paste(loops[4], "fw", sep = "")
-  
+
+  df$Residue <- gsub("A", ".1", df$Residue)
+  df$Residue <- gsub("B", ".2", df$Residue)
+
+  list <- gsub("A", ".1", df$Residue)
+  list <- gsub("B", ".2", df$Residue)
+
   for(i in 1:4)
   {
     str   <- loops[i]
     subdf <- df[df$`CDR loop` == str,]
     #print(nrow(subdf))
-    
+
     if(nrow(df) != 0)
     {
-      subdf$Residue <- as.numeric(subdf$Residue - as.numeric(list[i]))
+      subdf$Residue <- as.numeric(as.numeric(subdf$Residue) - as.numeric(list[i]))
     }
     else
     {
@@ -102,17 +112,19 @@ get_chain <- function(df, string)
   return(x)
 }
 
-make_circos <- function(mat, color_vector, color_name, outname)
+make_circos <- function(mat, color_vector, color_name, outname, size)
 {
-  
+  png(outname, 1000, res=120)
   names(color_vector) <- color_name
-  
+
   circos.par(gap.after = c(rep(5, nrow(mat)-1), 15,
                            rep(5, ncol(mat)-1), 15))
-  
+  par(cex = size, mar = c(0, 0, 0, 0))
+
   chordDiagram(mat, grid.col = color_vector, directional = 2, grid.border = NA,
                annotationTrack = c("grid", "name"))
-  ggsave(outname)
+
+  dev.off()
   circos.clear()
 }
 
@@ -120,7 +132,7 @@ count_contacts <- function(df)
 {
   return(df %>%
            group_by(Donor_Annotation, Acceptor_Chain) %>%
-           tally)  
+           tally)
 }
 
 args <- commandArgs(TRUE) #don't need for now
@@ -167,8 +179,8 @@ tv_yellow    <- rgb(1.0, 1.0, 0.2)
 lightmagenta <- rgb(1.0, 0.2, 0.8)
 deepblue     <- rgb(0.25, 0.25, 0.65)
 
-colour_hex   <- c(lightblue, palegreen, yellow, grey60, 
-                  grey80, tv_red, tv_green, purpleblue, 
+colour_hex   <- c(lightblue, palegreen, yellow, grey60,
+                  grey80, tv_red, tv_green, purpleblue,
                   grey90, tv_yellow, lightmagenta, deepblue,
                   grey90)
 colour_name  <- c("TCRa", "TCRb", "peptide", "MHCa", "MHCb",
@@ -224,8 +236,8 @@ tcra_cdr_starts <- get_start_of_loop(tcra_line)
 tcrb_cdr_starts <- get_start_of_loop(tcrb_line)
 
 
-x <- substract_CDR(as.data.frame(force_count_residues), tcra_cdr_starts, "a")
-y <- substract_CDR(as.data.frame(force_count_residues), tcrb_cdr_starts, "b")
+x <- subtract_CDR(as.data.frame(force_count_residues), tcra_cdr_starts, "a")
+y <- subtract_CDR(as.data.frame(force_count_residues), tcrb_cdr_starts, "b")
 z <- rbind(x,y)
 
 colnames(z) <- c("CDR Loop", "Residue", "Force", "Count")
@@ -308,7 +320,7 @@ to_p_count$Size      <- sum(to_p_count$freq) / total_size
 all_mhc_counts <- rbind(to_p_count, to_mhc_count, to_pmhc_count)
 
 all_mhc_counts <- all_mhc_counts[all_mhc_counts$Donor_Annotation %in% 
-                                   c("CDR1a","CDR1b","CDR2a",
+                                   c("CDR1a","CDR1b","CDR2a", "CDR2b",
                                      "CDR3a","CDR3b","FWa","FWb"),]
 
 names_in_contact <- unique(as.character(all_mhc_counts$Donor_Annotation))
@@ -328,6 +340,30 @@ sub_pallete      <- colour_hex[name_indexes]
 
 ggplot(all_mhc_counts, aes(x=Size/2, y=freq, fill=Donor_Annotation,
                            width=Size))+
+  theme_classic()+
+  ggtitle("Relative Contribution of CDR Loop to Contacts")+
+  # black border around pie slices
+  geom_bar(stat="identity", color='black', position = "fill")+
+  # remove black diagonal line from legend
+  guides(fill=guide_legend(override.aes=list(colour=NA)))+
+  # polar coordinates
+  coord_polar(theta='y')+
+  # label aesthetics
+  theme(axis.ticks=element_blank(),  # the axis ticks
+        axis.title=element_blank(),  # the axis labels
+        axis.text.y=element_blank(), # the 0.75, 1.00, 1.25 labels
+        axis.text.x=element_blank(),
+        plot.title=element_text(hjust = 0.5),
+        legend.title.align = 0.5)+
+  facet_grid(.~Source)+
+  scale_fill_manual(values=sub_pallete, name = "CDR Loop")
+
+cdr_pie <- paste(sub_dir, "/cdr_loop_contact_scaled_pie.tiff", sep = "")
+ggsave(cdr_pie)
+
+####
+ggplot(all_mhc_counts, aes(x=1, y=freq, fill=Donor_Annotation,
+                           width=1))+
   theme_classic()+
   ggtitle("Contribution of CDR Loop to Contacts")+
   # black border around pie slices
@@ -361,13 +397,12 @@ rownames(casted_contacts)        <- casted_contacts$Donor_Annotation
 casted_contacts$Donor_Annotation <- NULL
 casted_contacts                  <- as.matrix(casted_contacts)
 casted_contacts                 <- casted_contacts[rownames(casted_contacts) %in% 
-                                                     c("CDR1a","CDR1b","CDR2a",
+                                                     c("CDR1a","CDR1b","CDR2a", "CDR2b",
                                                        "CDR3a","CDR3b","FWa","FWb"),]
 
 
-
-cdr_circos <- paste(sub_dir, "/cdr_loop_circos.tiff", sep = "")
-make_circos(casted_contacts, colour_hex, colour_name, cdr_circos)
+cdr_circos <- paste(sub_dir, "/CDR_circos.png", sep = "")
+make_circos(casted_contacts, colour_hex, colour_name, cdr_circos, 0.8)
 
 no_loop_contacts <- TCR %>%
   group_by(Donor_Chain, Acceptor_Chain) %>%
@@ -381,5 +416,5 @@ rownames(casted_contacts_2)   <- casted_contacts_2$Donor_Chain
 casted_contacts_2$Donor_Chain <- NULL
 casted_contacts_2             <- as.matrix(casted_contacts_2)
 
-TCR_circos <- paste(sub_dir, "/TCR_circos.tiff", sep = "")
-make_circos(casted_contacts_2, colour_hex, colour_name, TCR_circos)
+TCR_circos <- paste(sub_dir, "/TCR_circos.png", sep = "")
+make_circos(casted_contacts_2, colour_hex, colour_name, TCR_circos, 2.5)

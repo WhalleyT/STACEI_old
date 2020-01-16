@@ -1,7 +1,7 @@
 # ANNOTATION LOCATIONS IMGT ALIGNED #
 
 TCRdict = {"CDR1a": range(27,39),
-           "CDR2a": range(56,65),
+           "CDR2a": range(55,70),
            "FWa"  : range(81, 86),
            "CDR3a": [104],
            "Cys1a": [23],

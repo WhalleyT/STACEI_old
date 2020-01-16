@@ -53,18 +53,18 @@ class ChainInformation:
 
 
 class Paths:
-    def __init__(self, seq_path, contact_path, pisa_path, sc_path, xing_path, map_path,
-                 pdb_path, vis_path, session_path, fasta_path):
+    def __init__(self, seq_path, contact_path, pisa_path, sc_path, xing_path,
+                 pdb_path, vis_path, session_path, fasta_path, elec_path):
         self.sequence_path = seq_path
         self.contact_path = contact_path
         self.sc_path = sc_path
         self.pisa_path = pisa_path
         self.crossing_path = xing_path
-        self.map_path = map_path
         self.vis_path = vis_path
         self.pdb_path = pdb_path
         self.session_path = session_path
         self.fasta_path = fasta_path
+        self.elec_path = elec_path
         self.current = os.getcwd()
 
 
@@ -148,7 +148,7 @@ class PisaOutputs:
         self.mhcb_chains = name + "_mhcb_pisa_chains.txt"
         self.pept_chains = name + "_peptide_pisa_chains.txt"
         self.tcra_chains = name + "_tcra_pisa_chains.txt"
-        self.tcrb_chains = name + "_tcrb_complex_pisa_chains.txt"
+        self.tcrb_chains = name + "_tcrb_pisa_chains.txt"
 
         self.order = [self.mhca_chains, self.mhcb_chains, self.pept_chains, self.tcra_chains, self.tcrb_chains]
         self.monomers = [mhca, mhcb, peptide, tcra, tcrb]

@@ -26,9 +26,8 @@ def extract_pisa(session, chain, outfile):
     with open("session.txt") as f:
         for line in f:
             if "    " + chain + "    " in line:
-                chain = line.split()[1]
+                chain = line.split()[0]
                 break
-
 
     subprocess.call("pisa %s -detail monomers %s > %s" % (session, chain, outfile), shell=True)
     start = False

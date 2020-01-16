@@ -2,9 +2,9 @@ import argparse
 import sys
 import os
 import containers
-import pymol
 import glob
 
+from distutils.spawn import find_executable
 
 def _parse_args():
     """
@@ -26,8 +26,9 @@ def _parse_args():
                              'This will affect performance at run time but will produce better images.')
     parser.add_argument('--suppress', '-S', dest='suppress', action='store_true',
                         help='Flag. If provided stdout output will be suppressed (inc. CCP4, Pymol and ANARCI)')
-    parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, default='ebi', type=str,
-                        help='The MTZ file to be analysed, if None is supplied it will skip')
+    parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, type=str,
+                        help='The MTZ file to be analysed, if None (default) is supplied it will skipped',
+                        default="None")
     args = parser.parse_args()
     return args
 
@@ -94,50 +95,26 @@ def create_paths(file_name):
     pisa_path = file_name + "/buried_surface"
     sc_path = file_name + "/surface_complementarity"
     xing_path = file_name + "/crossingAngle"
-    map_path = file_name + "/maps"
     pdb_path = file_name + "/pdbs"
-    vis_path = file_name + "/pymol_visualisation"
+    vis_path = file_name + "/visualisation"
     session_path = file_name + "/sessions"
     fasta_path = file_name + "/FASTAs"
+    elec_path = file_name + "/electrostatics"
+
     table_path = contact_path + "/contact_tables"
     mhc_table = table_path + "/MHC_to_pep"
     tcr_table = table_path + "/TCR_to_pMHC"
 
-    paths = [seq_path, contact_path, pisa_path, sc_path, xing_path, map_path,
-             pdb_path, vis_path, session_path, fasta_path, table_path, mhc_table, tcr_table]
+    paths = [seq_path, contact_path, pisa_path, sc_path, xing_path,
+             pdb_path, vis_path, session_path, fasta_path, table_path, mhc_table,
+             tcr_table, elec_path]
 
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path)
 
     return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path,
-                            map_path, pdb_path, vis_path, session_path, fasta_path)
-
-
-def disable_print(suppress):
-    """
-    stop flushing to stdout
-    """
-    if suppress:
-        sys.stdout = open(os.devnull, 'w')
-
-
-def enable_print():
-    """
-    as above, but re-enable
-    """
-    sys.stdout = sys.__stdout__
-
-
-def give_tree(startpath):
-    print "Output directory is arranged as follows: \n"
-    for root, dirs, files in os.walk(startpath):
-        level = root.replace(startpath, '').count(os.sep)
-        indent = ' ' * 4 * level
-        print('{}{}/'.format(indent, os.path.basename(root)))
-        subindent = ' ' * 4 * (level + 1)
-        for f in files:
-            print('{}{}'.format(subindent, f))
+                            pdb_path, vis_path, session_path, fasta_path, elec_path)
 
 
 def clean_namespace(name, paths, original):
@@ -162,9 +139,9 @@ def clean_namespace(name, paths, original):
             os.rename(file, paths.pdb_path + "/" + file.split("/")[-1])
 
     os.rename("sc.txt", paths.sc_path + "/" + "sc.txt")
-    os.rename("BSA.png", paths.pisa_path + "/BSA.png")
     os.rename(name + "_statistics.txt", paths.contact_path + "/contact_tables/" + name + "_statistics.txt")
     os.rename(name + "_ANARCI.txt", paths.sequence_path + "/" + name + "_ANARCI.txt")
+    os.rename("BSA.png", paths.vis_path + "/BSA.png")
 
 
     for file in glob.glob(name + "*pisa_chains*"):
@@ -179,4 +156,9 @@ def clean_namespace(name, paths, original):
     for file in glob.glob(name + "*sequence*"):
         os.rename(file, paths.sequence_path + "/" + file)
 
-    pymol.cmd.quit()
+def check_install():
+    commands = ["ncont", "pymol", "sc", "ncont", "ANARCI"]
+
+    for comm in commands:
+        if find_executable(comm) == False:
+            sys.exit("Could not find executable for %s" %comm)
