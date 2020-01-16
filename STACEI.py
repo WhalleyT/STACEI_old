@@ -36,18 +36,23 @@ def main():
     args, auto = housekeeping.check_parse()
     housekeeping.check_install()
 
+
     if args.suppress:
         warnings.simplefilter('ignore', BiopythonWarning)
+
 
     print "Assigning classes"
     pdb = classes.PDBStrings(args.infile)
 
+
     print "Assigning paths"
     paths = housekeeping.create_paths(pdb.name)
+
 
     print "Finding TCR-pMHC chain annotation"
     tcra, tcrb, peptide, mhca, mhcb, mhc_class = annotation.annotate_complex(pdb.file, pdb.filtered, pdb.numbered)
     full_complex = classes.ChainInformation(tcra, tcrb, peptide, mhc_class, mhca, mhcb)
+
 
     print "TCRa and TCRb are %s and %s, respectively" % (tcra, tcrb)
     print "MHCa and MHCb are %s and %s respectively" % (mhca, mhcb)
@@ -80,14 +85,15 @@ def main():
     vdj_out.anarci_to_imgt_fasta(pdb.imgt, tcra, tcrb, peptide, mhca, mhcb, anarci_files.outfile, 
                                  pdb.name, fasta_files.linear, fasta_files.annotated)
 
+
+
     ####################################################################################################################
 
     """
     Complex now should be completely clean! From here we can begin analysis.
     As it is arguably the most important let's start with contacts.
     """
-
-
+    
     print "Generating contact and sequence paths"
     contact_paths = classes.ContactPaths(pdb.name)
     sequences = classes.LinearSequences(pdb.name)
@@ -116,12 +122,16 @@ def main():
     #compute statistics for CDR loops to major chains
     contacts.stats(contact_paths.tcr_to_mhc_clean_file, pdb.name)
 
+
     print "Generating contact maps for TCR to pMHC contacts"
 
+    
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
+        print tcr, pmhc
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, [], pdb.name)
     for tcr, pmhc, smart in zip(tcr_permutations.tcr_safe, tcr_permutations.pmhc_safe, tcr_permutations.safe_calls):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, smart, pdb.name)
+    
 
     print "Cleaning and generating p to MHC contacts"
     # MHC -> peptide contacts
@@ -132,6 +142,7 @@ def main():
     print "Generating contact maps for p to MHC"
     
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
+    
 
     ####################################################################################################################
 
@@ -139,7 +150,7 @@ def main():
     Now let's call PISA. This will calculate the BSA for the whole TCR-pMHC complex and label it according to CDR loop.
     Then we can do the same, but just for pMHC.
     """
-
+    
     pisa_files = classes.PisaOutputs(pdb.name, full_complex.mhca, full_complex.mhcb, full_complex.peptide,
                                      full_complex.tcra, full_complex.tcrb)
 
@@ -153,9 +164,11 @@ def main():
     print "Calling PISA on full complex"
     total_complex_bsa = []
 
+
     pisa.call_pisa(pdb.imgt, "full_complex")
     for i,j in zip(pisa_files.order, pisa_files.monomers):
         BSA, ASA = pisa.extract_pisa("full_complex", j, i)
+    
 
  ####################################################################################################################
 
@@ -166,8 +179,13 @@ def main():
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex, pdb.name)
     
+
+    
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
+    
+    
+    #buried surface area viz
 
 
  ####################################################################################################################
@@ -179,36 +197,40 @@ def main():
         electrostatic.visualise_omit_MHC_only(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
                                               full_complex.complex, args.ray_trace, pdb.name)
 
-        electrostatic.omit_map(pdb.file, args.mtz, full_complex.mhc_class,
+        electrostatic.omit_map(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
                                full_complex.complex, args.ray_trace, pdb.name)
     else:
         print "Skipping electrostatics"
+
 
  ####################################################################################################################
     """
     Run the R code for BSA, and the circos plots/pies (static).
     """
-
+    
     print "Calling R for BSA of peptide"
     subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pmhc_chains, shell=True)
 
     print "Making Circos plots"
+
     subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name), shell=True)
-
+    
  ###################################################################################################################
     """
     Surface complementarity
     """
 
     print "Calling SC"
-
+    
     sc.write_SC_pipe(full_complex.mhca, full_complex.mhcb, full_complex.peptide,
                      full_complex.tcra, full_complex.tcrb)
 
     sc.run_SC(pdb.clean_imgt)
+    
+
 
  ###################################################################################################################
     """
@@ -217,6 +239,7 @@ def main():
 
     print "Done! Now cleaning up"
     housekeeping.clean_namespace(pdb.name, paths, args.infile)
+
 
 if __name__ == "__main__":
     main()
