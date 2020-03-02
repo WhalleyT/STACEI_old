@@ -6,29 +6,31 @@ import subprocess
 import os
 import re
 
+
 def read_fasta(fp):
-        name, seq = None, []
-        for line in fp:
-            line = line.rstrip()
-            if line.startswith(">"):
-                if name: yield (name, ''.join(seq))
-                name, seq = line, []
-            else:
-                seq.append(line)
-        if name: yield (name, ''.join(seq))
+    name, seq = None, []
+    for line in fp:
+        line = line.rstrip()
+        if line.startswith(">"):
+            if name: yield (name, ''.join(seq))
+            name, seq = line, []
+        else:
+            seq.append(line)
+    if name: yield (name, ''.join(seq))
 
 
 def get_peptide_lines(pdb_name, pdb_file, peptide_res):
-    #get the peptide sequences
-    parser          = PDBParser()
-    struct          = parser.get_structure(pdb_name, pdb_file)
-    pep_chain       = struct[0][peptide_res]
-    pep_residues    = list(Selection.unfold_entities(pep_chain, 'R'))
+    # get the peptide sequences
+    parser = PDBParser()
+    struct = parser.get_structure(pdb_name, pdb_file)
+    pep_chain = struct[0][peptide_res]
+    pep_residues = list(Selection.unfold_entities(pep_chain, 'R'))
     return pep_residues
+
 
 def get_peptide_residues(pep_residues):
     pep_sequence = []
-    for i in range (0, len(pep_residues)):
+    for i in range(0, len(pep_residues)):
         if is_aa(pep_residues[i]):
             line = str(pep_residues[i])
             line = line[8:]
@@ -39,6 +41,7 @@ def get_peptide_residues(pep_residues):
             pep_sequence.append(line)
     return pep_sequence
 
+
 def pep_list_to_string(pep_sequence):
     pepstring = ""
     for i in pep_sequence:
@@ -48,33 +51,33 @@ def pep_list_to_string(pep_sequence):
     peplen = len(pepstring)
     return pepstring, peplen
 
+
 def get_ATOMIC_data_PDB(pdb_file, peptide_res, MHCa_res, MHCb_res):
     file = open(pdb_file, "r")
     ATOM_lines = []
-    iter = 0
 
     for line in file:
         if line.startswith('ATOM'):
-            line_p   = re.sub(r'\s+', ' ',  line)
+            line_p = re.sub(r'\s+', ' ', line)
             letter = line_p.split()[4]
             if letter == peptide_res or letter == MHCa_res or letter == MHCb_res:
                 ATOM_lines.append(line)
     file.close()
     return ATOM_lines
 
+
 def get_ATOMIC_TCR(pdb_file, tcra_res, tcrb_res):
     file = open(pdb_file, "r")
-    ATOM_lines = []
-    iter = 0
+    atom_lines = []
 
     for line in file:
         if line.startswith('ATOM'):
-            line_p   = re.sub(r'\s+', ' ',  line)
+            line_p = re.sub(r'\s+', ' ', line)
             letter = line_p.split()[4]
             if letter == tcra_res or letter == tcrb_res:
-                ATOM_lines.append(line)
+                atom_lines.append(line)
     file.close()
-    return ATOM_lines
+    return atom_lines
 
 
 def get_header_PDB(pdb_file):
@@ -89,11 +92,12 @@ def get_header_PDB(pdb_file):
     file2.close()
     return header_lines
 
+
 def get_tail_PDB(pdb_file):
     last_atom = 0
     tail_lines = []
 
-    #get the stuff at the end of the file, PISA doesn't seem to like it missing
+    # get the stuff at the end of the file, PISA doesn't seem to like it missing
     with open(pdb_file) as myFile:
         for num, line in enumerate(myFile, 1):
             if 'ATOM' or 'ANISOU' in line:
@@ -107,37 +111,41 @@ def get_tail_PDB(pdb_file):
 
     return last_atom, tail_lines
 
-def write_parsed_PDB(header_lines, tail_lines, ATOM_lines, pisa_path):
+
+def write_parsed_pdb_file(header_lines, tail_lines, atom_lines, pisa_path):
     f = open(pisa_path + '/parsed_pdb.pdb', "w")
     for line in header_lines:
         f.write(line)
-    for line in ATOM_lines:
+    for line in atom_lines:
         f.write(line)
     for line in tail_lines:
         f.write(line)
     f.close()
     return
 
+
 def run_PISA(pisa_path):
-    subprocess.call('pisa structural_tool -analyse %s/parsed_pdb.pdb' %str(pisa_path), shell = True)
+    subprocess.call('pisa structural_tool -analyse %s/parsed_pdb.pdb' % str(pisa_path), shell=True)
 
-    #get the monomers names <- don't think this may be needed
-    subprocess.call('pisa  structural_tool  -list monomers > %s/monomers.txt' %str(pisa_path), shell = True)
+    # get the monomers names <- don't think this may be needed
+    subprocess.call('pisa  structural_tool  -list monomers > %s/monomers.txt' % str(pisa_path), shell=True)
 
-    #extract monomer 3 details
-    subprocess.call('pisa structural_tool -detail monomers 3 > %s/peptide_BSA.txt' %str(pisa_path), shell = True)
+    # extract monomer 3 details
+    subprocess.call('pisa structural_tool -detail monomers 3 > %s/peptide_BSA.txt' % str(pisa_path), shell=True)
+
 
 def run_TCR_pisa(pisa_path, pdb_file):
     # Call PISA
     print "Calling PISA for TCR"
-    subprocess.call('pisa structural_tool2 -analyse %s' %str(pdb_file), shell = True)
+    subprocess.call('pisa structural_tool2 -analyse %s' % str(pdb_file), shell=True)
 
-    #get the monomers names <- don't think this may be needed
-    subprocess.call('pisa  structural_tool2  -list monomers > %s/monomers.txt' %str(pisa_path), shell = True)
+    # get the monomers names <- don't think this may be needed
+    subprocess.call('pisa  structural_tool2  -list monomers > %s/monomers.txt' % str(pisa_path), shell=True)
 
-    #extract monomer 3 details
-    subprocess.call('pisa structural_tool2 -detail monomers 2 > %s/alpha_peptide_BSA.txt' %str(pisa_path), shell = True)
-    subprocess.call('pisa structural_tool2 -detail monomers 1 > %s/beta_peptide_BSA.txt' %str(pisa_path), shell = True)
+    # extract monomer 3 details
+    subprocess.call('pisa structural_tool2 -detail monomers 2 > %s/alpha_peptide_BSA.txt' % str(pisa_path), shell=True)
+    subprocess.call('pisa structural_tool2 -detail monomers 1 > %s/beta_peptide_BSA.txt' % str(pisa_path), shell=True)
+
 
 def clean_BSA(pisa_path):
     peptide_BSA = []
@@ -150,14 +158,14 @@ def clean_BSA(pisa_path):
             if '       Total ' in line:
                 BSA = line
                 BSA = BSA.split()[3]
-               # print "Buried surface area of peptide is %s" %str(BSA)
+                # print "Buried surface area of peptide is %s" %str(BSA)
                 with open(pisa_path + "/BSA.txt", "w") as f:
                     f.write(BSA)
                 f.close()
                 end = num
 
     peptide_BSA_filtered = []
-                
+
     for i in range(start + 2, end - 1):
         regexed_line = peptide_BSA[i].replace('|', '')
         peptide_BSA_filtered.append(regexed_line)
@@ -167,6 +175,7 @@ def clean_BSA(pisa_path):
         f.write(line)
     f.close()
     return
+
 
 def clean_ab_BSA(pisa_path):
     files = [pisa_path + "/alpha_peptide_BSA.txt", pisa_path + "/beta_peptide_BSA.txt"]
@@ -178,7 +187,7 @@ def clean_ab_BSA(pisa_path):
             for line in f:
                 if "   #" in line:
                     start = True
-                
+
                 x = line.strip()
                 if len(x) > 0:
                     if start and x[0].isdigit():
@@ -186,31 +195,37 @@ def clean_ab_BSA(pisa_path):
                         line = re.sub(r"\s+", " ", line)
                         line = re.sub(":", " ", line)
                         out.write(line + "\n")
-   # print "alpha and beta TCR PISA output cleaned"
 
+
+# print "alpha and beta TCR PISA output cleaned"
 
 
 def plot(pisa_path):
-   # print "Plotting peptide BSA in R"
-    subprocess.call('Rscript %s/bin/R/peptide_BSA.R %s' %(str(os.getcwd()), pisa_path), shell=True)
-   # print "Peptide BSA plot written to %s" %pisa_path
+    # print "Plotting peptide BSA in R"
+    subprocess.call('Rscript %s/bin/R/peptide_BSA.R %s' % (str(os.getcwd()), pisa_path), shell=True)
+
+
+# print "Peptide BSA plot written to %s" %pisa_path
 
 def plot_TCR(TCR_path, alpha, beta, fasta):
-   # print "Plotting TCR BSA in R"
-    subprocess.call('Rscript %s/bin/R/TCR_BSA.R %s %s %s %s' %(str(os.getcwd()), TCR_path, alpha, beta, str(os.getcwd() + "/" + fasta)), shell=True)
+    # print "Plotting TCR BSA in R"
+    subprocess.call('Rscript %s/bin/R/TCR_BSA.R %s %s %s %s' % (
+    str(os.getcwd()), TCR_path, alpha, beta, str(os.getcwd() + "/" + fasta)), shell=True)
 
-def _find_between(s, first, last ):
+
+def _find_between(s, first, last):
     try:
-        start = s.index( first ) + len( first )
-        end = s.index( last, start )
+        start = s.index(first) + len(first)
+        end = s.index(last, start)
         return s[start:end]
     except ValueError:
         return ""
 
+
 def _get_CDR_loop(chain, chain_str):
     chain = chain.split("|")
     ranges = []
-    
+
     loops = ["CDR1", "CDR2", "CDR3", "FW"]
     loops = [s + chain_str for s in loops]
 
@@ -219,15 +234,16 @@ def _get_CDR_loop(chain, chain_str):
         for element in chain:
             if loop in element:
                 cdrs.append(element)
-    
+
     for cdr in cdrs:
-        #print cdr
+        # print cdr
         loop = _find_between(cdr, "[", "]")
         loop = loop.split(",")
-        loop = loop[::len(loop)-1]
+        loop = loop[::len(loop) - 1]
         ranges.append(loop)
 
     return ranges
+
 
 def _get_lines(ranges, chain, file):
     sums = []
@@ -243,8 +259,9 @@ def _get_lines(ranges, chain, file):
         sums.append(BSA_sum)
     return sums
 
+
 def sum_BSA(alpha, beta, BSA, fasta):
-    #get lines we care about
+    # get lines we care about
     alpha_line = ""
     beta_line = ""
 
@@ -258,20 +275,20 @@ def sum_BSA(alpha, beta, BSA, fasta):
     alpha_ranges = _get_CDR_loop(alpha_line, "a")
     beta_ranges = _get_CDR_loop(beta_line, "b")
 
-    alpha_sums = _get_lines(alpha_ranges, alpha, BSA + "/TCR_BSA.txt")            
+    alpha_sums = _get_lines(alpha_ranges, alpha, BSA + "/TCR_BSA.txt")
     beta_sums = _get_lines(beta_ranges, beta, BSA + "/TCR_BSA.txt")
 
-    outstring_a = ["CDR1a: ", "CDR2a: ", "CDR3a: ", "CDRFWa: "]
-    outstring_b = ["CDR1b: ", "CDR2b: ", "CDR3b: ", "CDRFWb: "]
+    out_b = ["CDR1a: ", "CDR2a: ", "CDR3a: ", "CDRFWa: "]
+    out_a = ["CDR1b: ", "CDR2b: ", "CDR3b: ", "CDRFWb: "]
 
     out = open(BSA + "/CDR_loop_BSA.txt", "w")
 
-    for string, summ in zip(outstring_a, alpha_sums):
-        out.write(string + str(summ) + "\n")   
-    for string, summ in zip(outstring_b, beta_sums):
+    for string, summ in zip(out_b, alpha_sums):
+        out.write(string + str(summ) + "\n")
+    for string, summ in zip(out_a, beta_sums):
         out.write(string + str(summ) + "\n")
 
-   # print "BSA sums for CDR loops written to 'CDR_loop_BSA.txt'"
+# print "BSA sums for CDR loops written to 'CDR_loop_BSA.txt'"
 
 def plot_sum(pdb):
-    subprocess.call('Rscript %s/bin/R/CDR_loop_BSA.R %s' %(str(os.getcwd()), str(os.getcwd()) + "/" + pdb), shell=True) 
+    subprocess.call('Rscript %s/bin/R/CDR_loop_BSA.R %s' % (str(os.getcwd()), str(os.getcwd()) + "/" + pdb), shell=True)
