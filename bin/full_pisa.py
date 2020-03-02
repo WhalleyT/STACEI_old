@@ -4,6 +4,7 @@ import os
 
 
 def call_pisa(pdb, session):
+    print "pisa %s -analyse %s" % (session, pdb)
     subprocess.call("pisa %s -analyse %s" % (session, pdb), shell=True)
 
 
@@ -41,6 +42,7 @@ def extract_pisa(session, chain, all_chains, outfile, annotation_dictionary):
          'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
 
     subprocess.call("pisa %s -list interfaces > session.txt" % session, shell=True)
+    print "pisa %s -list interfaces > session.txt" % session
 
     # create a list of the other chains so we can collect interfaces
     from_chain = chain
@@ -52,6 +54,7 @@ def extract_pisa(session, chain, all_chains, outfile, annotation_dictionary):
         tchain = c
         fchain = chain
 
+        print tchain, fchain
         interface, structure = retrieve_interface([tchain, fchain])
 
         donor = annotation_dictionary[fchain]

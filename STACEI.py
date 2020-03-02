@@ -163,10 +163,9 @@ def main():
     pepBSA, pepASA = peptide_pisa.extract_pmhc_pisa("pMHC_only", full_complex.peptide, pisa_files.pmhc_chains)
 
     #Now for the full complex chains
-    full_pisa.call_pisa(pdb.imgt, "full")
+    full_pisa.call_pisa(pdb.imgt, "full_complex")
 
     for i, j in zip(pisa_files.order, pisa_files.monomers):
-        print i,j
         full_pisa.extract_pisa("full_complex", j, full_complex.complex_list, i, full_complex.annotation_dictionary)
 
 
