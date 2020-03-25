@@ -116,7 +116,8 @@ def main():
 
     print "Cleaning and generating TCR to pMHC contacts"
     # TCR -> pMHC contacts
-    contacts.clean_contacts(contact_paths.tcr_to_mhc_file, full_complex.string, fasta_files.annotated)
+    contacts.clean_contacts(contact_paths.tcr_to_mhc_file, full_complex.string, fasta_files.annotated,
+                            args.van_der_waals_distance, args.h_bond_distance, args.s_bond_distance)
     contacts.residue_only_contacts(contact_paths.tcr_to_mhc_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.tcr_to_mhc_residues)
     
@@ -136,7 +137,8 @@ def main():
 
     print "Cleaning and generating p to MHC contacts"
     # MHC -> peptide contacts
-    contacts.clean_contacts(contact_paths.mhc_to_pep_file, full_complex.string, fasta_files.annotated)
+    contacts.clean_contacts(contact_paths.mhc_to_pep_file, full_complex.string, fasta_files.annotated,
+                            args.van_der_waals_distance, args.h_bond_distance, args.s_bond_distance)
     contacts.residue_only_contacts(contact_paths.mhc_to_pep_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.mhc_to_pep_residues)
 

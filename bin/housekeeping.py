@@ -29,6 +29,15 @@ def _parse_args():
     parser.add_argument('--mtz', '-Mt', dest='mtz', required=False, type=str,
                         help='The MTZ file to be analysed, if None (default) is supplied it will skipped',
                         default="None")
+    parser.add_argument("--vanderwaals", "-Vdw", dest='van_der_waals_distance', required=False, type=float,
+                        default=4.0, help="Distance for an interaction to be considered a contact. If it does not "
+                                          "satisfy other criteria it will be marked a van der Waals interaction")
+    parser.add_argument("--hydrogenbond", "-Hb", dest="h_bond_distance", required=False, type=float, default=3.5,
+                        help="Distance threshold required for a pair of hydrogen bond donors and acceptors to be "
+                             "considered to make a hydrogen bond")
+    parser.add_argument("--saltbridge", "-Sb", dest='salt_bridge_distance', required=False, type=float,
+                        default=4.0, help="Distance threshold required for a pair of hydrogen bond donors and "
+                                          "acceptors to be considered to make a salt bridge")
     args = parser.parse_args()
     return args
 

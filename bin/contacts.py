@@ -233,7 +233,7 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
     return contacts_with_inserts
 
 
-def is_hydrogen_bond(contact_row):
+def is_hydrogen_bond(contact_row, h_bond_dist):
     hb_donors = ["ARGNE N", "ARGNH1N", "ARGNH2N", "ASNND2N", "GLNNE2N", "HISND1N", "HISNE2N", "LYSNZ N",
                  "SEROG O", "THROG1O", "TRPNE1N", "TYROH O", "ALAN  N", "ARGN  N", "ASNN  N", "ASPN  N", "CYSN  N"
                  "GLUN  N", "GLNN  N", "GLYN  N", "HISN  N", "ILEN  N", "LEUN  N", "LYSN  N", "METN  N", "PHEN  N",
@@ -248,10 +248,10 @@ def is_hydrogen_bond(contact_row):
     id_2 = contact_row[11] + contact_row[12] + contact_row[13]
 
     if id_1 in hb_donors and id_2 in hb_acceptors:
-        if contact_row[14] <= 3.40:
+        if contact_row[14] <= h_bond_dist:
             return True
     if id_2 in hb_donors and id_1 in hb_acceptors:
-        if contact_row[14] <= 3.40:
+        if contact_row[14] <= h_bond_dist:
             return True
     else:
         return False
@@ -275,28 +275,28 @@ def is_salt_bridge(contact_row):
         return False
 
 
-def is_van_der_waals(contact_row):
-    if contact_row[14] <= 4.0:
+def is_van_der_waals(contact_row, vdw_dist):
+    if contact_row[14] <= vdw_dist:
         return True
 
 
-def bond_annotator(contacts_row):
+def bond_annotator(contacts_row, vdw_dist, h_bond_dist, s_bond_dist):
     contacts_row.append('NO')
 
-    if is_van_der_waals(contacts_row):
+    if is_van_der_waals(contact_row, vdw_dist):
         contacts_row[15] = 'VW'
-    if is_hydrogen_bond(contacts_row):
+    if is_hydrogen_bond(contacts_row, h_bond_dist):
         contacts_row[15] = 'HB'
-    if is_salt_bridge(contacts_row):
+    if is_salt_bridge(contacts_row, s_bond_dist):
         contacts_row[15] = 'SB'
 
 
-def annotate_all_wrapper(contact_matrix):
+def annotate_all_wrapper(contact_matrix, vdw_dist, h_bond_dist, s_bond_dist):
     contact_matrix_new = []
     omit_counter = 0
    #### print 'Anotating contacts...'
     for row in contact_matrix:
-        bond_annotator(row)
+        bond_annotator(row, vdw_dist, h_bond_dist, s_bond_dist)
         if row[15] == "NO":
             omit_counter += 1
         else:
@@ -306,7 +306,7 @@ def annotate_all_wrapper(contact_matrix):
     return contact_matrix_new
 
 
-def clean_contacts(ncont, chains, fasta):
+def clean_contacts(ncont, chains, fasta, vdw_dist, h_bond_dist, s_bond_dist):
     in_file = read_file(ncont, "txt")
 
     in_file_name = ncont.rsplit('.', 1)[0]
@@ -349,7 +349,7 @@ def clean_contacts(ncont, chains, fasta):
                                          mhc_a_chain, mhc_b_chain, peptide_chain, tcr_a_chain, tcr_b_chain)
     
 
-    contact_matrix = annotate_all_wrapper(contact_matrix)
+    contact_matrix = annotate_all_wrapper(contact_matrix, vdw_dist, h_bond_dist, s_bond_dist)
 
     out_file = open(str(in_file_name) + '_clean.txt', 'w')
     output2 = ''
