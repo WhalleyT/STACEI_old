@@ -136,7 +136,7 @@ def run_PISA(pisa_path):
 
 def run_TCR_pisa(pisa_path, pdb_file):
     # Call PISA
-    print "Calling PISA for TCR"
+    print("Calling PISA for TCR")
     subprocess.call('pisa structural_tool2 -analyse %s' % str(pdb_file), shell=True)
 
     # get the monomers names <- don't think this may be needed

@@ -1,6 +1,5 @@
 import swalign
-import generic_functions
-import data.TCRgeneDictionary as gene_seq_dict
+from . import generic_functions
 
 #GLOBAL PARAMETERS
 #PLEASE BE CAREFUL OF THEM
@@ -76,8 +75,8 @@ def anarci_to_imgt_fasta(pdb, tcra, tcrb, peptide, mhca, mhcb, anarci,
     gene_keys = grab_VDJ_from_ANARCI(anarci)
 
     #get start and end
-    alpha = zip(alpha_pdb_num, alpha_pdb_seq)
-    beta = zip(beta_pdb_num, beta_pdb_seq)
+    alpha = list(zip(alpha_pdb_num, alpha_pdb_seq))
+    beta = list(zip(beta_pdb_num, beta_pdb_seq))
 
     for i in alpha:
         num = i[0]
@@ -130,5 +129,5 @@ def anarci_to_imgt_fasta(pdb, tcra, tcrb, peptide, mhca, mhcb, anarci,
     for name, seq in zip(names, seqs):
         outfile.write(name + "\n" + seq + "\n")
     
-    print "Gene usage is as follows:\n\t-%s\n\t-%s\n\t-%s\n\t-%s" %(gene_keys["TRAV"], gene_keys["TRAJ"], gene_keys["TRBV"], gene_keys["TRBJ"])
+    print("Gene usage is as follows:\n\t-%s\n\t-%s\n\t-%s\n\t-%s" %(gene_keys["TRAV"], gene_keys["TRAJ"], gene_keys["TRBV"], gene_keys["TRBJ"]))
     return gene_keys["TRAV"], gene_keys["TRAJ"], gene_keys["TRBV"], gene_keys["TRBJ"]

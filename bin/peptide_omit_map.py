@@ -40,7 +40,7 @@ def readFile(FILE, fileType):
     if FILE.split('.')[-1].lower() != str(fileType):
         sys.exit("\nFile extension must be of type ." + str(fileType) + "\n")
     else:
-        print 'Reading file: ' + str(FILE)
+        print('Reading file: ' + str(FILE))
         return open(FILE, "r")
 
 
@@ -54,7 +54,7 @@ def fileToList(inFile):
 ### Pymol tools
 
 def initialisePymol():
-    print "\nInitialising pymol...\n"
+    print("\nInitialising pymol...\n")
     pymol.finish_launching(['pymol', '-n'])
     pymol.cmd.reinitialize()
     # set PyMOL parameters
@@ -67,21 +67,21 @@ def initialisePymol():
 
 
 def wait4ray(query):
-    print "Waiting for image to render..."
+    print("Waiting for image to render...")
     while not os.path.exists(query):
         time.sleep(1)
     return None
 
 
 def rayTime(saveas):
-    print "Outputting image.. This may take a few seconds.."
+    print("Outputting image.. This may take a few seconds..")
     if os.path.exists(saveas):
-        print "Removing " + saveas + " as it already exists!"
+        print("Removing " + saveas + " as it already exists!")
         os.remove(saveas)
     time.sleep(10)
     pymol.cmd.png(saveas, ray=1, width=3000, height=3000, dpi=300)
     wait4ray(saveas)
-    print "Done! " + str(saveas) + " was outputted"
+    print("Done! " + str(saveas) + " was outputted")
 
 
 ### BODY ###
@@ -106,7 +106,7 @@ def omit_map():
 
 
     if mtz != "ebi":
-        print "A map.mtz file was provided!", mtz, "will be moved to", fileName + "/maps/" + fileName + ".mtz"
+        print("A map.mtz file was provided!", mtz, "will be moved to", fileName + "/maps/" + fileName + ".mtz")
         MTZfile = readFile(mtz, "mtz")
         import shutil
 
@@ -115,16 +115,16 @@ def omit_map():
 
     if mtz == "ebi":
         if not os.path.exists(fileName + "/maps/" + fileName + ".mtz"):
-            print "Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)"
-            import urllib
+            print("Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)")
+            import urllib.request, urllib.parse, urllib.error
 
-            urllib.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
+            urllib.request.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
                                fileName + "/maps/" + fileName + ".mtz")
         else:
             "Did not need to download from ebi as map.mtz already exists"
 
         if os.path.exists(fileName + "/maps/" + fileName + ".mtz"):
-            print "Download successful!"
+            print("Download successful!")
         else:
             sys.exit(
                 "ERROR! Could not scrape the map.mtz file from the EBI server. Ensure input pdb file is named according to pdb entry name or supply loca mtz file")
@@ -177,15 +177,15 @@ def omit_map():
 
     # Find the MHC helices
     if MHCclass == "I":
-        a1locs = range(50, 86)
+        a1locs = list(range(50, 86))
         MHCa1 = ["MHCa"] + a1locs
-        a2locs = range(140, 176)
+        a2locs = list(range(140, 176))
         MHCa2 = ["MHCa"] + a2locs
 
     if MHCclass == "II":
-        a1locs = range(46, 78)
+        a1locs = list(range(46, 78))
         MHCa1 = ["MHCa"] + a1locs
-        a2locs = range(54, 91)
+        a2locs = list(range(54, 91))
         MHCa2 = ["MHCb"] + a2locs
 
     ## Let's get started
@@ -199,14 +199,14 @@ def omit_map():
     pymol.cmd.load(diffmap, fileName + "_dmap")
 
     # align to template
-    print "\nAligning file to template...\n"
+    print("\nAligning file to template...\n")
     pymol.cmd.load("bin/" + MHCclass + "_template.pdb")
     pymol.cmd.align("omitxyz", MHCclass + "_template")
     pymol.cmd.matrix_copy("omitxyz", "complex")
     pymol.cmd.matrix_copy("omitxyz", fileName + "_map")
     pymol.cmd.matrix_copy("omitxyz", fileName + "_dmap")
     pymol.cmd.delete(MHCclass + "_template")
-    print "\nAlignment to " + MHCclass + "_template.pdb complete!\n"
+    print("\nAlignment to " + MHCclass + "_template.pdb complete!\n")
     pymol.cmd.delete("omitxyz")
 
     # Make chains objects

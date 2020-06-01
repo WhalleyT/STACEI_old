@@ -92,7 +92,7 @@ def clean_SC_PDB(pdb_file, out_name, sc_path):
     return filt_name
 
 def run_SC(filtered_name, sc_path):
-    print filtered_name
+    print(filtered_name)
     cmdstring = "sc XYZIN %s < %s/sc_in.txt > %s/sc_out.txt" % (filtered_name, sc_path, sc_path)
     os.system(cmdstring)
 

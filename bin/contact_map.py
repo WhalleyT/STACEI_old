@@ -177,7 +177,7 @@ def dishOutLocations(nodeList, i, xcentre, y):
     counter = 1
     #print "Num", "\t", "Annot", "\t", "Res", "\t", "xcoord"
     for element in output:
-        for node, coord in itertools.izip(element[2], element[3]):
+        for node, coord in zip(element[2], element[3]):
             #print counter, "\t", element[0][:4], "\t", node[-1], "\t", coord[0]
             counter += 1
 

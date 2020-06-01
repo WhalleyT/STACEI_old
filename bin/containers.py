@@ -49,13 +49,13 @@ class ChainInformation:
                                       mhcb: "MHCb"}
 
     def print_chains(self):
-        print ""
-        print "PDB file is of class %i" %self.mhc_class
-        print "TCR alpha chain is %s" %self.tcra
-        print "TCR beta chain is %s" %self.tcrb
-        print "MHC alpha chain is %s" %self.mhca
-        print "%s is %s" %(self.class_string, self.mhcb)
-        print "Peptide chain is %s" %self.peptide
+        print("")
+        print("PDB file is of class %i" %self.mhc_class)
+        print("TCR alpha chain is %s" %self.tcra)
+        print("TCR beta chain is %s" %self.tcrb)
+        print("MHC alpha chain is %s" %self.mhca)
+        print("%s is %s" %(self.class_string, self.mhcb))
+        print("Peptide chain is %s" %self.peptide)
 
 
 
@@ -163,7 +163,7 @@ class PisaOutputs:
 
 class cleanUp:
     def __init__(self):
-        print "hi"
+        print("hi")
 
 
 

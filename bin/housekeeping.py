@@ -1,7 +1,7 @@
 import argparse
 import sys
 import os
-import containers
+from . import containers
 import glob
 
 from distutils.spawn import find_executable
@@ -35,7 +35,7 @@ def _parse_args():
     parser.add_argument("--hydrogenbond", "-Hb", dest="h_bond_distance", required=False, type=float, default=3.5,
                         help="Distance threshold required for a pair of hydrogen bond donors and acceptors to be "
                              "considered to make a hydrogen bond")
-    parser.add_argument("--saltbridge", "-Sb", dest='salt_bridge_distance', required=False, type=float,
+    parser.add_argument("--saltbridge", "-Sb", dest='s_bond_distance', required=False, type=float,
                         default=4.0, help="Distance threshold required for a pair of hydrogen bond donors and "
                                           "acceptors to be considered to make a salt bridge")
     args = parser.parse_args()
@@ -55,15 +55,15 @@ def check_parse():
         return args, True
     elif args.chains is not None and args.mhc_class is not None:
         if args.mhc_class not in classes:
-            print "MHC class must be 1 or 2"
+            print("MHC class must be 1 or 2")
             sys.exit()
 
         if len(args.chains) != 5 and args.chains is not None:
-            print "Chains argument must be exactly 5 letters"
+            print("Chains argument must be exactly 5 letters")
             sys.exit()
         return args, False
     else:
-        print "Chains argument and MHC argument must be supplied together or not all"
+        print("Chains argument and MHC argument must be supplied together or not all")
         sys.exit()
 
 
@@ -96,7 +96,7 @@ def create_paths(file_name):
     """creates directories for tidiness (if needed)
        and returns the contacts path for us"""
     if file_name == 'bin':
-        print 'Please reconsider calling your PDB file "bin" as it clashes with a directory'
+        print('Please reconsider calling your PDB file "bin" as it clashes with a directory')
         sys.exit()
 
     seq_path = file_name + "/sequences"

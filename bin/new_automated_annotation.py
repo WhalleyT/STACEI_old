@@ -6,7 +6,7 @@ import shutil
 
 from Bio.SeqIO import convert
 from itertools import product
-from data.mhc_sequences import mhc_fastas
+from .data.mhc_sequences import mhc_fastas
 
 def _read_fasta(fp):
         name, seq = None, []
@@ -80,7 +80,7 @@ def _non_tcr_chains(chains, alphas, betas):
 
 def _pair_tcrs(alphas, betas, pdb):
     if len(alphas) is 1 and len(betas) is 1:
-        print "There is only one TCR alpha and beta chain pairing possible"
+        print("There is only one TCR alpha and beta chain pairing possible")
         return alphas[0], betas[0]
 
     if len(alphas) is 0 or len(betas) is 0:
@@ -176,7 +176,7 @@ def  _get_mhc_pep(none_tcr, fasta):
 
 def _pair_mhcs(alphas, betas, pdb, alpha_range, beta_range, distance):
     if len(alphas) is 1 and len(betas) is 1:
-        print "There is only one MHC alpha and beta chain pairing possible"
+        print("There is only one MHC alpha and beta chain pairing possible")
         return [tuple([alphas[0], betas[0]])]
 
     potential_pairs = []
@@ -307,7 +307,7 @@ def clean_pdb_standard(infile, outfile):
 
                             insert_index = list(spaces) + insert_index + list(" ")
 
-                            for i, j in zip(range(0, 4), range(23, 27)):
+                            for i, j in zip(list(range(0, 4)), list(range(23, 27))):
                                 line[j] = insert_index[i]
                             
                             line = "".join(line)
@@ -318,7 +318,7 @@ def clean_pdb_standard(infile, outfile):
 
 def annotate_complex(pdb_file, filtered_name, numbered_name):
     chains = _get_chains(pdb_file)
-    print "PDB contains %i chains" %len(chains)
+    print("PDB contains %i chains" %len(chains))
 
     outdir = pdb_file.split("/")[-1].replace(".pdb", "")
 
@@ -339,7 +339,7 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
 
 
     if len(tcr_pairs) > 2:
-        alphas, betas = zip(*tcr_pairs)
+        alphas, betas = list(zip(*tcr_pairs))
     else:
         alphas = list(tcr_pairs[0])
         betas = list(tcr_pairs[1])
@@ -361,7 +361,7 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
         sys.exit("One of MHCa or MHCb could not be identified")
         
     if mhc_class == 1:
-        print "Pairing MHC class I"
+        print("Pairing MHC class I")
         alpha_range = "14-16"
         beta_range = "22-24"
         distance = "32.0"
@@ -371,19 +371,19 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
         beta_range = "38-40"
         distance = "22.0"
         mhc_pairs = _pair_mhcs(mhcas, mhcbs, numbered_name, alpha_range, beta_range, distance)
-        print "Pairing MHC class II"
+        print("Pairing MHC class II")
 
     for tcr in tcr_pairs:
         mhc_alpha, mhc_beta, success =_map_tcr_to_mhc(mhc_pairs, tcr[0], tcr[1], numbered_name)
 
         if success:
-            print "Successfully paired a TCR to MHC"
+            print("Successfully paired a TCR to MHC")
             peptide = _map_peptide(tcr[0], tcr[1], peps, numbered_name)
             tcr_alpha = tcr[0]
             tcr_beta = tcr[1]
             return tcr_alpha, tcr_beta, peptide, mhc_alpha, mhc_beta, mhc_class
         else:
-            print "Unsuccessfuly tried to pair a TCR and MHC, trying again"
+            print("Unsuccessfuly tried to pair a TCR and MHC, trying again")
             continue
     
     sys.exit("Could not successfully group a TCR-pMHC complex")
