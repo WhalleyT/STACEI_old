@@ -69,15 +69,15 @@ def _write_indexes(nums, letters, start, chain_seq):
     for index, vector in enumerate(nums):
         # print vector
         if index > 0:
-            between.append(range(int(previous_vector[-1]) + 1, int(vector[0])))
+            between.append(list(range(int(previous_vector[-1]) + 1, int(vector[0]))))
         previous_vector = vector
 
-    start_list = range(start, int(nums[0][0]))
+    start_list = list(range(start, int(nums[0][0])))
     #print start_list
     list_minus_end = start_list + nums[0] + between[0] + nums[1] + between[1] + nums[2] + between[2] + nums[3]
     list_minus_end = [int(e) for e in list_minus_end]
 
-    indexes = list_minus_end + range(list_minus_end[-1] + 1, len(chain_seq))
+    indexes = list_minus_end + list(range(list_minus_end[-1] + 1, len(chain_seq)))
     # print indexes
     return indexes
 
@@ -144,8 +144,8 @@ def _rewrite_pdb(pdb_obj, a_range, b_range, achain, bchain):
     a_diff = len(pdb_2d_a) - len(a_range)
     b_diff = len(pdb_2d_b) - len(b_range)
 
-    a_add = range(a_range[-1] + 1, a_range[-1] + 1 + a_diff)
-    b_add = range(b_range[-1] + 1, b_range[-1] + 1 + b_diff)
+    a_add = list(range(a_range[-1] + 1, a_range[-1] + 1 + a_diff))
+    b_add = list(range(b_range[-1] + 1, b_range[-1] + 1 + b_diff))
 
     a_range = a_range + a_add
     b_range = b_range + b_add
@@ -264,7 +264,7 @@ def read_fasta(fp):
 
 def iterate_tcr(tcr, nums):
     for i, j in enumerate(tcr):
-        print i,j
+        print(i,j)
 
 
 def find_start(tcr):
@@ -322,7 +322,7 @@ def renumber_chain(pdb, chain, chain_pairs, starting_chain):
                     if current != previous:
                         on_first_chain = False
                         start = False
-                        chain_pair = chain_iter.next()
+                        chain_pair = next(chain_iter)
 
                     split[5] = str(chain_pair[0])
 
@@ -334,7 +334,7 @@ def renumber_chain(pdb, chain, chain_pairs, starting_chain):
 
 def renumber_chain_safe_MET(pdb, chain, chain_pairs, starting_chain):
     chain_iter = iter(chain_pairs)
-    print starting_chain, chain
+    print(starting_chain, chain)
     out = []
 
     start_found = False
@@ -358,7 +358,7 @@ def renumber_chain_safe_MET(pdb, chain, chain_pairs, starting_chain):
                     current = int(split[5])
 
                     if current != previous and start_found:
-                        chain_pair = chain_iter.next()
+                        chain_pair = next(chain_iter)
 
                     split[5] = str(chain_pair[0])
                     previous = current
@@ -401,17 +401,17 @@ def renumber_ANARCI(fasta, pdb, tcra, tcrb, peptide, mhca, mhcb):
     a_start = find_start(tcra_seq)
     b_start = find_start(tcrb_seq)
 
-    alpha_range = range(a_start, len(tcra_seq))
-    beta_range = range(b_start, len(tcrb_seq))
+    alpha_range = list(range(a_start, len(tcra_seq)))
+    beta_range = list(range(b_start, len(tcrb_seq)))
 
     a_nums, a_lets = pop_list(alpha_range, tcra_seq)
     b_nums, b_lets = pop_list(beta_range, tcrb_seq)
 
     pdb_list = get_pdb_list(pdb)
 
-    a_pair = map(lambda x,y:(x,y), a_nums, a_lets)
+    a_pair = list(map(lambda x,y:(x,y), a_nums, a_lets))
     a_pair = a_pair + [(a_nums[-1] + 1, "X")]
-    b_pair = map(lambda x,y:(x,y), b_nums, b_lets)
+    b_pair = list(map(lambda x,y:(x,y), b_nums, b_lets))
     b_pair = b_pair +  [(b_nums[-1] + 1, "X")]
 
     a_start_pair = (a_nums[0], a_lets[0])

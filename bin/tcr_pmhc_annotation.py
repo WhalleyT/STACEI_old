@@ -204,7 +204,7 @@ def find_tcr(pdb):
                 return alpha, beta
 
     if alpha == "" or beta == "":
-        print "One or more TCR chain could not be identified"
+        print("One or more TCR chain could not be identified")
         sys.exit()
 
 
@@ -321,11 +321,11 @@ def find_mhc(pdb, mhc_list):
             previous_line = line
 
     if is_class1 and is_b2m:
-        print "MHC is class I and MHC alpha is chain %s and beta-2-microglobulin is chain %s" %(mhca, mhcb)
+        print("MHC is class I and MHC alpha is chain %s and beta-2-microglobulin is chain %s" %(mhca, mhcb))
         mhc_class = 1
         return mhca, mhcb, mhc_class
     if not is_class1 and not is_b2m:
-        print "MHC is class II and MHC alpha is chain %s and MHC beta is chain %s" %(mhca, mhcb)
+        print("MHC is class II and MHC alpha is chain %s and MHC beta is chain %s" %(mhca, mhcb))
         mhc_class = 2
         return mhca, mhcb, mhc_class
 
@@ -341,14 +341,14 @@ def convert_pdb_to_fasta(pdb):
         fasta = bio_convert(pdb_name, "pdb-atom", pdb_fa, "fasta")
     except:
         # Change this exception when we find a case where the error happens
-        print "Bio.convert was unsuccessful, trying by SeqRes"
+        print("Bio.convert was unsuccessful, trying by SeqRes")
         fail = True
 
     if fail:
         try:
             fasta = bio_convert(pdb_name, "pdb-seqres", pdb_fa, "fasta")
         except:
-            print "Converting by SeqRes was also unsuccessful"
+            print("Converting by SeqRes was also unsuccessful")
             sys.exit()
         return fasta
     else:
@@ -400,9 +400,9 @@ def count_chains(pdb):
             chain_count += 1
     
     if chain_count >= 5:
-        print "There are %i chains in the structure" % chain_count
+        print("There are %i chains in the structure" % chain_count)
     else:
-        print "There are < 5 chains in the structure %s, meaning it cannot be a TCR-pMHC" % pdb
+        print("There are < 5 chains in the structure %s, meaning it cannot be a TCR-pMHC" % pdb)
         sys.exit()
 
 
@@ -415,7 +415,7 @@ def count_entities(pdb):
                 entity_counter += 1
 
     if entity_counter < 5:
-        print "There are %i entities." % entity_counter
+        print("There are %i entities." % entity_counter)
         sys.exit()
 
 

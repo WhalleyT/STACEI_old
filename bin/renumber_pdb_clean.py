@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
 import swalign
-import generic_functions
+from . import generic_functions
 
 # global paramaters
 SW_SCORE = swalign.NucleotideScoringMatrix(2, -1)
@@ -67,7 +67,7 @@ def filter_alignment(anarci, pdb):
     offset = swout.q_pos - swout.r_pos
     
     attrs = vars(swout)
-    print ', '.join("%s: %s" % item for item in attrs.items())
+    print(', '.join("%s: %s" % item for item in list(attrs.items())))
 
     return offset
 
@@ -84,27 +84,27 @@ def get_pdb_list(pdb_file):
 
 def get_end_of_constant(pdb_nums, anarci_nums):
     #convert to int
-    check_range = map(int, pdb_nums)
+    check_range = list(map(int, pdb_nums))
 
     #convert to int, for ANARCI files we need to remove AB conformations in CDR loops
     repls = ("A", ""), ("B", "")
     anarci_ints = [x.replace("A", "") for x in anarci_nums]
     anarci_ints = [x.replace("B", "") for x in anarci_ints]
-    anarci_ints = map(int, anarci_ints)
+    anarci_ints = list(map(int, anarci_ints))
 
     #get last variable ANARCI annotation
     final_variable = max(anarci_ints)
 
     #get number of AA past Anarci
-    num_aa = len(list(filter(lambda x: x > final_variable, check_range)))
+    num_aa = len(list([x for x in check_range if x > final_variable]))
 
 
     #make a range from end of constant -> end of sequence
     start_constant = final_variable + 1
     end_constant = start_constant + num_aa
 
-    constant_list = range(start_constant, end_constant)
-    constant_list = map(str, constant_list)
+    constant_list = list(range(start_constant, end_constant))
+    constant_list = list(map(str, constant_list))
 
     return constant_list
 

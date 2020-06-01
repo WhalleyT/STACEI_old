@@ -149,7 +149,7 @@ def get_fasta_annot(fasta_file, chain):
                         if j != ".":
                             indexes.append(i)
                 else:
-                    indexes = range(1, len(seq) + 1)
+                    indexes = list(range(1, len(seq) + 1))
     return indexes
 
 

@@ -3,7 +3,7 @@ import pymol
 import sys
 import time
 import shutil
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import bin.data.colourSet as colourSet
 import bin.data.viewSet as viewSet
@@ -20,7 +20,7 @@ def read_file(filename, file_type):
     if filename.split('.')[-1].lower() != str(file_type):
         sys.exit("\nFile extension must be of type ." + str(file_type) + "\n")
     else:
-        print 'Reading file: ' + str(filename)
+        print('Reading file: ' + str(filename))
         return open(filename, "r")
 
 
@@ -32,7 +32,7 @@ def file_to_list(infile):
 
 
 def initialisePymol():
-    print "\nInitialising pymol...\n"
+    print("\nInitialising pymol...\n")
     pymol.finish_launching(['pymol', '-nqc'])
     pymol.cmd.reinitialize()
     # set PyMOL parameters
@@ -45,21 +45,21 @@ def initialisePymol():
 
 
 def wait4ray(query):
-    print "Waiting for image to render..."
+    print("Waiting for image to render...")
     while not os.path.exists(query):
         time.sleep(1)
     return None
 
 
 def ray_tracer(saveas, tracing):
-    print "Outputting image.. This may take a few seconds.."
+    print("Outputting image.. This may take a few seconds..")
     if os.path.exists(saveas):
-        print "Removing " + saveas + " as it already exists!"
+        print("Removing " + saveas + " as it already exists!")
         os.remove(saveas)
     time.sleep(10)
     pymol.cmd.png(saveas, ray=tracing, width=3000, height=3000, dpi=300)
     wait4ray(saveas)
-    print "Done! " + str(saveas) + " was outputted"
+    print("Done! " + str(saveas) + " was outputted")
 
 
 def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
@@ -72,37 +72,37 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
     pdb_name = file_name.lower()
 
     # Make output folder #
-    print file_name
+    print(file_name)
 
     if not os.path.exists(file_name):
-        print "Creating Directory " + file_name
+        print("Creating Directory " + file_name)
         os.makedirs(file_name)
 
     if not os.path.exists(file_name + "/visualisation"):
-        print "Creating Directory " + file_name + "/visualisation"
+        print("Creating Directory " + file_name + "/visualisation")
         os.makedirs(file_name + "/visualisation")
 
     if not os.path.exists(file_name + "/maps"):
-        print "Creating Directory " + file_name + "/maps"
+        print("Creating Directory " + file_name + "/maps")
         os.makedirs(file_name + "/maps")
 
     if mtz != "ebi":
-        print "A map.mtz file was provided!", mtz, "will be moved to", prefix + ".mtz"
+        print("A map.mtz file was provided!", mtz, "will be moved to", prefix + ".mtz")
 
         shutil.copy(mtz, prefix + ".mtz")
 
     if mtz == "ebi":
         if not os.path.exists(prefix + ".mtz"):
-            print "Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)"
+            print("Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)")
 
             try:
                 url = "http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz"
                 destination = prefix + ".mtz"
-                print url, destination
-                urllib.urlretrieve(url, destination)
+                print(url, destination)
+                urllib.request.urlretrieve(url, destination)
             except:
-                print "Could not retrieve url. Please try again, making sure you either supply a file," \
-                      " or your file shares its name with one on PDB"
+                print("Could not retrieve url. Please try again, making sure you either supply a file," \
+                      " or your file shares its name with one on PDB")
                 # quit early, get rid of pymol
                 pymol.cmd.quit()
                 sys.exit()
@@ -112,7 +112,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
             "Did not need to download from ebi as map.mtz already exists"
 
         if os.path.exists(prefix + ".mtz"):
-            print "Download successful!"
+            print("Download successful!")
 
     mtz = prefix + ".mtz"
 
@@ -137,15 +137,15 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Find the MHC helices
     if MHCclass == "I":
-        a1locs = range(50, 86)
+        a1locs = list(range(50, 86))
         MHCa1 = ["MHCa"] + a1locs
-        a2locs = range(140, 176)
+        a2locs = list(range(140, 176))
         MHCa2 = ["MHCa"] + a2locs
 
     if MHCclass == "II":
-        a1locs = range(46, 78)
+        a1locs = list(range(46, 78))
         MHCa1 = ["MHCa"] + a1locs
-        a2locs = range(54, 91)
+        a2locs = list(range(54, 91))
         MHCa2 = ["MHCb"] + a2locs
 
     # Let's get started
@@ -158,12 +158,12 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
     pymol.cmd.load(diffmap, file_name + "_dmap")
 
     # align to template
-    print "\nAligning file to template...\n"
+    print("\nAligning file to template...\n")
     pymol.cmd.load("bin/data/" + MHCclass + "_cdr_template.pdb")
     pymol.cmd.align("complex", MHCclass + "_cdr_template")
     pymol.cmd.matrix_copy("complex", file_name + "_map")
     pymol.cmd.delete(MHCclass + "_cdr_template")
-    print "\nAlignment to " + MHCclass + "_cdr_template.pdb  complete!\n"
+    print("\nAlignment to " + MHCclass + "_cdr_template.pdb  complete!\n")
 
     # Make chains objects
     pymol.cmd.select("MHCas", selection="chain " + MHCachain)
@@ -292,36 +292,36 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     # Make output folder #
 
     if not os.path.exists(file_name):
-        print "Creating Directory " + file_name
+        print("Creating Directory " + file_name)
         os.makedirs(file_name)
 
     if not os.path.exists(file_name + "/visualisation"):
-        print "Creating Directory " + file_name + "/visualisation"
+        print("Creating Directory " + file_name + "/visualisation")
         os.makedirs(file_name + "/visualisation")
 
     if not os.path.exists(file_name + "/maps"):
-        print "Creating Directory " + file_name + "/maps"
+        print("Creating Directory " + file_name + "/maps")
         os.makedirs(file_name + "/maps")
 
     if not os.path.exists(file_name + "/pdbs"):
-        print "Creating Directory " + file_name + "/pdbs"
+        print("Creating Directory " + file_name + "/pdbs")
         os.makedirs(file_name + "/pdbs")
 
     if mtz != "ebi":
-        print "A map.mtz file was provided!", mtz, "will be moved to", prefix + ".mtz"
+        print("A map.mtz file was provided!", mtz, "will be moved to", prefix + ".mtz")
 
         shutil.copy(mtz, prefix + ".mtz")
 
     if mtz == "ebi":
         if not os.path.exists(prefix + ".mtz"):
-            print "Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)"
+            print("Downloading map.mtz for entry", pdb_name, "from the PDBe (EBI)")
 
             try:
-                urllib.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
+                urllib.request.urlretrieve("http://www.ebi.ac.uk/pdbe/coordinates/files/" + pdb_name + "_map.mtz",
                                prefix + ".mtz")
             except:
-                print "Could not retrieve url. Please try again, making sure you either supply a file," \
-                      " or your file shares its name with one on PDB"
+                print("Could not retrieve url. Please try again, making sure you either supply a file," \
+                      " or your file shares its name with one on PDB")
                 # quit early, get rid of pymol
                 pymol.cmd.quit()
                 sys.exit()
@@ -333,12 +333,12 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     temp.close()
 
     # delete chain
-    print "Deleting chain for %s" % pdb
+    print("Deleting chain for %s" % pdb)
     os.system("pdbcur XYZIN " + pdb + " XYZOUT " + file_name + "/pdbs/" + file_name +
               "_nopeptide.pdb" + " < " + file_name + "/pdbs/" + file_name + "_pdbcurPARAM.tmp")
 
     # Run one cycle of refmac without peptide in the groove
-    print "Running refmac with peptideless complex"
+    print("Running refmac with peptideless complex")
     os.system("refmac5 XYZIN " + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " XYZOUT " +
               file_name + "/pdbs/" + file_name + "_refmac5_omitmap.pdb" + " HKLIN " + file_name + "/electrostatics/"
               + file_name + ".mtz" + " HKLOUT " + prefix + "_refmac5_omitmap.mtz" + " LIBOUT "
@@ -349,17 +349,17 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
 
     # This bit is the same as peptideMHCvisualise except the inputs and outputs are different
-    print "Running fast fourier transform with parameters 1"
+    print("Running fast fourier transform with parameters 1")
     os.system("fft HKLIN " + prefix + "_refmac5_omitmap.mtz" + " MAPOUT " + file_name +
               "/electrostatics/" + file_name + "_om.map1.tmp" + " < " + "bin/data/EDMparam1.tmp")
-    print "Running mapmask with parameters 1"
+    print("Running mapmask with parameters 1")
     os.system("mapmask MAPIN " + prefix + "_om.map1.tmp" +
               " MAPOUT " + prefix + "_om.map.ccp4" + " XYZIN "
               + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " < " + "bin/data/EDMparam2.tmp")
-    print "Running fast fourier transform with parameters 2"
+    print("Running fast fourier transform with parameters 2")
     os.system("fft HKLIN " + prefix + "_refmac5_omitmap.mtz"
               + " MAPOUT " + prefix + "_om.map3.tmp" + " < " + " bin/data/EDMparam3.tmp")
-    print "Running mapmask with parameters 2"
+    print("Running mapmask with parameters 2")
     os.system("mapmask MAPIN " + prefix + "_om.map3.tmp" +
               " MAPOUT " + prefix + "_om.difference_map.ccp4"
               + " XYZIN " + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " < " + "bin/data/EDMparam4.tmp")
@@ -378,15 +378,15 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Find the MHC helices
     if MHCclass == "I":
-        a1locs = range(50, 86)
+        a1locs = list(range(50, 86))
         MHCa1 = ["MHCa"] + a1locs
-        a2locs = range(140, 176)
+        a2locs = list(range(140, 176))
         MHCa2 = ["MHCa"] + a2locs
 
     if MHCclass == "II":
-        a1locs = range(46, 78)
+        a1locs = list(range(46, 78))
         MHCa1 = ["MHCa"] + a1locs
-        a2locs = range(54, 91)
+        a2locs = list(range(54, 91))
         MHCa2 = ["MHCb"] + a2locs
 
     # Let's get started
@@ -400,14 +400,14 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     pymol.cmd.load(diffmap, file_name + "_dmap")
 
     # align to template
-    print "\nAligning file to template...\n"
+    print("\nAligning file to template...\n")
     pymol.cmd.load("bin/data/" + MHCclass + "_cdr_template.pdb")
     pymol.cmd.align("omitxyz", MHCclass + "_cdr_template")
     pymol.cmd.matrix_copy("omitxyz", "complex")
     pymol.cmd.matrix_copy("omitxyz", file_name + "_map")
     pymol.cmd.matrix_copy("omitxyz", file_name + "_dmap")
     pymol.cmd.delete(MHCclass + "_cdr_template")
-    print "\nAlignment to " + MHCclass + "_cdr_template.pdb  complete!\n"
+    print("\nAlignment to " + MHCclass + "_cdr_template.pdb  complete!\n")
     pymol.cmd.delete("omitxyz")
 
     # Make chains objects

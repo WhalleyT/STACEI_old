@@ -28,9 +28,9 @@ def _read_fasta(fp):
 
 
 def _missing_elements(nums):
-    nums = map(int, nums)
+    nums = list(map(int, nums))
     start, end = nums[0], nums[-1]
-    return sorted(set(xrange(start, end + 1)).difference(nums))
+    return sorted(set(range(start, end + 1)).difference(nums))
 
 
 def _x_to_dot(sequence):
@@ -75,14 +75,14 @@ def _convert_pdb_to_fasta(pdb_name, pdb_fa):
     try:
         bio_convert(pdb_name, "pdb-atom", pdb_fa, "fasta")
     except:
-        print "Bio.convert was unsuccessful, trying by SeqRes"
+        print("Bio.convert was unsuccessful, trying by SeqRes")
         convert_fail = True
 
     if convert_fail:
         try:
             bio_convert(pdb_name, "pdb-seqres", pdb_fa, "fasta")
         except:
-            print "Converting by SeqRes was also unsuccessful"
+            print("Converting by SeqRes was also unsuccessful")
             sys.exit()
 
 

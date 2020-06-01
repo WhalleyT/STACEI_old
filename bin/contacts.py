@@ -3,7 +3,7 @@ import sys
 import itertools
 import re
 from Bio.PDB import Selection as pdb_select
-from modifed_biopython_parser import PDBParser as pdb_parser
+from .modifed_biopython_parser import PDBParser as pdb_parser
 from Bio.PDB import is_aa as is_amino_acid
 
 
@@ -208,7 +208,7 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
         else:
             contact_matrix.append(contact_matrix_row(lines, tcr_a_locations, tcr_b_locations, mhc_a_chain,
                                                      mhc_b_chain, peptide_chain, tcr_a_chain, tcr_b_chain))
-    print str(omit_counter) + ' contacts were omitted due to water "HOH"'
+    print(str(omit_counter) + ' contacts were omitted due to water "HOH"')
     
     sorted_contacts = sorted(contact_matrix, key=lambda items: (items[0], items[2]))
 
@@ -222,7 +222,7 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
         if float(i[2]).is_integer() == False:
             if ".5" in str(i[2]):
                 res = str(i[2] + 1).replace(".5", "A")
-                print res
+                print(res)
             if ".75" in str(i[2]):
                 res = str(i[2] + 1).replace(".75", "B")
 
@@ -257,7 +257,7 @@ def is_hydrogen_bond(contact_row, h_bond_dist):
         return False
 
 
-def is_salt_bridge(contact_row):
+def is_salt_bridge(contact_row, sb_dist):
     acid_atoms = ["GLUOE1O", "GLUOE2O", "ASPOD1O", "ASPOD2O"]
     base_atoms = ["LYSNZ N", "ARGNE N", "ARGNH1N", "ARGNH2N"]
 
@@ -266,10 +266,10 @@ def is_salt_bridge(contact_row):
 
 
     if id_1 in acid_atoms and id_2 in base_atoms:
-        if contact_row[14] <= 3.40:
+        if contact_row[14] <= sb_dist:
             return True
     if id_2 in acid_atoms and id_1 in base_atoms:
-        if contact_row[14] <= 3.40:
+        if contact_row[14] <= sb_dist:
             return True
     else:
         return False
@@ -283,7 +283,7 @@ def is_van_der_waals(contact_row, vdw_dist):
 def bond_annotator(contacts_row, vdw_dist, h_bond_dist, s_bond_dist):
     contacts_row.append('NO')
 
-    if is_van_der_waals(contact_row, vdw_dist):
+    if is_van_der_waals(contacts_row, vdw_dist):
         contacts_row[15] = 'VW'
     if is_hydrogen_bond(contacts_row, h_bond_dist):
         contacts_row[15] = 'HB'
@@ -302,7 +302,7 @@ def annotate_all_wrapper(contact_matrix, vdw_dist, h_bond_dist, s_bond_dist):
         else:
             contact_matrix_new.append(row)
 
-    print str(omit_counter) + ' contacts were omitted due to not meeting annotation criteria "NO"'
+    print(str(omit_counter) + ' contacts were omitted due to not meeting annotation criteria "NO"')
     return contact_matrix_new
 
 
@@ -382,7 +382,7 @@ def run_ncont(pdb_name, mhca_res, mhcb_res, peptide_res, tcra_res, tcrb_res, fil
                       "mindist 0.0\n" \
                       "maxdist 4.0" %(filtered_name, pdb_mhc_pep_ncont, mhca_res, mhcb_res, peptide_res)
 
-    print "Calling: %s\n" %pep_mhc_command
+    print("Calling: %s\n" %pep_mhc_command)
     os.system(pep_mhc_command)
 
     tcr_pmhc_command = "ncont XYZIN %s <<eof > %s \n" \
@@ -395,7 +395,7 @@ def run_ncont(pdb_name, mhca_res, mhcb_res, peptide_res, tcra_res, tcrb_res, fil
                        "maxdist 4.0" %(filtered_name, pdb_tcr_pmhc_ncont, tcra_res,
                                       tcrb_res, mhca_res, mhcb_res, peptide_res)
 
-    print "Calling: %s\n" %tcr_pmhc_command
+    print("Calling: %s\n" %tcr_pmhc_command)
     os.system(tcr_pmhc_command)
 
 
@@ -482,7 +482,10 @@ def three2one(seq):
     if len(seq) % 3 == 0:
         upper_seq = seq.upper()
         single_seq = ''
-        for i in range(len(upper_seq) / 3):
+
+        iter_range = int(len(upper_seq) / 3)
+
+        for i in range(iter_range):
             single_seq += d[upper_seq[3 * i:3 * i + 3]]
         return single_seq
 
@@ -915,7 +918,7 @@ def allLevels(contactMatrix, requestList):
 
     counter = 0
     if len(requestList) <= 1:
-       print "Request error"
+       print("Request error")
     if len(requestList) % 2 != 0:
       print ("Request list error.. request list must be even")
 
@@ -950,7 +953,7 @@ def allLevels(contactMatrix, requestList):
 
 
 def stats(fileIn, inFileName):
-    print "calling stats"
+    print("calling stats")
 
     inFile = read_file(fileIn, "txt")
 

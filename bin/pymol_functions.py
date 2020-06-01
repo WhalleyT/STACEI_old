@@ -77,7 +77,7 @@ def colour_peptide_buriedness(peplen, path, home):
     for row in f:
         BSA_values.append(float(row))
 
-    peptide_position = range(1, peplen + 1)
+    peptide_position = list(range(1, peplen + 1))
     numpep = len(peptide_position)
     res = 0
     while (res < numpep):

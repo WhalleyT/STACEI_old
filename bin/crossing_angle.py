@@ -14,7 +14,7 @@ def read_file(infile, file_type):
     if infile.split('.')[-1].lower() != str(file_type):
         sys.exit("\nFile extension must be of type ." + str(file_type) + "\n")
     else:
-        print 'Reading file: ' + str(infile)
+        print('Reading file: ' + str(infile))
         return open(infile, "r")
 
 
@@ -26,22 +26,22 @@ def file_to_list(infile):
 
 
 def align_to_template(file_name, mhc_class):
-    print os.getcwd(); raw_input()
-    print "\nAligning file to template...\n"
+    print(os.getcwd()); input()
+    print("\nAligning file to template...\n")
     pymol.finish_launching(['pymol', '-qeim'])
     pymol.cmd.load(file_name + ".pdb")
     pymol.cmd.load("bin/data/" + mhc_class + "_template.pdb")
-    print "x"
+    print("x")
     pymol.cmd.align(file_name, mhc_class + "_template")
-    print "y"
+    print("y")
     pymol.cmd.save(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb", file_name)
     pymol.cmd.reinitialize()
-    print "\nAlignment to " + mhc_class + "_template.pdb complete!\n"
+    print("\nAlignment to " + mhc_class + "_template.pdb complete!\n")
     return None
 
 
 def sulphide_parser(infile):
-    print "Finding SSBOND Lines..."
+    print("Finding SSBOND Lines...")
     out_ss = []
     for line in infile:
         add = ''
@@ -52,7 +52,7 @@ def sulphide_parser(infile):
 
 
 def header_parser(inFile):
-    print "Finding header..."
+    print("Finding header...")
     outHeader = []
     for line in inFile:
         add = ''
@@ -63,7 +63,7 @@ def header_parser(inFile):
 
 
 def title_parser(infile):
-    print "Finding title..."
+    print("Finding title...")
     outTitle = []
     for line in infile:
         add = ''
@@ -78,27 +78,27 @@ def title_parser(infile):
 def wait_for_ray(query):
     counter = 0
     while not os.path.exists(query):
-        print counter
+        print(counter)
         time.sleep(1)
         counter += 1
     return None
 
 
 def save_ray(save_as):
-    print "Outputting image.. This may take a few seconds.."
+    print("Outputting image.. This may take a few seconds..")
     if os.path.exists(save_as):
-        print "Removing " + save_as + " as it already exists!"
+        print("Removing " + save_as + " as it already exists!")
         os.remove(save_as)
     time.sleep(10)
     pymol.cmd.png(save_as, ray=1, width=3000, height=3000, dpi=300)
     wait_for_ray(save_as)
-    print "Done! " + str(save_as) + " was outputted"
+    print("Done! " + str(save_as) + " was outputted")
 
 
 ### PDB Atom Parser ###
 
 def atom_parser(all_lines):
-    print str(len(all_lines)) + " went in"
+    print(str(len(all_lines)) + " went in")
     atom_list = []
     else_list = []
     for line in all_lines:
@@ -106,8 +106,8 @@ def atom_parser(all_lines):
             atom_list.append(line)
         else:
             else_list.append(line)
-    print str(len(atom_list)) + " atom lines detected"
-    print str(len(else_list)) + " else lines detected"
+    print(str(len(atom_list)) + " atom lines detected")
+    print(str(len(else_list)) + " else lines detected")
     return atom_list, else_list
 
 
@@ -121,23 +121,23 @@ def atomRowParser(atomRow):
 
 def make_atom_matrix(atomList):
     atomMatrix = []
-    print '\nCreating atom matrix...'
+    print('\nCreating atom matrix...')
     for row in atomList:
         atomMatrix.append(atomRowParser(row))
-    print "Done!\n"
+    print("Done!\n")
     return atomMatrix
 
 
 ### Robust Cysteine pair finder ###
 
 def sulphide_bond_parser(infile):
-    print "\nFinding disulphide bridges..."
+    print("\nFinding disulphide bridges...")
     ss_bond_list = []
     for line in infile:
         if "SSBOND" in line[0:6]:
             parsedLine = [line[15], int(line[18:21]), line[29], int(line[32:35])]
             ss_bond_list.append(parsedLine)
-    print str(len(ss_bond_list)) + " SSBOND lines detected!\n"
+    print(str(len(ss_bond_list)) + " SSBOND lines detected!\n")
     if len(ss_bond_list) > 0:
         return ss_bond_list
     else:
@@ -150,7 +150,7 @@ def tcr_pair_finder(ss_bond_list):
     
     the alpha chain cys and the beta chain cys
     """
-    print "Finding TCRa and TCRb cysteine pairs...\n "
+    print("Finding TCRa and TCRb cysteine pairs...\n ")
     alphaCys = []
     betaCys = []
     for row in ss_bond_list:
@@ -175,9 +175,9 @@ def tcr_pair_finder(ss_bond_list):
                 if row[2] == 'E':
                     if 85 <= row[1] <= 110:
                         betaCys = row
-    print alphaCys
-    print betaCys
-    print "\n"
+    print(alphaCys)
+    print(betaCys)
+    print("\n")
     if len(alphaCys) > 0 and len(betaCys) > 0:
         return alphaCys, betaCys
     else:
@@ -185,7 +185,7 @@ def tcr_pair_finder(ss_bond_list):
 
 
 def tcr_pair_atom_finder(pair_location, atom_matrix):
-    print "Finding SG atoms..."
+    print("Finding SG atoms...")
     coordinate1 = []
     coordinate2 = []
     chain = pair_location[0]
@@ -217,16 +217,16 @@ def get_sg_coords(row):
 def robust_cysteine(infile, atom_matrix):
     ss_lines = sulphide_bond_parser(infile)
     if not ss_lines:
-        print "No SSBOND lines were detected in the PDB!\n"
+        print("No SSBOND lines were detected in the PDB!\n")
         return False, False, False, False
     a, b = tcr_pair_finder(ss_lines)
     if a is False or b is False:
-        print "Could not find TCR cysteine pairs in the SSBOND list!\n"
+        print("Could not find TCR cysteine pairs in the SSBOND list!\n")
         return False, False, False, False
     a1_atoms, a2_atoms = tcr_pair_atom_finder(a, atom_matrix)
     b1_atoms, b2_atoms = tcr_pair_atom_finder(b, atom_matrix)
     if a1_atoms == False or a2_atoms == False or b1_atoms == False or b2_atoms == False:
-        print "Could not find TCR cysteine atoms from the cysteine pairs listed in SSBOND list!\n"
+        print("Could not find TCR cysteine atoms from the cysteine pairs listed in SSBOND list!\n")
         return False, False, False, False
     return a1_atoms, a2_atoms, b1_atoms, b2_atoms
 
@@ -234,7 +234,7 @@ def robust_cysteine(infile, atom_matrix):
 # Weak Cys pair finder #    
 
 def cysPairFinder(atomMatrix, chain):
-    print "Finding CYS residues between residues 15 to 35 and between 85 to 105..."
+    print("Finding CYS residues between residues 15 to 35 and between 85 to 105...")
     cysteines = []
     cyspairs = []
     cysPairsSG = []
@@ -246,16 +246,16 @@ def cysPairFinder(atomMatrix, chain):
             if row[3] == '' or 'A':
                 cyspairs.append(row)
     for x in cyspairs:
-        print x
-    print '\nNumber of cys atoms found in chain ' + str(chain) + ' around the S-S bridge region: ' + str(len(cyspairs))
+        print(x)
+    print('\nNumber of cys atoms found in chain ' + str(chain) + ' around the S-S bridge region: ' + str(len(cyspairs)))
     for row in cyspairs:
         if 'SG' in row[2]:
             cysPairsSG.append(row)
-    print '\nNumber of cys SG atoms found in chain ' + str(chain) + ' around the S-S bridge region: ' + str(
-        len(cysPairsSG)) + "\n"
+    print('\nNumber of cys SG atoms found in chain ' + str(chain) + ' around the S-S bridge region: ' + str(
+        len(cysPairsSG)) + "\n")
     for x in cysPairsSG:
-        print x
-    print "\n"
+        print(x)
+    print("\n")
     return cysPairsSG
 
 
@@ -270,7 +270,7 @@ def cysWeak(atomMatrix):
 ### MHC coordinates finder ###
 
 def MHCaxisI(atomMatrix):
-    print "\nMHC axis atoms are:\n"
+    print("\nMHC axis atoms are:\n")
     Calphas = []
     helixCalphas = []
     for row in atomMatrix:
@@ -281,13 +281,13 @@ def MHCaxisI(atomMatrix):
             if row[3] == '' or 'A':
                 helixCalphas.append(row)
     for x in helixCalphas:
-        print x
-    print '\nNumber of Calpha atoms in MHC axis: ' + str(len(helixCalphas)) + "\n"
+        print(x)
+    print('\nNumber of Calpha atoms in MHC axis: ' + str(len(helixCalphas)) + "\n")
     return helixCalphas
 
 
 def MHCaxisII(atomMatrix):
-    print "\nMHC axis atoms are:\n"
+    print("\nMHC axis atoms are:\n")
     Calphas = []
     helixCalphas = []
     for row in atomMatrix:
@@ -309,13 +309,13 @@ def MHCaxisII(atomMatrix):
             if row[3] == '' or 'A':
                 helixCalphas.append(row)
     for x in helixCalphas:
-        print x
-    print '\nNumber of Calpha atoms in MHC axis: ' + str(len(helixCalphas)) + "\n"
+        print(x)
+    print('\nNumber of Calpha atoms in MHC axis: ' + str(len(helixCalphas)) + "\n")
     return helixCalphas
 
 
 def MHCaxisCoords(helixCalphas):
-    print "Extracting MHC axis coordinates..."
+    print("Extracting MHC axis coordinates...")
     MHCx = []
     MHCy = []
     MHCz = []
@@ -329,10 +329,10 @@ def MHCaxisCoords(helixCalphas):
 
 def findMHCaxisCoords(atomMatrix, MHCclass):
     if MHCclass == "I":
-        print 'Establishing MHC I axis...'
+        print('Establishing MHC I axis...')
         return MHCaxisCoords(MHCaxisI(atomMatrix))
     if MHCclass == "II":
-        print 'Establishing MHC II axis...'
+        print('Establishing MHC II axis...')
         return MHCaxisCoords(MHCaxisII(atomMatrix))
 
 
@@ -356,11 +356,11 @@ def generateMatrixM(mhc_3d_coords):
 ### Matrix A ###
 
 def generateMatrixA(matrixM):
-    print "\nGenerating matrix A...\n"
+    print("\nGenerating matrix A...\n")
     matrixMt = matrixM.transpose()
     matrixMtt = matrixMt.transpose()
-    print "Matrix A: \n"
-    print numpy.dot(matrixMtt, matrixMt)
+    print("Matrix A: \n")
+    print(numpy.dot(matrixMtt, matrixMt))
     return numpy.dot(matrixMtt, matrixMt)
 
 
@@ -370,16 +370,16 @@ def generateEigens(matrixA):
     eigenvecval = numpy.linalg.eigh(matrixA)
     eigenvalues = eigenvecval[0]
     eigenvectors = eigenvecval[1]
-    print "\nLargest Eigenvalue:"
-    print eigenvalues[-1]
-    print "\nLargest Eigenvector"
-    print eigenvectors[:, 2] * -1
-    print "\n"
+    print("\nLargest Eigenvalue:")
+    print(eigenvalues[-1])
+    print("\nLargest Eigenvector")
+    print(eigenvectors[:, 2] * -1)
+    print("\n")
     return eigenvalues[-1], eigenvectors[:, 2] * -1
 
 
 def crossingAngleCalculator(TCRA, TCRB, MHCA, MHCB):
-    print "\nCalculating crossing angle...\n"
+    print("\nCalculating crossing angle...\n")
     p = (TCRB[0] - TCRA[0]) * (MHCB[0] - MHCA[0]) + (TCRB[1] - TCRA[1]) * (MHCB[1] - MHCA[1]) + (TCRB[2] - TCRA[2]) * (
         MHCB[2] - MHCA[2])
     q = ((TCRB[0] - TCRA[0]) ** 2) + ((TCRB[1] - TCRA[1]) ** 2) + ((TCRB[2] - TCRA[2]) ** 2)
@@ -391,19 +391,19 @@ def crossingAngleCalculator(TCRA, TCRB, MHCA, MHCB):
 
 def which_quadrant(TCRBx, TCRBy):
     if TCRBx > 0 and TCRBy > 0:
-        print "Crossing angle is in the 0-90 quadrant\n"
+        print("Crossing angle is in the 0-90 quadrant\n")
         return 0, 90
     elif TCRBx < 0 < TCRBy:
-        print "Crossing angle is in the 90-180 quadrant\n"
+        print("Crossing angle is in the 90-180 quadrant\n")
         return 90, 180
     elif TCRBx < 0 and TCRBy < 0:
-        print "Crossing angle is in the 180-270 quadrant\n"
+        print("Crossing angle is in the 180-270 quadrant\n")
         return 180, 270
     elif TCRBx > 0 > TCRBy:
-        print "Crossing angle is in the 270-360 quadrant\n"
+        print("Crossing angle is in the 270-360 quadrant\n")
         return 270, 360
     else:
-        print "Crossing angle is not within any expected quadrant\n"
+        print("Crossing angle is not within any expected quadrant\n")
         sys.exit()
 
 
@@ -425,7 +425,7 @@ def pyMOLparameters():
 
 def crossingAngleVisualisation(fileName, MHCclass, ray):
     pyMOLparameters()
-    print "Generating crossing angle image"
+    print("Generating crossing angle image")
     # load and extract to objects
     pymol.cmd.load(fileName + "/crossingAngle/" + fileName + "_centroids.pdb", "centroids")
     pymol.cmd.select("TCRaCentroid", selection="chain Y")
@@ -479,15 +479,15 @@ def crossingAngleVisualisation(fileName, MHCclass, ray):
 
     # show MHC
     if MHCclass == "I":
-        range_a1loc = range(50, 86)
+        range_a1loc = list(range(50, 86))
         mhca_1 = ["MHCao"] + range_a1loc
-        a2locs = range(140, 176)
+        a2locs = list(range(140, 176))
         mhca_2 = ["MHCao"] + a2locs
 
     if MHCclass == "II":
-        range_a1loc = range(46, 78)
+        range_a1loc = list(range(46, 78))
         mhca_1 = ["MHCao"] + range_a1loc
-        a2locs = range(54, 91)
+        a2locs = list(range(54, 91))
         mhca_2 = ["MHCbo"] + a2locs
 
     name = "MHCa1"
@@ -520,8 +520,8 @@ def crossingAngleVisualisation(fileName, MHCclass, ray):
 
         # save sessiona and quit
     pymol.cmd.save(fileName + "/crossingAngle/" + fileName + "_aligned_crossingangle.pse")
-    print "Outputted " + fileName + "_crossingangle.png image and " + fileName + \
-          "_aligned_crossingangle.pse session file.\n"
+    print("Outputted " + fileName + "_crossingangle.png image and " + fileName + \
+          "_aligned_crossingangle.pse session file.\n")
     pymol.cmd.reinitialize()
 
 
@@ -532,7 +532,7 @@ def angleToTargetPyMOL(file_name, ray):
     pymol.cmd.select("MHCmove", selection="chain M+N")
     pymol.cmd.load("bin/data/centroids_target.pdb", "centroids_target")
     pymol.cmd.align("MHCmove", "centroids_target")
-    print "Aligned at origin!"
+    print("Aligned at origin!")
     # colour and show spheres and lines
     pymol.cmd.hide("everything")
     pymol.cmd.show("spheres")
@@ -559,7 +559,7 @@ def angleToTargetPyMOL(file_name, ray):
         11.795754433,    8.656616211,    2.305841923,\
       -26788.419921875, 27120.732421875,    0.000000000")
     # generate images
-    print "Generating image.."
+    print("Generating image..")
 
     if ray:
         centroid_on_axis = file_name + "/crossingAngle/" + file_name + "_centroidonxaxis.png"
@@ -600,7 +600,7 @@ def calculate(pdb, mhc_class, ray, file_name):
     # Align input.pdb to template #
 
     align_to_template(file_name, mhc_class)
-    print "Opening aligned PDB file"
+    print("Opening aligned PDB file")
     alignedPDBnoMeta = read_file(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb", "pdb")
 
     # Extract all lines from PDB file of orig and aligned PDB files #
@@ -611,7 +611,7 @@ def calculate(pdb, mhc_class, ray, file_name):
 
     ### Metadata Replacer ###
 
-    print "Transfering metadata from " + file_name + ".pdb to " + file_name + "_aligned_noMeta\n"
+    print("Transfering metadata from " + file_name + ".pdb to " + file_name + "_aligned_noMeta\n")
     metatitle = title_parser(origall_lines)
     metaheader = header_parser(origall_lines)
     MetaSS = sulphide_parser(origall_lines)
@@ -638,10 +638,10 @@ def calculate(pdb, mhc_class, ray, file_name):
     for Metax in alignedAllLines:
         outTxtMeta += Metax
     working_file.write(outTxtMeta)
-    print "Metadata added to " + file_name + "/crossingAngle/" + file_name + "_aligned.pdb\n"
+    print("Metadata added to " + file_name + "/crossingAngle/" + file_name + "_aligned.pdb\n")
 
     # Load the working PDB file
-    print "Extracting all lines from " + file_name + "/crossingAngle/" + file_name + "_aligned.pdb\n"
+    print("Extracting all lines from " + file_name + "/crossingAngle/" + file_name + "_aligned.pdb\n")
     working_file = open(file_name + "/crossingAngle/" + file_name + '_aligned.pdb', 'r')
     all_lines = file_to_list(working_file)
     working_file.close()
@@ -655,27 +655,27 @@ def calculate(pdb, mhc_class, ray, file_name):
     if TCRaCys1 == False or TCRaCys2 == False or TCRbCys1 == False or TCRbCys2 == False:
         cysWARNING = True
         TCRaCys1, TCRaCys2, TCRbCys1, TCRbCys2 = cysWeak(atomM)
-    print "\nTCRa and TCRb cysteine pair SG atoms are:\n"
-    print TCRaCys1
-    print TCRaCys2
-    print TCRbCys1
-    print TCRbCys2
+    print("\nTCRa and TCRb cysteine pair SG atoms are:\n")
+    print(TCRaCys1)
+    print(TCRaCys2)
+    print(TCRbCys1)
+    print(TCRbCys2)
     cysAlpha1 = get_sg_coords(TCRaCys1)
     cysAlpha2 = get_sg_coords(TCRaCys2)
     cysBeta1 = get_sg_coords(TCRbCys1)
     cysBeta2 = get_sg_coords(TCRbCys2)
-    print "\nTCRa and TCRb cysteine pair SG coordinates are [x,y,z]:\n"
-    print cysAlpha1
-    print cysAlpha2
-    print cysBeta1
-    print cysBeta1
+    print("\nTCRa and TCRb cysteine pair SG coordinates are [x,y,z]:\n")
+    print(cysAlpha1)
+    print(cysAlpha2)
+    print(cysBeta1)
+    print(cysBeta1)
     tcra = [(cysAlpha1[0] + cysAlpha2[0]) / 2, (cysAlpha1[1] + cysAlpha2[1]) / 2, (cysAlpha1[2] + cysAlpha2[2]) / 2]
     tcrb = [(cysBeta1[0] + cysBeta2[0]) / 2, (cysBeta1[1] + cysBeta2[1]) / 2, (cysBeta1[2] + cysBeta2[2]) / 2]
-    print "\nTCRa cysteine centroid is [x,y,z]:"
-    print tcra
-    print "\nTCRb cysteine centroid is [x,y,z]:"
-    print tcrb
-    print "\n\n"
+    print("\nTCRa cysteine centroid is [x,y,z]:")
+    print(tcra)
+    print("\nTCRb cysteine centroid is [x,y,z]:")
+    print(tcrb)
+    print("\n\n")
 
     # MHC axis #
 
@@ -703,7 +703,7 @@ def calculate(pdb, mhc_class, ray, file_name):
 
     # Centroid PDB file #
 
-    print "Generating centroid PDB file for visualisation...\n"
+    print("Generating centroid PDB file for visualisation...\n")
     centroidsPdbFile = open(file_name + "/crossingAngle/" + file_name + '_centroids.pdb', 'w')
     outPDB = ''
     outPDB += "         " + str(1) + "         " + str(2) + "         " + str(3) + "         " + str(4) + \
@@ -737,15 +737,15 @@ def calculate(pdb, mhc_class, ray, file_name):
     outPDB += "ATOM      4  N   ALA N   1    " + d1 + d2 + d3 + "  1.00  1.00           S"
     centroidsPdbFile.write(outPDB)
     centroidsPdbFile.close()
-    print "Done!\n"
+    print("Done!\n")
     # Make me that image #
 
     crossingAngleVisualisation(file_name, mhc_class, ray)
 
     # Directionality parameters
-    print"Angle calculator output: "
+    print("Angle calculator output: ")
     angleInposition = crossingAngleCalculator(tcra, tcrb, MHCA, MHCB)
-    print ("%.2f" % angleInposition)
+    print(("%.2f" % angleInposition))
     dxMHC = MHCB[0] - MHCA[0]
     dyMHC = MHCB[1] - MHCA[1]
     dzMHC = MHCB[2] - MHCA[2]
@@ -802,25 +802,25 @@ def calculate(pdb, mhc_class, ray, file_name):
     #################################### Calculation ###############################################
     # These are calculation parameters only #
 
-    print "Moving everything to the origin..."
+    print("Moving everything to the origin...")
     MHCA = [0.0, 0.0, 0.0]
     tcra, tcrb, MHCA, MHCB = angleToTargetPyMOL(file_name, ray)
     tcra = [round(elem, 3) for elem in tcra]
     tcrb = [round(elem, 3) for elem in tcrb]
-    print tcrb
+    print(tcrb)
     MHCA = [round(elem, 3) for elem in MHCA]
     MHCB = [round(elem, 3) for elem in MHCB]
 
     # Crossing angle calculator #
 
-    print "\nLine 1 (TCR) A:"
-    print tcra
-    print "\nLine 1 (TCR) B:"
-    print tcrb
-    print "\nLine 2 (MHC) A:"
-    print MHCA
-    print "\nLine 2 (MHC) B:"
-    print MHCB
+    print("\nLine 1 (TCR) A:")
+    print(tcra)
+    print("\nLine 1 (TCR) B:")
+    print(tcrb)
+    print("\nLine 2 (MHC) A:")
+    print(MHCA)
+    print("\nLine 2 (MHC) B:")
+    print(MHCB)
     crossingAngle = crossingAngleCalculator(tcra, tcrb, MHCA, MHCB)
 
     # Directionality parameters
@@ -878,16 +878,16 @@ def calculate(pdb, mhc_class, ray, file_name):
 
     TCRBx = tcrb[0]
     TCRBy = tcrb[1]
-    print "TCRBx is " + str(TCRBx)
-    print "TCRBy is " + str(TCRBy) + "\n"
+    print("TCRBx is " + str(TCRBx))
+    print("TCRBy is " + str(TCRBy) + "\n")
     rangeLow, rangeHigh = which_quadrant(TCRBx, TCRBy)
-    print "Output from angle calculator = " + ("%.2f" % crossingAngle)
+    print("Output from angle calculator = " + ("%.2f" % crossingAngle))
     smartCrossingAngle = which_crossing_angle(crossingAngle, rangeLow)
 
     ########################## ANSWER ###########################################
-    print "\n#########    ANSWER    ############\n"
-    print "The crossing angle is:"
-    print ("%.2f" % smartCrossingAngle)
+    print("\n#########    ANSWER    ############\n")
+    print("The crossing angle is:")
+    print(("%.2f" % smartCrossingAngle))
 
     cysWarningmessage = "WARNING!!!!!.. this value was calculated by attempting to find the disulphide bridge in " \
                         "each TCR chain and may cause errors if there are CYS residues within the CDR3 region.\n \
@@ -896,11 +896,11 @@ def calculate(pdb, mhc_class, ray, file_name):
 
     cysOkaymessage = "Calculated using the robust Cys detection method\n"
     if cysWARNING:
-        print cysWarningmessage
+        print(cysWarningmessage)
         outTxt += cysWarningmessage
 
     if not cysWARNING:
-        print cysOkaymessage
+        print(cysOkaymessage)
         outTxt += cysOkaymessage
 
     ### OUTPUT ANSWER ###
@@ -918,9 +918,9 @@ def calculate(pdb, mhc_class, ray, file_name):
     #pymol.cmd.quit()
     outTxtFile.close()
     os.remove(file_name + "/crossingAngle/" + file_name + "_aligned_noMeta.pdb")
-    print "\ncrossingAngle.py created the following files in the directory " + file_name + "/crossingAngle" + ":"
+    print("\ncrossingAngle.py created the following files in the directory " + file_name + "/crossingAngle" + ":")
     for files in os.listdir(os.getcwd() + "/" + file_name + "/crossingAngle"):
-        print files
-    print "Quitting"
+        print(files)
+    print("Quitting")
     #pymol.cmd.quit()
-    print "done"
+    print("done")

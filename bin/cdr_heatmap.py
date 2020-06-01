@@ -38,7 +38,7 @@ def get_ranges(fasta):
             start = 1
             end = len(seq)
 
-        lens.append(range(start, end))
+        lens.append(list(range(start, end)))
 
     return FastaInformation(lens, names, seqs)
 
@@ -125,11 +125,11 @@ def generate_map(fasta_file, tcr_file, mhc_file):
     pep_start = 1
     pep_end = 11
     peplen = pep_end - pep_start + 1
-    peprange = range(pep_start, pep_end + 1)
+    peprange = list(range(pep_start, pep_end + 1))
 
     counter = 0
     for start, end in zip(starts, ends):
-        cdrange = range(int(start), int(end) + 1)
+        cdrange = list(range(int(start), int(end) + 1))
         for num in cdrange:
             res_chunk = [num] * peplen
             pep_chunk = peprange

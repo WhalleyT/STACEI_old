@@ -11,7 +11,7 @@ def readFile(FILE, fileType):
     if FILE.split('.')[-1].lower() != str(fileType):
         sys.exit("\nFile extension must be of type ." + str(fileType) + "\n")
     else:
-        print 'Reading file: ' + str(FILE)
+        print('Reading file: ' + str(FILE))
         return open(FILE, "r")
 
 
@@ -84,7 +84,7 @@ def purgeCysLocs(locations):
 
 
 def initialisePymol():
-    print "\nInitialising pymol...\n"
+    print("\nInitialising pymol...\n")
     pymol.finish_launching(['pymol', '-qeimc'])
     pymol.cmd.reinitialize()
     # set PyMOL parameters
@@ -97,20 +97,20 @@ def initialisePymol():
 
 
 def wait4ray(query):
-    print "Waiting for image to render..."
+    print("Waiting for image to render...")
     while not os.path.exists(query):
         time.sleep(1)
     return None
 
 def rayTime(saveas, tracing):
-    print "Outputting image.. This may take a few seconds.."
+    print("Outputting image.. This may take a few seconds..")
     if os.path.exists(saveas):
-        print "Removing " + saveas + " as it already exists!"
+        print("Removing " + saveas + " as it already exists!")
         os.remove(saveas)
     time.sleep(2)
     pymol.cmd.png(saveas, ray=tracing, width=3000, height=3000, dpi=300)
     wait4ray(saveas)
-    print "Done! " + str(saveas) + " was outputted"
+    print("Done! " + str(saveas) + " was outputted")
 
 
 ############ BODY #########################
@@ -130,15 +130,15 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         MHCclass = "II"
 
     if not os.path.exists(fileName):
-        print "Creating Directory " + fileName
+        print("Creating Directory " + fileName)
         os.makedirs(fileName)
 
     if not os.path.exists(fileName + "/visualisation"):
-        print "Creating Directory " + fileName + "/visualisation"
+        print("Creating Directory " + fileName + "/visualisation")
         os.makedirs(fileName + "/visualisation")
 
     if not os.path.exists(fileName + "/pdbs"):
-        print "Creating Directory " + fileName + "/pdbs"
+        print("Creating Directory " + fileName + "/pdbs")
         os.makedirs(fileName + "/pdbs")
 
     # Unpack the fasta file with CDR information #
@@ -169,15 +169,15 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
 
     # Find the MHC helices and groove
     if MHCclass == "I":
-        a1locs = range(50, 86)
+        a1locs = list(range(50, 86))
         MHCa1 = ["chain " + MHCachain ] + a1locs
-        a2locs = range(140, 176)
+        a2locs = list(range(140, 176))
         MHCa2 = ["chain " + MHCachain ] + a2locs
 
     if MHCclass == "II":
-        a1locs = range(46, 78)
+        a1locs = list(range(46, 78))
         MHCa1 = ["chain " + MHCachain ] + a1locs
-        a2locs = range(54, 91)
+        a2locs = list(range(54, 91))
         MHCa2 = ["chain " + MHCbchain ] + a2locs
 
     # Let's get started
@@ -478,7 +478,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         pymol.cmd.save(fileName + "/pdbs/" + fileName + "_" + name + "_COM.pdb", name + "_COM")
 
     for COM in COMs:
-        print COM
+        print(COM)
 
     ## Photo op here
     pymol.cmd.set_view(viewSet.birdsEyeView)
