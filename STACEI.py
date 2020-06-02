@@ -197,13 +197,14 @@ def main():
  ####################################################################################################################
 
     """
-     Check crystal structure validation in pymol
+     Check crystal structure validation in pymol; do so with original file so we can 
+     keep the CRYST information etc.
     """
     if args.mtz != "None":
-        electrostatic.visualise_omit_MHC_only(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
+        electrostatic.visualise_omit_MHC_only(pdb.file, args.mtz, full_complex.mhc_class,
                                               full_complex.complex, args.ray_trace, pdb.name)
 
-        electrostatic.omit_map(pdb.clean_imgt, args.mtz, full_complex.mhc_class,
+        electrostatic.omit_map(pdb.file, args.mtz, full_complex.mhc_class,
                                full_complex.complex, args.ray_trace, pdb.name)
     else:
         print("Skipping electrostatics")
