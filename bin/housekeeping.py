@@ -156,6 +156,9 @@ def clean_namespace(name, paths, original):
     for file in glob.glob(name + "*pisa_chains*"):
         os.rename(file, paths.pisa_path + "/" + file)
 
+    for file in glob.glob(name + "/visualisation/*.pse"):
+        os.rename(file, file.replace("/visualisation/", "sessions"))
+
     for file in glob.glob(name + "*MHC_to_pep*"):
         os.rename(file, paths.contact_path + "/contact_tables/MHC_to_pep/" + file)
 

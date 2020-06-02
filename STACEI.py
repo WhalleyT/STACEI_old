@@ -18,6 +18,7 @@ import bin.planar_crossing_angle as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
 import bin.peptide_MHC_visualise as electrostatic
 import bin.shape_complementarity as sc
+import bin.html as html
 
 import warnings
 import subprocess
@@ -247,6 +248,13 @@ def main():
     print("Done! Now cleaning up")
     housekeeping.clean_namespace(pdb.name, paths, args.infile)
 
+ ###################################################################################################################
+    """
+    write HTML file
+    """
+
+    print("Writing HTML file")
+    html.make_html(pdb.name)
 
 if __name__ == "__main__":
     main()
