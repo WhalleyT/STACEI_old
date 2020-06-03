@@ -329,7 +329,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRbirdseye", action="store")
 
-    CDRbirdseyeout = fileName + "/visualisation/" + fileName "_CDRloopsBirdsEye.png"
+    CDRbirdseyeout = fileName + "/visualisation/" + fileName  + "_CDRloopsBirdsEye.png"
     
     if ray:
         rayTime(CDRbirdseyeout, 1)
@@ -484,7 +484,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRCOM", action="store")
 
-    CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
+    CDRCOMimage = fileName + "/visualisation/" + fileName + "_CDR_centre_of_mass.png"
     
     if ray:
         rayTime(CDRCOMimage, 1)

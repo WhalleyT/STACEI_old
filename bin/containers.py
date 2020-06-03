@@ -61,7 +61,7 @@ class ChainInformation:
 
 class Paths:
     def __init__(self, seq_path, contact_path, pisa_path, sc_path, xing_path,
-                 pdb_path, vis_path, session_path, fasta_path, elec_path):
+                 pdb_path, vis_path, session_path, fasta_path, elec_path, r_path):
         self.sequence_path = seq_path
         self.contact_path = contact_path
         self.sc_path = sc_path
@@ -72,6 +72,7 @@ class Paths:
         self.session_path = session_path
         self.fasta_path = fasta_path
         self.elec_path = elec_path
+        self.r_plots_path = r_path
         self.current = os.getcwd()
 
 
@@ -93,7 +94,7 @@ class ContactPaths:
         self.tcr_to_mhc_residues = pdb_name + "_TCR_to_pMHC_contacts_clean_residues.txt"
         self.mhc_to_pep_residues = pdb_name + "_MHC_to_pep_contacts_clean_residues.txt"
         self.tcr_to_mhc_list = pdb_name + "_TCR_to_pMHC_contacts_clean_residues_contacts_residues_full.txt"
-        self.mhc_to_pep_list =  pdb_name + "_TCR_to_pMHC_contacts_clean_residues_contacts_residues_full.txt"
+        self.mhc_to_pep_list =  pdb_name + "_MHC_to_pep_contacts_clean_residues_contacts_residues_full.txt"
 
 
 class PeptideData:

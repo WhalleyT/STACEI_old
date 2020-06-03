@@ -713,3 +713,5 @@ def generate_mhc(seqFile, MHCclass, fileName) :
     plt.savefig(mapPath + "/png/" + outputName + ".png", format="png", transparent=True)
     #print('\n''     ~  End of contactMap_pMHC.py v1.0  ~')
     clear()
+
+generate_mhc("c5men_TCR_to_pMHC_contacts_clean_residues_contacts_residues_full.txt", 1, "5men")

@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Project TRAMP</title>
+    <title>STACEI</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -27,7 +27,7 @@
    <nav class="navbar navbar-light bg-light">
    <h1><a href="#menu-toggle" class="btn btn-dark" id="menu-toggle">☰</a></h1>
           <a class="navbar-brand" href="#">
-            <h3>Project TRAMP <img src="CU.svg" width="35" height="35" class="d-inline-block align-top" alt="Cardiff University">
+            <h3>STACEI <img src="CU.svg" width="35" height="35" class="d-inline-block align-top" alt="Cardiff University">
             </h3>
           </a>
         </nav>
@@ -41,7 +41,7 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
                     <a href="#">
-                    Project TRAMP
+                    STACEI
                     </a>
                 </li>
                 
@@ -103,7 +103,9 @@
             <div class="jumbotron">
            
             <h1>Peptide availability</h1>
-            <p>This analysis uses the buried surface area (BSA) and available surface area (ASA) of the peptide residues within the MHC groove to identify which residues are being buried into the MHC and which are exposed for potential ligand binding.</p>
+            <p>This analysis uses the buried surface area (BSA) and available surface area (ASA) of the peptide residues 
+                within the MHC groove to identify which residues are being buried into the MHC and which are exposed 
+                for potential ligand binding. The availability is the ratio of the BSA to the ASA. </p>
             </div>
             
         <!-- The jumbotron (page master description) ends here -->
@@ -118,11 +120,11 @@
   <div class="row">
   <div class="col-sm-3">
     <div class="img-thumbnail">
-      <a href="data/buried_surface/BSA.png">
-        <img src="data/buried_surface/BSA.png" alt="BSA" style="width:100%">
+      <a href="R_visualisation/BSA.png">
+        <img src="R_visualisation/BSA.png" alt="BSA" style="width:100%">
         <div class="caption m-2">
         
-          <a href="data/buried_surface/BSA.png" class="btn btn-primary btn-sm" role="button">.png</a>     
+          <a href="R_visualisation/BSA.png" class="btn btn-primary btn-sm" role="button">.png</a>     
          <p>Availability of each peptide residue.</p> 
         </div>        
       </a>
@@ -141,6 +143,8 @@
       <div class="card">
       <div class="card-header text-center"><h6>Legend</h6></div>
       <div class="card-body">
+      Chains:<br>
+      <span class="badge badge-primary" style="background-color: rgb(255, 255, 0)">Peptide</span>
     
 
       </div>

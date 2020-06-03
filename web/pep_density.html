@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Project TRAMP</title>
+    <title>STACEI</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -26,8 +26,8 @@
    
    <nav class="navbar navbar-light bg-light">
    <h1><a href="#menu-toggle" class="btn btn-dark" id="menu-toggle">☰</a></h1>
-          <a class="navbar-brand" href="#">
-            <h3>Project TRAMP <img src="CU.svg" width="35" height="35" class="d-inline-block align-top" alt="Cardiff University">
+          <a class="navbar-brand" href="sessions/omitmap.pse">
+            <h3>STACEI <img src="CU.svg" width="35" height="35" class="d-inline-block align-top" alt="Cardiff University">
             </h3>
           </a>
         </nav>
@@ -40,8 +40,8 @@
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
-                    <a href="#">
-                    Project TRAMP
+                    <a href="sessions/omitmap.pse">
+                    STACEI
                     </a>
                 </li>
                 
@@ -118,38 +118,53 @@
   <div class="row">
   <div class="col-sm-3">
     <div class="img-thumbnail">
-      <a href="data/pymol_visualisation/peptide_density.png">
-        <img src="data/pymol_visualisation/peptide_density.png" alt="contactmap" style="width:100%">
-        
+      <a href="visualisation/PeptideEdm1sig.png">
+        <img src="visualisation/PeptideEdm1sig.png" alt="contactmap" style="width:100%">
+
         <div class="caption">
-        
-          <a href="data/pymol_visualisation/peptide_density.png" class="btn btn-primary btn-sm" role="button">.png</a> 
-          <a href="#" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>   
-          <p>Electron density map (1.0 sigma) surrounding the peptide</p> 
-        </div>     
+
+          <a href="visualisation/PeptideEdm1sig.png" class="btn btn-primary btn-sm" role="button">.png</a>
+          <a href="sessions/omitmap.pse" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>
+          <p>Electron density map (1.0 sigma) surrounding the peptide</p>
+        </div>
         </a>
-      
+
     </div>
   </div>
-  <!-- Column 2 -->      
+
+  <!-- Column 2 -->
     <div class="col-sm-3">
     <div class="img-thumbnail">
-      <a href="data/pymol_visualisation/omit_map_peptide.png">
-        <img src="data/pymol_visualisation/omit_map_peptide.png" alt="contactmap" style="width:100%">
-        
+      <a href="visualisation/PeptideEdm05sig.png">
+        <img src="visualisation/PeptideEdm05sig.png" alt="contactmap" style="width:100%">
+
         <div class="caption">
-        
-          <a href="data/pymol_visualisation/omit_map_peptide.png" class="btn btn-primary btn-sm" role="button">.png</a> 
-          <a href="#" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>   
-          <p>Omit map analysis of peptide density surrounding the modelled peptide. Difference map peaks (+/- 3.0 sigma) are shown.</p> 
-        </div>     
+
+          <a href="visualisation/PeptideEdm05sig.png" class="btn btn-primary btn-sm" role="button">.png</a>
+          <a href="sessions/omitmap.pse" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>
+          <p>Electron density map (0.5 sigma) surrounding the peptide. </p>
+        </div>
         </a>
-      
+
     </div>
   </div>
-<!-- Column 3 -->      
+  <!-- Column 3 -->
     <div class="col-sm-3">
-  </div>  
+    <div class="img-thumbnail">
+      <a href="visualisation/differencemap.png">
+        <img src="visualisation/differencemap.png" alt="contactmap" style="width:100%">
+
+        <div class="caption">
+
+          <a href="visualisation/differencemap.png" class="btn btn-primary btn-sm" role="button">.png</a>
+          <a href="sessions/omitmap.pse" class="btn btn btn-secondary btn-sm" role="button">PyMOL session (.pse)</a>
+          <p>Omit map analysis of peptide density surrounding the modelled peptide. Difference map peaks (+/- 3.0 sigma) are shown.</p>
+        </div>
+        </a>
+
+    </div>
+  </div>
+
   <!-- Column 4 - This is the right side bar - use for colour code keys etc. -->
       <div class="col-sm-1"></div>
       <div class="col-sm-2 sidenav sticky-top">

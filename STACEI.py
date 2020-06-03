@@ -18,7 +18,7 @@ import bin.planar_crossing_angle as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
 import bin.peptide_MHC_visualise as electrostatic
 import bin.shape_complementarity as sc
-import bin.html as html
+import bin.html_operations as html_ops
 
 import warnings
 import subprocess
@@ -132,6 +132,7 @@ def main():
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
         print(tcr, pmhc)
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, [], pdb.name)
+
     for tcr, pmhc, smart in zip(tcr_permutations.tcr_safe, tcr_permutations.pmhc_safe, tcr_permutations.safe_calls):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, smart, pdb.name)
     
@@ -144,8 +145,9 @@ def main():
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.mhc_to_pep_residues)
 
     print("Generating contact maps for p to MHC")
-    
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
+    print(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
+    import sys; sys.exit()
     
 
     ####################################################################################################################
@@ -188,11 +190,7 @@ def main():
     
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                       full_complex.string, args.ray_trace, pdb.name)
-    
 
-    
-    
-    #buried surface area viz
 
 
  ####################################################################################################################
@@ -217,10 +215,9 @@ def main():
     """
     
     print("Calling R for BSA of peptide")
-    subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pmhc_chains, shell=True)
+    subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pept_chains, shell=True)
 
     print("Making Circos plots")
-
     subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
@@ -254,7 +251,7 @@ def main():
     """
 
     print("Writing HTML file")
-    html.make_html(pdb.name)
+    #html_ops.make_html(pdb.name)
 
 if __name__ == "__main__":
     main()
