@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>STACEI</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    
+     <!-- Bruce's styles -->
+    <link href="css/thumbnails.css" rel="stylesheet">
+
+</head>
+
+<body>
+   <!-- Navbar -->  
+   
+   <nav class="navbar navbar-light bg-light">
+   <h1><a href="#menu-toggle" class="btn btn-dark" id="menu-toggle">☰</a></h1>
+          <a class="navbar-brand" href="#">
+            <h3>STACEI <img src="CU.svg" width="35" height="35" class="d-inline-block align-top" alt="Cardiff University">
+            </h3>
+          </a>
+        </nav>
+        
+    <!-- Navbar end -->
+
+    <div id="wrapper">
+
+              <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                    STACEI
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="gen_vis.html">General Visualisation</a>
+                </li>
+                <li>
+                    <a href="gen_stat.html">General Statistics</a>
+                </li>
+                TCRpMHC Analyses
+                <li>
+                    <a href="CDR_pos.html">CDR Positioning</a>
+                </li>
+                <li>
+                    <a href="cross_ang.html">Crossing Angle</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_tab.html">Contact Tables</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_maps.html">Contact Maps</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_charts.html">Contact Charts</a>
+                </li>
+                <li>
+                    <a href="TCR_contact_explorer.html">Contact Explorer</a>
+                </li>
+                <li>
+                    <a href="TCR_charts.html">BSA</a>
+                </li>
+                pMHC Analyses
+                <li>
+                    <a href="pMHC_surface.html">pMHC surface</a>
+                </li>
+                <li>
+                    <a href="pep_avail.html">Peptide Availability</a>
+                </li>               
+                <li>
+                    <a href="pep_density.html">Peptide Density Validation</a>
+                </li>       
+                <li>
+                    <a href="pep_contact_maps.html">p to MHC Contact Map</a>
+                </li> 
+                <li>
+                    <a href="pep_charts.html">p to MHC Contact Charts</a>
+                </li>                                 
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+       
+<!--    <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p> -->
+
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+        <!-- The jumbotron (page master description) starts here -->
+            <div class="jumbotron">
+           
+            <h1>Peptide availability</h1>
+            <p>This analysis uses the buried surface area (BSA) and available surface area (ASA) of the peptide residues 
+                within the MHC groove to identify which residues are being buried into the MHC and which are exposed 
+                for potential ligand binding. The availability is the ratio of the BSA to the ASA. </p>
+            </div>
+            
+        <!-- The jumbotron (page master description) ends here -->
+                
+        
+          <!-- OUTPUT DATA GOES IN HERE --> 
+          
+   <!-- Work in a grid of four system - the first three columns are for data and the 4th column is for a legend. Each column occupies a span of 3  --> 
+   
+   <!-- New Row -->   
+   <!-- Column 1 -->                              
+  <div class="row">
+  <div class="col-sm-3">
+    <div class="img-thumbnail">
+      <a href="R_visualisation/BSA.png">
+        <img src="R_visualisation/BSA.png" alt="BSA" style="width:100%">
+        <div class="caption m-2">
+        
+          <a href="R_visualisation/BSA.png" class="btn btn-primary btn-sm" role="button">.png</a>     
+         <p>Availability of each peptide residue.</p> 
+        </div>        
+      </a>
+      
+    </div>
+  </div>
+  <!-- Column 2 -->      
+    <div class="col-sm-3"></div>
+
+<!-- Column 3 -->      
+    <div class="col-sm-3">
+  </div>  
+  <!-- Column 4 - This is the right side bar - use for colour code keys etc. -->
+  	  <div class="col-sm-1"></div>
+      <div class="col-sm-2 sidenav sticky-top">
+      <div class="card">
+      <div class="card-header text-center"><h6>Legend</h6></div>
+      <div class="card-body">
+      Chains:<br>
+      <span class="badge badge-primary" style="background-color: rgb(255, 255, 0)">Peptide</span>
+    
+
+      </div>
+      
+      </div>
+      </div>
+     
+  
+
+  <!-- /#row div --> 
+  </div>
+   <!-- /#container-fluid-wrapper -->   
+        </div>
+   <!-- /#page-content-wrapper -->
+        </div>
+   <!-- /#wrapper -->
+        </div>
+        
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+
+
+</body>
+
+</html>
