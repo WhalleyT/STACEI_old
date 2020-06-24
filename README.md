@@ -35,7 +35,7 @@ Python and R generally come pre-installed on most Linux and Mac distributions, b
 
 PyMol can also be downloaded by following the above link. Conda users can install it using `conda install -c schrodinger pymol` and Ubuntu users can download it with `sudo apt-get install pymol`.
 
-ANARCI must be downloaded by following the link manually.
+ANARCI must be downloaded by following the link manually, or by installing via ```setuptools```.
 
 
 ### Installing
@@ -43,22 +43,16 @@ To install, simply clone this repository or download it. Cloning it can be done 
 
 `git clone github.com/whalleyt/STACEI`
 
-then run ```python setup.py install``` .
+then run:
+ `python setup.py install`
+
+This will download the Linux binaries for CCP4, install them as part of the tool and then install everything else via ```setuptools```.
 
 ### Docker
 A Docker build of the tool is also available. To run your data in a Docker image do the following:
 
 ```docker pull twhalley93/stacei```
-
-<to add in >
   
-### Singularity
-
-Although the tool does not require a HPC setup, should the user want to run STACEI on a cluster then run the `bash build_singularity.sh` script. This will pull the Docker image into a Singularity image file.
-
-To run your data in the singularity image do the following:
-
-<to add in>
 
 ## Authors
 Manuscript in  progress
