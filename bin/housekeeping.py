@@ -109,6 +109,7 @@ def create_paths(file_name):
     session_path = file_name + "/sessions"
     fasta_path = file_name + "/FASTAs"
     elec_path = file_name + "/electrostatics"
+    r_path = file_name + "/R_visualisation"
 
     table_path = contact_path + "/contact_tables"
     mhc_table = table_path + "/MHC_to_pep"
@@ -116,14 +117,14 @@ def create_paths(file_name):
 
     paths = [seq_path, contact_path, pisa_path, sc_path, xing_path,
              pdb_path, vis_path, session_path, fasta_path, table_path, mhc_table,
-             tcr_table, elec_path]
+             tcr_table, elec_path, r_path]
 
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path)
 
     return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path,
-                            pdb_path, vis_path, session_path, fasta_path, elec_path)
+                            pdb_path, vis_path, session_path, fasta_path, elec_path, r_path)
 
 
 def clean_namespace(name, paths, original):
@@ -135,11 +136,11 @@ def clean_namespace(name, paths, original):
     # remove uneeded files
     stray_files = ["clean.fasta", "ANARCI.txt", "ab_contact.txt", "session.txt", "peptide_BSA_piped.txt", "Rplots.pdf",
                    "sc_in.txt", "sc_out.txt"]
-
     for file in stray_files:
         if os.path.exists(file):
             os.remove(file)
 
+    # delete extra fastas
     for file in glob.glob("*.fasta"):
         os.rename(file, paths.fasta_path + "/" + file)
 
@@ -150,7 +151,7 @@ def clean_namespace(name, paths, original):
     os.rename("sc.txt", paths.sc_path + "/" + "sc.txt")
     os.rename(name + "_statistics.txt", paths.contact_path + "/contact_tables/" + name + "_statistics.txt")
     os.rename(name + "_ANARCI.txt", paths.sequence_path + "/" + name + "_ANARCI.txt")
-    os.rename("BSA.png", paths.vis_path + "/BSA.png")
+    os.rename("BSA.png", paths.r_plots_path + "/BSA.png")
 
 
     for file in glob.glob(name + "*pisa_chains*"):
