@@ -251,7 +251,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.frontView)
     pymol.cmd.scene(key="front", action="store")
 
-    frontViewImage = fileName + "/visualisation/" + "front.png"
+    frontViewImage = fileName + "/visualisation/" + fileName + "_front.png"
 
     if ray:
         rayTime(frontViewImage, 1)
@@ -262,7 +262,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.sideView)
     pymol.cmd.scene(key="side", action="store")
 
-    sideViewImage = fileName + "/visualisation/" + "side.png"
+    sideViewImage = fileName + "/visualisation/" + fileName + "_side.png"
 
     if ray:
         rayTime(sideViewImage, 1)
@@ -287,7 +287,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRloops", action="store")
 
-    CDRloopsImage = fileName + "/visualisation/" + "CDRloops.png"
+    CDRloopsImage = fileName + "/visualisation/" + fileName + "_CDRloops.png"
     
     if ray:
         rayTime(CDRloopsImage, 1)
@@ -329,7 +329,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRbirdseye", action="store")
 
-    CDRbirdseyeout = fileName + "/visualisation/" + "CDRloopsBirdsEye.png"
+    CDRbirdseyeout = fileName + "/visualisation/" + fileName  + "_CDRloopsBirdsEye.png"
     
     if ray:
         rayTime(CDRbirdseyeout, 1)
@@ -351,7 +351,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRsurfaceBirdseye", action="store")
 
-    CDRsurfaceBirdseye = fileName + "/visualisation/" + "CDRsurfaceBirdseye.png"
+    CDRsurfaceBirdseye = fileName + "/visualisation/" + fileName + "_CDRsurfaceBirdseye.png"
 
     if ray:
         rayTime(CDRsurfaceBirdseye, 1)
@@ -383,7 +383,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRfootprint", action="store")
     
-    CDRfootprint = fileName + "/visualisation/" + "CDRfootprint.png"
+    CDRfootprint = fileName + "/visualisation/" + fileName + "_CDRfootprint.png"
     
     if ray:
         rayTime(CDRfootprint, 1)
@@ -412,7 +412,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="pMHCsurface", action="store")
 
-    pMHCsurface = fileName + "/visualisation/" + "pMHCsurface.png"
+    pMHCsurface = fileName + "/visualisation/" + fileName + "_pMHCsurface.png"
     
     if ray:
         rayTime(pMHCsurface, 1)
@@ -439,7 +439,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="MHChelices", action="store")
 
-    MHChelices = fileName + "/visualisation/" + "MHChelices.png"
+    MHChelices = fileName + "/visualisation/" + fileName + "_MHChelices.png"
 
     if ray:
         rayTime(MHChelices, 1)
@@ -484,7 +484,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRCOM", action="store")
 
-    CDRCOMimage = fileName + "/visualisation/" + "CDR_centre_of_mass.png"
+    CDRCOMimage = fileName + "/visualisation/" + fileName + "_CDR_centre_of_mass.png"
     
     if ray:
         rayTime(CDRCOMimage, 1)

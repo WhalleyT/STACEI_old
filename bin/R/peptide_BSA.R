@@ -16,7 +16,7 @@ BSA  %<>%
 
 BSA$peptide <- "peptide"
 
-ggplot(data = BSA, aes(x = No, y = mean_avail, fill = peptide))+
+plt <- ggplot(data = BSA, aes(x = No, y = mean_avail, fill = peptide))+
   geom_bar(stat = "identity")+
   theme_classic()+
   scale_x_continuous(breaks = round(seq(min(BSA$No), max(BSA$No), by = 1),1))+
@@ -27,7 +27,7 @@ ggplot(data = BSA, aes(x = No, y = mean_avail, fill = peptide))+
   theme(plot.title = element_text(hjust = 0.5))+
   scale_fill_manual(values = c("peptide" = "#FFFF00"))
 
-ggsave("BSA.png", plot = last_plot())
+ggsave("BSA.png", plot = plt)
 write.table(BSA[,5], "peptide_BSA_piped.txt", sep="\t",
             row.names = FALSE, quote = FALSE,
             col.names = FALSE) 

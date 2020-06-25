@@ -86,6 +86,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     if not os.path.exists(file_name + "/maps"):
         print("Creating Directory " + file_name + "/maps")
+        print("Creating Directory " + file_name + "/maps")
         os.makedirs(file_name + "/maps")
 
     if mtz != "ebi":
@@ -272,7 +273,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
         ray_tracer(MHChelixPeptide2, 0)
 
     # Save the session
-    pymol.cmd.save(file_name + "/visualisation/" + file_name + "_peptideMHCvis.pse")
+    pymol.cmd.save(file_name + "/sessions/" + file_name + "_peptideMHCvis.pse")
 
     # Quit pymol
     #pymol.cmd.quit()
@@ -515,7 +516,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     else:
         ray_tracer(MHChelixPeptide2, 0)
     # Save the session
-    pymol.cmd.save(file_name + "/visualisation/" + file_name + "_omitmap.pse")
+    pymol.cmd.save(file_name + "/sessions/" + file_name + "_omitmap.pse")
 
     # Quit pymol
     pymol.cmd.quit()
