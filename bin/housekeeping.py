@@ -36,8 +36,10 @@ def _parse_args():
                         help="Distance threshold required for a pair of hydrogen bond donors and acceptors to be "
                              "considered to make a hydrogen bond")
     parser.add_argument("--saltbridge", "-Sb", dest='s_bond_distance', required=False, type=float,
-                        default=4.0, help="Distance threshold required for a pair of hydrogen bond donors and "
+                        default=4.0, help="Distance threshold required for a pair of salt bridge donors and "
                                           "acceptors to be considered to make a salt bridge")
+    parser.add_argument("--outdir", "-O", dest="outdir", required=False, type=str, default="",
+                        help="Output directory, if not specified the output will be written to the name of the PDB")
     args = parser.parse_args()
     return args
 

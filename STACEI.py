@@ -43,7 +43,7 @@ def main():
 
 
     print("Assigning classes")
-    pdb = classes.PDBStrings(args.infile)
+    pdb = classes.PDBStrings(args.infile, args.outdir)
 
 
     print("Assigning paths")
@@ -189,10 +189,6 @@ def main():
                       full_complex.string, args.ray_trace, pdb.name)
     
 
-    
-    
-    #buried surface area viz
-
 
  ####################################################################################################################
 
@@ -216,6 +212,7 @@ def main():
     """
     
     print("Calling R for BSA of peptide")
+    print("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pept_chains)
     subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pmhc_chains, shell=True)
 
     print("Making Circos plots")

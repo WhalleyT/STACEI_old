@@ -13,7 +13,7 @@ STACEI is a tool, primarily written in Python and R designed for the analysis an
 
 ### Prerequisites
 
-STACEI leverages several pre-existing tools for its analyses. As such, the following must already be installed before using it:
+STACEI leverages several pre-existing tools for its analyses:
 
 * [CCP4 suite](http://www.ccp4.ac.uk/)
 
@@ -25,38 +25,35 @@ STACEI leverages several pre-existing tools for its analyses. As such, the follo
 
 * [ANARCI](http://opig.stats.ox.ac.uk/webapps/sabdab-sabpred/ANARCI.php)
 
-CCP4 can be installed by following the instruction guidlines. It must also be added to the path in order for Python to recognise it when making calls to it. This can be done by either running `./start` from within the CCP4 directory, or by running `source /applications/ccp4-x.y.x/bin/ccp4.setup-sh` and adding it to your BASH path.
+If you run the installation script (setup.py) these will be installed for you.
 
 Python and R generally come pre-installed on most Linux and Mac distributions, but if not they can be downloaded from the above links, or in Ubuntu with:
 `sudo apt-get install python2.7`
 `sudo apt-get install r-base`
 
+## Manually installng
+
+CCP4 can be installed by following the instruction guidlines. It must also be added to the path in order for Python to recognise it when making calls to it. This can be done by either running `./start` from within the CCP4 directory, or by running `source /applications/ccp4-x.y.x/bin/ccp4.setup-sh` and adding it to your BASH path.
+
 PyMol can also be downloaded by following the above link. Conda users can install it using `conda install -c schrodinger pymol` and Ubuntu users can download it with `sudo apt-get install pymol`.
 
-ANARCI must be downloaded by following the link manually.
-
+ANARCI must be downloaded by following the link manually, or by installing via ```setuptools```.
 
 ### Installing
 To install, simply clone this repository or download it. Cloning it can be done with:
 
 `git clone github.com/whalleyt/STACEI`
 
-The cd into the STACEI directory and run `bash install.sh`, this will install the STACEI python package, as well as the dependent R packages. This will not download the pre-requisite software.
+then run:
+ `python setup.py install`
+
+This will download the Linux binaries for CCP4, install them as part of the tool and then install everything else via ```setuptools```.
 
 ### Docker
-A Docker build of the tool is also available. Run `bash build_docker.sh` to pull the docker repo and label it.
+A Docker build of the tool is also available. To run your data in a Docker image do the following:
 
-To run your data in a Docker image do the following:
-
-<to add in >
+```docker pull twhalley93/stacei```
   
-### Singularity
-
-Although the tool does not require a HPC setup, should the user want to run STACEI on a cluster then run the `bash build_singularity.sh` script. This will pull the Docker image into a Singularity image file.
-
-To run your data in the singularity image do the following:
-
-<to add in>
 
 ## Authors
 Manuscript in  progress

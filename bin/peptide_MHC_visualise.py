@@ -69,7 +69,9 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
     elif MHCclass == 2:
         MHCclass = "II"
 
-    pdb_name = file_name.lower()
+
+    #directly fetch our pdb file name in case "EBI" has been specified and outdir as outdir flag with override
+    pdb_name = pdb.rsplit(".")[0].split("/")[-1].lower()
 
     # Make output folder #
     print(file_name)
@@ -102,7 +104,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
                 urllib.request.urlretrieve(url, destination)
             except:
                 print("Could not retrieve url. Please try again, making sure you either supply a file," \
-                      " or your file shares its name with one on PDB")
+                      " or make sure your file shares its name with one on PDB")
                 # quit early, get rid of pymol
                 pymol.cmd.quit()
                 sys.exit()
@@ -159,11 +161,11 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # align to template
     print("\nAligning file to template...\n")
-    pymol.cmd.load("bin/data/" + MHCclass + "_cdr_template.pdb")
-    pymol.cmd.align("complex", MHCclass + "_cdr_template")
+    pymol.cmd.load("bin/data/" + MHCclass + "_template.pdb")
+    pymol.cmd.align("complex", MHCclass + "_template")
     pymol.cmd.matrix_copy("complex", file_name + "_map")
-    pymol.cmd.delete(MHCclass + "_cdr_template")
-    print("\nAlignment to " + MHCclass + "_cdr_template.pdb  complete!\n")
+    pymol.cmd.delete(MHCclass + "_template")
+    print("\nAlignment to " + MHCclass + "_template.pdb  complete!\n")
 
     # Make chains objects
     pymol.cmd.select("MHCas", selection="chain " + MHCachain)
@@ -278,7 +280,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
 
 def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
-    pdb_name = pdb.rsplit('.', 1)[0].lower()
+    pdb_name = pdb.rsplit(".")[0].split("/")[-1].lower()
     prefix = file_name + "/electrostatics/" + file_name
 
     if MHCclass == 1:
@@ -401,13 +403,13 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # align to template
     print("\nAligning file to template...\n")
-    pymol.cmd.load("bin/data/" + MHCclass + "_cdr_template.pdb")
-    pymol.cmd.align("omitxyz", MHCclass + "_cdr_template")
+    pymol.cmd.load("bin/data/" + MHCclass + "_template.pdb")
+    pymol.cmd.align("omitxyz", MHCclass + "_template")
     pymol.cmd.matrix_copy("omitxyz", "complex")
     pymol.cmd.matrix_copy("omitxyz", file_name + "_map")
     pymol.cmd.matrix_copy("omitxyz", file_name + "_dmap")
-    pymol.cmd.delete(MHCclass + "_cdr_template")
-    print("\nAlignment to " + MHCclass + "_cdr_template.pdb  complete!\n")
+    pymol.cmd.delete(MHCclass + "_template")
+    print("\nAlignment to " + MHCclass + "_template.pdb  complete!\n")
     pymol.cmd.delete("omitxyz")
 
     # Make chains objects

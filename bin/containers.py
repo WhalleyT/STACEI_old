@@ -4,10 +4,13 @@ import glob
 class PDBStrings:
     """small class that holds various pdb associated filenames"""
 
-    def __init__(self, arg):
-        self.name = arg.rsplit(".")[0]
+    def __init__(self, arg, outdir):
 
-        if "/" in self.name:
+        #use outdir if specified, else use pdb name
+        if outdir != "":
+            self.name = outdir
+        else:
+            self.name = arg.rsplit(".")[0]
             self.name = self.name.split("/")[-1]
 
         self.file = arg
