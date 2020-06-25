@@ -43,7 +43,7 @@ def main():
 
 
     print("Assigning classes")
-    pdb = classes.PDBStrings(args.infile)
+    pdb = classes.PDBStrings(args.infile, args.outdir)
 
 
     print("Assigning paths")
