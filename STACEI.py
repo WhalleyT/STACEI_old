@@ -216,7 +216,7 @@ def main():
     """
     
     print("Calling R for BSA of peptide")
-    subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pmhc_chains, shell=True)
+    subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pept_chains, shell=True)
 
     print("Making Circos plots")
 
