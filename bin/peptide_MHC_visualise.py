@@ -63,15 +63,15 @@ def ray_tracer(saveas, tracing):
 
 
 def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
-    prefix = file_name + "/electrostatics/" + file_name
+    #directly fetch our pdb file name in case "EBI" has been specified and outdir as outdir flag with override
+    pdb_name = pdb.rsplit(".")[0].split("/")[-1].lower()
+
+    prefix = file_name + "/electrostatics/" + pdb_name
     if MHCclass == 1:
         MHCclass = "I"
     elif MHCclass == 2:
         MHCclass = "II"
 
-
-    #directly fetch our pdb file name in case "EBI" has been specified and outdir as outdir flag with override
-    pdb_name = pdb.rsplit(".")[0].split("/")[-1].lower()
 
     # Make output folder #
     print(file_name)
@@ -122,11 +122,11 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
     # Use CCP4 to generate map
 
     os.system("fft HKLIN " + mtz + " MAPOUT " + file_name + "/electrostatics/" +
-              file_name + ".map1.tmp" + " < " + "bin/data/EDMparam1.tmp")
+              pdb_name + ".map1.tmp" + " < " + "bin/data/EDMparam1.tmp")
     os.system("mapmask MAPIN " + prefix + ".map1.tmp" +
               " MAPOUT " + prefix + ".map.ccp4" + " XYZIN " + pdb + " < " + "bin/data/EDMparam2.tmp")
     os.system("fft HKLIN " + mtz + " MAPOUT " + file_name + "/electrostatics/" +
-              file_name + ".map3.tmp" + " < " + " bin/data/EDMparam3.tmp")
+              pdb_name + ".map3.tmp" + " < " + " bin/data/EDMparam3.tmp")
     os.system("mapmask MAPIN " + prefix + ".map3.tmp" +
               " MAPOUT " + prefix + ".difference_map.ccp4" +
               " XYZIN " + pdb + " < " + "bin/data/EDMparam4.tmp")
@@ -157,14 +157,14 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
     pymol.cmd.reinitialize()
 
     pymol.cmd.load(pdb, "complex")
-    pymol.cmd.load(edmap, file_name + "_map")
-    pymol.cmd.load(diffmap, file_name + "_dmap")
+    pymol.cmd.load(edmap, pdb_name + "_map")
+    pymol.cmd.load(diffmap, pdb_name + "_dmap")
 
     # align to template
     print("\nAligning file to template...\n")
     pymol.cmd.load("bin/data/" + MHCclass + "_template.pdb")
     pymol.cmd.align("complex", MHCclass + "_template")
-    pymol.cmd.matrix_copy("complex", file_name + "_map")
+    pymol.cmd.matrix_copy("complex", pdb_name + "_map")
     pymol.cmd.delete(MHCclass + "_template")
     print("\nAlignment to " + MHCclass + "_template.pdb  complete!\n")
 
@@ -190,8 +190,8 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Make electron density map
     pymol.cmd.map_double(file_name + "_map", -1)
-    pymol.cmd.isomesh("p_map_1sigma", file_name + "_map", 1.0, "ps", carve=1.6)
-    pymol.cmd.isomesh("p_map_05sigma", file_name + "_map", 0.5, "ps", carve=1.6)
+    pymol.cmd.isomesh("p_map_1sigma", pdb_name + "_map", 1.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("p_map_05sigma", pdb_name + "_map", 0.5, "ps", carve=1.6)
     pymol.cmd.set("mesh_width", 0.5)
 
     pymol.cmd.hide("mesh", "all")
@@ -227,10 +227,10 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
     # Make difference map
 
     pymol.cmd.hide("mesh", "all")
-    pymol.cmd.isomesh("posdiffmesh", file_name + "_dmap", 3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("posdiffmesh", pdb_name + "_dmap", 3.0, "ps", carve=1.6)
     pymol.cmd.color("green", "posdiffmesh")
     pymol.cmd.show("mesh", "posdiffmesh")
-    pymol.cmd.isomesh("negdiffmesh", file_name + "_dmap", -3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("negdiffmesh", pdb_name + "_dmap", -3.0, "ps", carve=1.6)
     pymol.cmd.color("red", "negdiffmesh")
     pymol.cmd.show("mesh", "negdiffmesh")
 
@@ -273,7 +273,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
         ray_tracer(MHChelixPeptide2, 0)
 
     # Save the session
-    pymol.cmd.save(file_name + "/sessions/" + file_name + "_peptideMHCvis.pse")
+    pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_peptideMHCvis.pse")
 
     # Quit pymol
     #pymol.cmd.quit()
@@ -282,7 +282,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
 def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     pdb_name = pdb.rsplit(".")[0].split("/")[-1].lower()
-    prefix = file_name + "/electrostatics/" + file_name
+    prefix = file_name + "/electrostatics/" + pdb_name
 
     if MHCclass == 1:
         MHCclass = "I"
@@ -331,20 +331,20 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
 
     tempTxt = "delchain " + peptidechain + "\n" + "END"
-    temp = open(file_name + "/pdbs/" + file_name + "_pdbcurPARAM.tmp", "w")
+    temp = open(file_name + "/pdbs/" + pdb_name + "_pdbcurPARAM.tmp", "w")
     temp.write(tempTxt)
     temp.close()
 
     # delete chain
     print("Deleting chain for %s" % pdb)
-    os.system("pdbcur XYZIN " + pdb + " XYZOUT " + file_name + "/pdbs/" + file_name +
-              "_nopeptide.pdb" + " < " + file_name + "/pdbs/" + file_name + "_pdbcurPARAM.tmp")
+    os.system("pdbcur XYZIN " + pdb + " XYZOUT " + file_name + "/pdbs/" + pdb_name +
+              "_nopeptide.pdb" + " < " + file_name + "/pdbs/" + pdb_name + "_pdbcurPARAM.tmp")
 
     # Run one cycle of refmac without peptide in the groove
     print("Running refmac with peptideless complex")
-    os.system("refmac5 XYZIN " + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " XYZOUT " +
-              file_name + "/pdbs/" + file_name + "_refmac5_omitmap.pdb" + " HKLIN " + file_name + "/electrostatics/"
-              + file_name + ".mtz" + " HKLOUT " + prefix + "_refmac5_omitmap.mtz" + " LIBOUT "
+    os.system("refmac5 XYZIN " + file_name + "/pdbs/" + pdb_name + "_nopeptide.pdb" + " XYZOUT " +
+              file_name + "/pdbs/" + pdb_name + "_refmac5_omitmap.pdb" + " HKLIN " + file_name + "/electrostatics/"
+              + pdb_name + ".mtz" + " HKLOUT " + prefix + "_refmac5_omitmap.mtz" + " LIBOUT "
               + prefix + "_refmac_omitmap.cif" + " < " + "bin/data/OMITparam.tmp")
 
 
@@ -354,23 +354,23 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     # This bit is the same as peptideMHCvisualise except the inputs and outputs are different
     print("Running fast fourier transform with parameters 1")
     os.system("fft HKLIN " + prefix + "_refmac5_omitmap.mtz" + " MAPOUT " + file_name +
-              "/electrostatics/" + file_name + "_om.map1.tmp" + " < " + "bin/data/EDMparam1.tmp")
+              "/electrostatics/" + pdb_name + "_om.map1.tmp" + " < " + "bin/data/EDMparam1.tmp")
     print("Running mapmask with parameters 1")
     os.system("mapmask MAPIN " + prefix + "_om.map1.tmp" +
               " MAPOUT " + prefix + "_om.map.ccp4" + " XYZIN "
-              + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " < " + "bin/data/EDMparam2.tmp")
+              + file_name + "/pdbs/" + pdb_name + "_nopeptide.pdb" + " < " + "bin/data/EDMparam2.tmp")
     print("Running fast fourier transform with parameters 2")
     os.system("fft HKLIN " + prefix + "_refmac5_omitmap.mtz"
               + " MAPOUT " + prefix + "_om.map3.tmp" + " < " + " bin/data/EDMparam3.tmp")
     print("Running mapmask with parameters 2")
     os.system("mapmask MAPIN " + prefix + "_om.map3.tmp" +
               " MAPOUT " + prefix + "_om.difference_map.ccp4"
-              + " XYZIN " + file_name + "/pdbs/" + file_name + "_nopeptide.pdb" + " < " + "bin/data/EDMparam4.tmp")
+              + " XYZIN " + file_name + "/pdbs/" + pdb_name + "_nopeptide.pdb" + " < " + "bin/data/EDMparam4.tmp")
 
     os.remove(prefix + "_om.map3.tmp")
     os.remove(prefix + ".map1.tmp")
     os.remove(prefix + ".map3.tmp")
-    os.remove(file_name + "/pdbs/" + file_name + "_pdbcurPARAM.tmp")
+    os.remove(file_name + "/pdbs/" + pdb_name + "_pdbcurPARAM.tmp")
 
     edmap = prefix + "_om.map.ccp4"
 
@@ -398,17 +398,17 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     pymol.cmd.reinitialize()
 
     pymol.cmd.load(pdb, "complex")
-    pymol.cmd.load(file_name + "/pdbs/" + file_name + "_refmac5_omitmap.pdb", "omitxyz")
-    pymol.cmd.load(edmap, file_name + "_map")
-    pymol.cmd.load(diffmap, file_name + "_dmap")
+    pymol.cmd.load(file_name + "/pdbs/" + pdb_name + "_refmac5_omitmap.pdb", "omitxyz")
+    pymol.cmd.load(edmap, pdb_name + "_map")
+    pymol.cmd.load(diffmap, pdb_name + "_dmap")
 
     # align to template
     print("\nAligning file to template...\n")
     pymol.cmd.load("bin/data/" + MHCclass + "_template.pdb")
     pymol.cmd.align("omitxyz", MHCclass + "_template")
     pymol.cmd.matrix_copy("omitxyz", "complex")
-    pymol.cmd.matrix_copy("omitxyz", file_name + "_map")
-    pymol.cmd.matrix_copy("omitxyz", file_name + "_dmap")
+    pymol.cmd.matrix_copy("omitxyz", pdb_name + "_map")
+    pymol.cmd.matrix_copy("omitxyz", pdb_name + "_dmap")
     pymol.cmd.delete(MHCclass + "_template")
     print("\nAlignment to " + MHCclass + "_template.pdb  complete!\n")
     pymol.cmd.delete("omitxyz")
@@ -435,8 +435,8 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Make electron density map
     pymol.cmd.map_double(file_name + "_map", -1)
-    pymol.cmd.isomesh("p_map_1sigma", file_name + "_map", 1.0, "ps", carve=1.6)
-    pymol.cmd.isomesh("p_map_05sigma", file_name + "_map", 0.5, "ps", carve=1.6)
+    pymol.cmd.isomesh("p_map_1sigma", pdb_name + "_map", 1.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("p_map_05sigma", pdb_name + "_map", 0.5, "ps", carve=1.6)
     pymol.cmd.set("mesh_width", 0.5)
 
     pymol.cmd.hide("mesh", "all")
@@ -471,10 +471,10 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
 
     pymol.cmd.hide("mesh", "all")
-    pymol.cmd.isomesh("posdiffmesh", file_name + "_dmap", 3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("posdiffmesh", pdb_name + "_dmap", 3.0, "ps", carve=1.6)
     pymol.cmd.color("green", "posdiffmesh")
     pymol.cmd.show("mesh", "posdiffmesh")
-    pymol.cmd.isomesh("negdiffmesh", file_name + "_dmap", -3.0, "ps", carve=1.6)
+    pymol.cmd.isomesh("negdiffmesh", pdb_name + "_dmap", -3.0, "ps", carve=1.6)
     pymol.cmd.color("red", "negdiffmesh")
     pymol.cmd.show("mesh", "negdiffmesh")
 
@@ -516,7 +516,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     else:
         ray_tracer(MHChelixPeptide2, 0)
     # Save the session
-    pymol.cmd.save(file_name + "/sessions/" + file_name + "_omitmap.pse")
+    pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_omitmap.pse")
 
     # Quit pymol
     pymol.cmd.quit()

@@ -18,6 +18,7 @@ import bin.planar_crossing_angle as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
 import bin.peptide_MHC_visualise as electrostatic
 import bin.shape_complementarity as sc
+import bin.html_operations as html_ops
 
 import warnings
 import subprocess
@@ -68,11 +69,11 @@ def main():
     """
     
     print("Generating FASTA paths")
-    anarci_files = classes.AnarciFiles(pdb.name)
-    fasta_files = classes.FastaFiles(pdb.name)
+    anarci_files = classes.AnarciFiles(pdb.name, pdb.id)
+    fasta_files = classes.FastaFiles(pdb.name, pdb.id)
 
     print("Making VDJ assignments")
-    vdj.first_annotation_fasta(full_complex, fasta_files.linear, pdb.name, pdb.numbered)
+    vdj.first_annotation_fasta(full_complex, fasta_files.linear, pdb.name, pdb.numbered, pdb.id)
 
     print("Calling ANARCI")
     vdj.run_anarci(anarci_files.infile, anarci_files.outfile)
@@ -181,12 +182,12 @@ def main():
     """
 
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
-                                       args.ray_trace, full_complex.complex, pdb.name)
+                                       args.ray_trace, full_complex.complex, pdb.name, pdb.id)
     
 
     
     pymol_cdr.generate(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
-                      full_complex.string, args.ray_trace, pdb.name)
+                      full_complex.string, args.ray_trace, pdb.name, pdb.id)
     
 
     
@@ -200,6 +201,7 @@ def main():
      Check crystal structure validation in pymol; do so with original file so we can 
      keep the CRYST information etc.
     """
+
     if args.mtz != "None":
         electrostatic.visualise_omit_MHC_only(pdb.file, args.mtz, full_complex.mhc_class,
                                               full_complex.complex, args.ray_trace, pdb.name)
@@ -236,7 +238,7 @@ def main():
                      full_complex.tcra, full_complex.tcrb)
 
     sc.run_SC(pdb.clean_imgt)
-    
+
 
 
  ###################################################################################################################
@@ -245,7 +247,8 @@ def main():
     """
 
     print("Done! Now cleaning up")
-    housekeeping.clean_namespace(pdb.name, paths, args.infile)
+    housekeeping.clean_namespace(pdb.name, paths, args.infile, pdb.id)
+    #html_ops.make_html(pdb.name)
 
 
 if __name__ == "__main__":

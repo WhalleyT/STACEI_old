@@ -37,7 +37,7 @@ def _x_to_dot(sequence):
     return sequence.replace("X", ".")
 
 
-def first_annotation_fasta(chains_class, fasta_name, pdb_name, full_file):
+def first_annotation_fasta(chains_class, fasta_name, pdb_name, full_file, id):
     chains = chains_class.mhca + chains_class.mhcb + chains_class.peptide + chains_class.tcra + chains_class.tcrb
     names = []
     seqs = []
@@ -50,7 +50,7 @@ def first_annotation_fasta(chains_class, fasta_name, pdb_name, full_file):
             names.append(name)
             seqs.append(_x_to_dot(seq))
 
-    out = open(pdb_name + "/FASTAs/" + pdb_name + ".fasta", 'w')
+    out = open(pdb_name + "/FASTAs/" + id + ".fasta", 'w')
 
     # convert letter index to their numeric equivalent e.g. A == 1
     nums = []
@@ -71,10 +71,11 @@ def first_annotation_fasta(chains_class, fasta_name, pdb_name, full_file):
 
 def _convert_pdb_to_fasta(pdb_name, pdb_fa):
     convert_fail = False
-
+    print(pdb_name)
     try:
         bio_convert(pdb_name, "pdb-atom", pdb_fa, "fasta")
-    except:
+    except Exception as e:
+        print(e)
         print("Bio.convert was unsuccessful, trying by SeqRes")
         convert_fail = True
 

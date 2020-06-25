@@ -129,7 +129,7 @@ def create_paths(file_name):
                             pdb_path, vis_path, session_path, fasta_path, elec_path, r_path)
 
 
-def clean_namespace(name, paths, original):
+def clean_namespace(name, paths, original, id):
     """
     Now the script has finished, so time to clean up our files;
     either delete the unwanted ones, or move them to a new home
@@ -151,22 +151,22 @@ def clean_namespace(name, paths, original):
             os.rename(file, paths.pdb_path + "/" + file.split("/")[-1])
 
     os.rename("sc.txt", paths.sc_path + "/" + "sc.txt")
-    os.rename(name + "_statistics.txt", paths.contact_path + "/contact_tables/" + name + "_statistics.txt")
-    os.rename(name + "_ANARCI.txt", paths.sequence_path + "/" + name + "_ANARCI.txt")
+    os.rename(name + "_statistics.txt", paths.contact_path + "/contact_tables/" + id + "_statistics.txt")
+    os.rename(id + "_ANARCI.txt", paths.sequence_path + "/" + id + "_ANARCI.txt")
     os.rename("BSA.png", paths.r_plots_path + "/BSA.png")
 
 
     for file in glob.glob(name + "*pisa_chains*"):
-        os.rename(file, paths.pisa_path + "/" + file)
+        os.rename(file, paths.pisa_path + "/" + file.split("/")[-1])
 
     for file in glob.glob(name + "*MHC_to_pep*"):
-        os.rename(file, paths.contact_path + "/contact_tables/MHC_to_pep/" + file)
+        os.rename(file, paths.contact_path + "/contact_tables/MHC_to_pep/" + file.split("/")[-1])
 
     for file in glob.glob(name + "*TCR_to_pMHC*"):
-        os.rename(file, paths.contact_path + "/contact_tables/TCR_to_pMHC/" + file)
+        os.rename(file, paths.contact_path + "/contact_tables/TCR_to_pMHC/" + file.split("/")[-1])
 
     for file in glob.glob(name + "*sequence*"):
-        os.rename(file, paths.sequence_path + "/" + file)
+        os.rename(file, paths.sequence_path + "/" + file.split("/")[-1])
 
 def check_install():
     commands = ["ncont", "pymol", "sc", "ncont", "ANARCI"]

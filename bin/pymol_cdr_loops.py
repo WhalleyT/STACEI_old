@@ -118,7 +118,7 @@ def rayTime(saveas, tracing):
 ### Initialiser ###
 
 # Load input.pdb #
-def generate(pdb, fasta, MHCclass, chains, ray, fileName):
+def generate(pdb, fasta, MHCclass, chains, ray, fileName, id):
     print('     ~  Running autoCDRloops.py v0.1 BETA  ~')
 
     PDBfile = readFile(pdb, "pdb")
@@ -183,7 +183,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     # Let's get started
 
     initialisePymol()
-    pymol.cmd.load(fileName + "/crossingAngle/" + fileName + "_aligned.pdb", "complex")
+    pymol.cmd.load(fileName + "/crossingAngle/" + id + "_aligned.pdb", "complex")
 
     # Make chains objects
     pymol.cmd.select("MHCas", selection="chain " + MHCachain)
@@ -251,7 +251,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.frontView)
     pymol.cmd.scene(key="front", action="store")
 
-    frontViewImage = fileName + "/visualisation/" + fileName + "_front.png"
+    frontViewImage = fileName + "/visualisation/" + id + "_front.png"
 
     if ray:
         rayTime(frontViewImage, 1)
@@ -262,7 +262,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.sideView)
     pymol.cmd.scene(key="side", action="store")
 
-    sideViewImage = fileName + "/visualisation/" + fileName + "_side.png"
+    sideViewImage = fileName + "/visualisation/" + id + "_side.png"
 
     if ray:
         rayTime(sideViewImage, 1)
@@ -287,7 +287,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRloops", action="store")
 
-    CDRloopsImage = fileName + "/visualisation/" + fileName + "_CDRloops.png"
+    CDRloopsImage = fileName + "/visualisation/" + id + "_CDRloops.png"
     
     if ray:
         rayTime(CDRloopsImage, 1)
@@ -329,7 +329,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRbirdseye", action="store")
 
-    CDRbirdseyeout = fileName + "/visualisation/" + fileName  + "_CDRloopsBirdsEye.png"
+    CDRbirdseyeout = fileName + "/visualisation/" + id  + "_CDRloopsBirdsEye.png"
     
     if ray:
         rayTime(CDRbirdseyeout, 1)
@@ -351,7 +351,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRsurfaceBirdseye", action="store")
 
-    CDRsurfaceBirdseye = fileName + "/visualisation/" + fileName + "_CDRsurfaceBirdseye.png"
+    CDRsurfaceBirdseye = fileName + "/visualisation/" + id + "_CDRsurfaceBirdseye.png"
 
     if ray:
         rayTime(CDRsurfaceBirdseye, 1)
@@ -383,7 +383,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRfootprint", action="store")
     
-    CDRfootprint = fileName + "/visualisation/" + fileName + "_CDRfootprint.png"
+    CDRfootprint = fileName + "/visualisation/" + id + "_CDRfootprint.png"
     
     if ray:
         rayTime(CDRfootprint, 1)
@@ -412,7 +412,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="pMHCsurface", action="store")
 
-    pMHCsurface = fileName + "/visualisation/" + fileName + "_pMHCsurface.png"
+    pMHCsurface = fileName + "/visualisation/" + id + "_pMHCsurface.png"
     
     if ray:
         rayTime(pMHCsurface, 1)
@@ -439,7 +439,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="MHChelices", action="store")
 
-    MHChelices = fileName + "/visualisation/" + fileName + "_MHChelices.png"
+    MHChelices = fileName + "/visualisation/" + id + "_MHChelices.png"
 
     if ray:
         rayTime(MHChelices, 1)
@@ -462,7 +462,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         pymol.cmd.show("spheres", name + "_COM")
         pymol.cmd.color(colourSet.CDRcolourSet[name], name + "_COM")
         pymol.cmd.set("sphere_scale", 1.5, name + "_COM")
-        pymol.cmd.save(fileName + "/pdbs/" + fileName + "_" + name + "_COM.pdb", name + "_COM")
+        pymol.cmd.save(fileName + "/pdbs/" + id + "_" + name + "_COM.pdb", name + "_COM")
 
     for loop in TCRBlocations:
         COM = []
@@ -475,7 +475,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         pymol.cmd.show("spheres", name + "_COM")
         pymol.cmd.color(colourSet.CDRcolourSet[name], name + "_COM")
         pymol.cmd.set("sphere_scale", 1.5, name + "_COM")
-        pymol.cmd.save(fileName + "/pdbs/" + fileName + "_" + name + "_COM.pdb", name + "_COM")
+        pymol.cmd.save(fileName + "/pdbs/" + id + "_" + name + "_COM.pdb", name + "_COM")
 
     for COM in COMs:
         print(COM)
@@ -484,7 +484,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="CDRCOM", action="store")
 
-    CDRCOMimage = fileName + "/visualisation/" + fileName + "_CDR_centre_of_mass.png"
+    CDRCOMimage = fileName + "/visualisation/" + id + "_CDR_centre_of_mass.png"
     
     if ray:
         rayTime(CDRCOMimage, 1)
@@ -492,7 +492,7 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
         rayTime(CDRCOMimage, 0)
 
     # Save the session
-    pymol.cmd.save(fileName + "/sessions/" + fileName + "_autoCDRloops.pse")
+    pymol.cmd.save(fileName + "/sessions/" + id + "_autoCDRloops.pse")
 
 
     # for mean in loopMeans:
@@ -502,11 +502,11 @@ def generate(pdb, fasta, MHCclass, chains, ray, fileName):
 
     for loop in TCRAlocations:
         name = loop[0]
-        pymol.cmd.save(fileName + "/pdbs/" + fileName + "_" + name + ".pdb", name)
+        pymol.cmd.save(fileName + "/pdbs/" + id + "_" + name + ".pdb", name)
 
     for loop in TCRBlocations:
         name = loop[0]
-        pymol.cmd.save(fileName + "/pdbs/" + fileName + "_" + name + ".pdb", name)
+        pymol.cmd.save(fileName + "/pdbs/" + id + "_" + name + ".pdb", name)
 
     # Quit pymol
     #pymol.cmd.quit()

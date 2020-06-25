@@ -102,5 +102,3 @@ def make_html(name):
     rewrite_file(name + "/pep_density.html", ["sessions/"], name)
 
 
-
-make_html("5men")

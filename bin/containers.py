@@ -9,9 +9,10 @@ class PDBStrings:
         #use outdir if specified, else use pdb name
         if outdir != "":
             self.name = outdir
+            self.id = arg.rsplit(".")[0].split("/")[-1]
         else:
-            self.name = arg.rsplit(".")[0]
-            self.name = self.name.split("/")[-1]
+            self.name = arg.rsplit(".")[0].split("/")[-1]
+            self.id = self.name
 
         self.file = arg
         self.filtered = self.name + "_filtered.pdb"
@@ -109,16 +110,16 @@ class PeptideData:
 
 
 class AnarciFiles:
-    def __init__(self, pdb):
-        self.infile =   pdb + "/FASTAs/" + pdb + ".fasta"
-        self.outfile = pdb + "_ANARCI.txt"
+    def __init__(self, outdir, id):
+        self.infile =  outdir + "/FASTAs/" + id + ".fasta"
+        self.outfile = id + "_ANARCI.txt"
 
 
 class FastaFiles:
-    def __init__(self, pdb):
-        self.default = pdb + "/FASTAs/" + pdb +  ".fasta"
-        self.linear = pdb + "/FASTAs/" + pdb + "_linear.fasta"
-        self.annotated = pdb + "_ANARCI_IMGT_annotated.fasta"
+    def __init__(self, outdir, id):
+        self.default = outdir + "/FASTAs/" + id +  ".fasta"
+        self.linear = outdir + "/FASTAs/" + id + "_linear.fasta"
+        self.annotated = id + "_ANARCI_IMGT_annotated.fasta"
 
 
 class LinearSequences:
