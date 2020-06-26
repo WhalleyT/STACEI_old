@@ -7,35 +7,18 @@ import warnings
 
 import bin.data.colourSet as colourSet
 import bin.data.viewSet as viewSet
- 
-import numpy as np
 
-def empty_file(filename):
-    if filename is None:
-        sys.exit('No file to read')
+import numpy as np
 
 
 def read_file(filename, file_type):
-    empty_file(filename)
-
+    if filename is None:
+        sys.exit('No file to read')
     if filename.split('.')[-1].lower() != str(file_type):
         sys.exit("\nFile extension must be of type ." + str(file_type) + "\n")
     else:
         print('Reading file: ' + str(filename))
         return open(filename, "r")
-
-
-def find_tcr_no_cys(cys, atoms, index):
-    if index == 1:
-        chain = cys[0]
-        residue = cys[1]
-    else:
-        chain = cys[2]
-        residue = cys[3]
-
-    for x in atoms:
-        if chain == x[5] and residue == str(x[6]):
-            return x       
 
 
 def file_to_list(infile):
@@ -58,18 +41,18 @@ def init_pymol():
     return None
 
 
-def align_to_template(pdb, file_name, id, mhc_class):
+def align_to_template(pdb, file_name, mhc_class, pdb_name):
     pymol.cmd.delete("all")
     print("\nAligning file to template...\n")
     pymol.cmd.load(pdb)
     pymol.cmd.load("bin/data/" + mhc_class + "_template.pdb")
     pymol.cmd.align(file_name, mhc_class + "_template")
-    pymol.cmd.save(file_name + "/crossingAngle/" + id + "_aligned_noMeta.pdb", id)
+    pymol.cmd.save(file_name + "/crossingAngle/" + pdb_name + "_aligned_noMeta.pdb", pdb_name)
     print("\nAlignment to " + mhc_class + "_template.pdb complete!\n")
     return None
 
 
-def disulphide_parser(inFile):
+def SSParser(inFile):
     print("Finding SSBOND Lines...")
     outSS = []
     for line in inFile:
@@ -103,9 +86,11 @@ def title_parser(infile):
 
 
 def wait4ray(query):
-    print("Waiting for image to render...")
+    counter = 0
     while not os.path.exists(query):
+        print(("=" * counter) + "| " + str(counter))
         time.sleep(1)
+        counter += 1
     return None
 
 
@@ -194,24 +179,23 @@ def find_tcr_pair_atom(pair_location, atom_matrix):
 
     coordinate1, coordinate2 = None, None
 
+    print(pair_location)
     chain = pair_location[0]
     cys_residue1 = pair_location[1]
     cys_residue2 = pair_location[3]
-
     for atoms in atom_matrix:
         if atoms[5] is chain:
-            if str(atoms[6]) == cys_residue1:
+            if atoms[6] is cys_residue1:
                 if "SG" in atoms[2]:
-                    if atoms[3] == '' or 'A':
+                    if atoms[3] is '' or 'A':
                         coordinate1 = atoms
-
     for atoms in atom_matrix:
         if atoms[5] is chain:
-            if str(atoms[6]) == cys_residue2:
+            if atoms[6] is cys_residue2:
                 if "SG" in atoms[2]:
-                    if atoms[3] == '' or 'A':
+                    if atoms[3] is '' or 'A':
                         coordinate2 = atoms
-
+    
     if coordinate1 is not None and coordinate2 is not None:
         return coordinate1, coordinate2
     else:
@@ -270,17 +254,17 @@ def find_locations(entries):
     return locations
 
 
-def unpack_locations(sub_entries):
+def depack_locations(sub_entries):
     locations = []
     for col in sub_entries:
         location = [col.rsplit("=", 1)[0]]
         location_string = (col.partition('[')[-1].rpartition(']')[0])
-        location += location_string.split(',')
+        location += list(map(int, location_string.split(',')))
         locations.append(location)
     return locations
 
 
-def find_cysteine_locations(locations):
+def findCysLocs(locations):
     cys1, cys2 = None, None
 
     for locs in locations:
@@ -377,16 +361,15 @@ def get_mhc_ii_axis(atomMatrix, MHCachain, MHCbchain):
 
 def MHCaxisCoords(helixCalphas):
     print("Extracting MHC axis coordinates...")
-    mhc_x = []
-    mhc_y = []
-    mhc_z = []
-
+    MHCx = []
+    MHCy = []
+    MHCz = []
     for row in helixCalphas:
-        mhc_x.append(row[8])
-        mhc_y.append(row[9])
-        mhc_z.append(row[10])
-    mhc_coords = [mhc_x, mhc_y, mhc_z]
-    return mhc_coords
+        MHCx.append(row[8])
+        MHCy.append(row[9])
+        MHCz.append(row[10])
+    MHCcoords = [MHCx, MHCy, MHCz]
+    return MHCcoords
 
 
 def findMHCaxisCoords(atomMatrix, MHCclass, MHCachain, MHCbchain):
@@ -400,7 +383,7 @@ def findMHCaxisCoords(atomMatrix, MHCclass, MHCachain, MHCbchain):
 
 def calc_plane_bis(x, y, z):
     a = np.column_stack((x, y, z))
-    return np.linalg.lstsq(a, np.ones_like(x))[0]
+    return np.linalg.lstsq(a, np.ones_like(x), rcond=None)[0]
 
 
 def project_points(x, y, z, a, b, c):
@@ -414,13 +397,10 @@ def project_points(x, y, z, a, b, c):
 
     points = np.column_stack((x, y, z))
     points_from_point_in_plane = points - point_in_plane
-
-    #dot product
-    projection_vector = np.dot(points_from_point_in_plane, normal_vector)
-
-
+    proj_onto_normal_vector = np.dot(points_from_point_in_plane,
+                                     normal_vector)
     proj_onto_plane = (points_from_point_in_plane -
-                       projection_vector[:, None] * normal_vector)
+                       proj_onto_normal_vector[:, None] * normal_vector)
 
     return point_in_plane + proj_onto_plane
 
@@ -462,7 +442,7 @@ def whichQuadrant(TCR):
         print("Crossing angle is in the 180-270 quadrant\n")
         return 270, 360
     else:
-        print("Error in assigning quadrant")
+        print("oh boy")
         return None
 
 
@@ -475,13 +455,12 @@ def whichCrossingAngle(crossingAngle, rangeLow):
         return 360 - crossingAngle
 
 
+def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name, pdb_name):
 
-def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
-
-    if mhc_class == 1:
-        mhc_class = "I"
-    elif mhc_class == 2:
-        mhc_class = "II"
+    if MHCclass == 1:
+        MHCclass = "I"
+    elif MHCclass == 2:
+        MHCclass = "II"
 
     origPDB = read_file(pdb, "pdb")
 
@@ -490,6 +469,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     # Sort chains
     MHCachain, MHCbchain, peptidechain, TCRachain, TCRbchain = chains[0], chains[1], chains[2], chains[3], chains[4]
+
+    # Make output folder #
 
     if not os.path.exists(file_name):
         print("Creating Directory " + file_name)
@@ -501,9 +482,9 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     # Align input.pdb to template #
     init_pymol()
-    align_to_template(pdb, file_name, id, mhc_class)
+    align_to_template(pdb, file_name, MHCclass, pdb_name)
     print("Opening aligned PDB file")
-    alignedPDBnoMeta = read_file(file_name + "/crossingAngle/" + id + "_aligned_noMeta.pdb", "pdb")
+    alignedPDBnoMeta = read_file(file_name + "/crossingAngle/" + pdb_name + "_aligned_noMeta.pdb", "pdb")
 
     # Extract all lines from PDB file of orig and aligned PDB files #
 
@@ -511,17 +492,17 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     aligned_all_lines = file_to_list(alignedPDBnoMeta)
     alignedPDBnoMeta.close()
 
-    print("Transfering metadata from " + file_name + ".pdb to " + id + "_aligned_noMeta\n")
-    meta_title = title_parser(origall_lines)
-    meta_header = headerParser(origall_lines)
-    meta_disulphide = disulphide_parser(origall_lines)
-    working_file = open(file_name + "/crossingAngle/" + id + '_aligned.pdb', 'w')
-    output_metadata = ''
-    output_metadata += "         " + str(1) + "         " + str(2) + "         " + str(3) + "         " + str(4) + \
+    print("Transfering metadata from " + file_name + ".pdb to " + pdb_name + "_aligned_noMeta\n")
+    metatitle = title_parser(origall_lines)
+    metaheader = headerParser(origall_lines)
+    MetaSS = SSParser(origall_lines)
+    working_file = open(file_name + "/crossingAngle/" + pdb_name + '_aligned.pdb', 'w')
+    outTxtMeta = ''
+    outTxtMeta += "         " + str(1) + "         " + str(2) + "         " + str(3) + "         " + str(4) + \
                   "         " + str(5) + "         " + str(6) + "         " + str(7) + "         " + str(8) + "\n"
 
-    output_metadata += str(12345678901234567890123456789012345678901234567890123456789012345678901234567890) + "\n"
-    output_metadata += "REMARK   1                                                                      \n\
+    outTxtMeta += str(12345678901234567890123456789012345678901234567890123456789012345678901234567890) + "\n"
+    outTxtMeta += "REMARK   1                                                                      \n\
     REMARK   1  ~~~~ Metadata generated by crossingAngle_v2.0.py     ~~~~ \n\
     REMARK   1                                                                      \n\
     REMARK   1  This metadata contains :           \n\
@@ -530,20 +511,20 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     REMARK   1      This REMARK \n\
     REMARK   1      SSBOND lines required for crossing angle calculations    \n\
     REMARK   1\n"
-    for Metax in meta_header:
-        output_metadata += Metax
-    for Metax in meta_title:
-        output_metadata += Metax
-    for Metax in meta_disulphide:
-        output_metadata += Metax
+    for Metax in metaheader:
+        outTxtMeta += Metax
+    for Metax in metatitle:
+        outTxtMeta += Metax
+    for Metax in MetaSS:
+        outTxtMeta += Metax
     for Metax in aligned_all_lines:
-        output_metadata += Metax
-    working_file.write(output_metadata)
-    print("Metadata added to " + file_name + "/crossingAngle/" + id + "_aligned.pdb\n")
+        outTxtMeta += Metax
+    working_file.write(outTxtMeta)
+    print("Metadata added to " + file_name + "/crossingAngle/" + pdb_name + "_aligned.pdb\n")
 
     # Load the working PDB file #
-    print("Extracting all lines from " + file_name + "/crossingAngle/" + id + "_aligned.pdb\n")
-    working_file = open(file_name + "/crossingAngle/" + id + '_aligned.pdb', 'r')
+    print("Extracting all lines from " + file_name + "/crossingAngle/" + pdb_name + "_aligned.pdb\n")
+    working_file = open(file_name + "/crossingAngle/" + pdb_name + '_aligned.pdb', 'r')
     all_lines = file_to_list(working_file)
 
     working_file.close()
@@ -552,7 +533,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     atom_matrix = make_atom_matrix(atom_list)
 
     if fasta is not None:
-        print("An annotated fasta file was provided to flag where the cysteine pair residues are")
+        print("Perfect! an annotated fasta file was provided to flag where the cysteine pair residues are!")
         fasta_entries = parse_fasta(fasta)
         fasta_entries = unpack_id(fasta_entries)
 
@@ -561,9 +542,9 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
             if "TCRA" in entry:
                 TCRAflag = entry
         TCRAflaglocations = find_locations(TCRAflag)
-        TCRAflaglocations = unpack_locations(TCRAflaglocations)
+        TCRAflaglocations = depack_locations(TCRAflaglocations)
 
-        aCys1, aCys2 = find_cysteine_locations(TCRAflaglocations)
+        aCys1, aCys2 = findCysLocs(TCRAflaglocations)
         TCRaCys = [TCRachain, aCys1[1], TCRachain, aCys2[1]] #here is cysX and the residue
 
         TCRBflag = []
@@ -571,60 +552,48 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
             if "TCRB" in entry:
                 TCRBflag = entry
         TCRBflaglocations = find_locations(TCRBflag)
-        TCRBflaglocations = unpack_locations(TCRBflaglocations)
+        TCRBflaglocations = depack_locations(TCRBflaglocations)
 
-        bCys1, bCys2 = find_cysteine_locations(TCRBflaglocations)
+        bCys1, bCys2 = findCysLocs(TCRBflaglocations)
         TCRbCys = [TCRbchain, bCys1[1], TCRbchain, bCys2[1]]
 
-        tcra_cys1, tcra_cys2 = find_tcr_pair_atom(TCRaCys, atom_matrix)
-        tcrb_cys1, tcrb_cys2 = find_tcr_pair_atom(TCRbCys, atom_matrix)
+        TCRaCys1, TCRaCys2 = find_tcr_pair_atom(TCRaCys, atom_matrix)
+        TCRbCys1, TCRbCys2 = find_tcr_pair_atom(TCRbCys, atom_matrix)
+
     else:
         print("Determining the TCR axis via locating the cys pair atom coordinates...\n")
-        tcra_cys1, tcra_cys2, tcrb_cys1, tcrb_cys2 = cys_from_ss_bond_wrapper(else_list, atom_matrix, TCRachain, TCRbchain)
+        TCRaCys1, TCRaCys2, TCRbCys1, TCRbCys2 = cys_from_ss_bond_wrapper(else_list, atom_matrix, TCRachain, TCRbchain)
 
-    cysCheck = [tcra_cys1, tcra_cys2, tcrb_cys1, tcrb_cys2]
+    cysCheck = [TCRaCys1, TCRaCys2, TCRbCys1, TCRbCys2]
     if any(x is False for x in cysCheck):
         pymol.cmd.quit()
         sys.exit("Could not find the TCR disulphide bridge in the TCR residues. \
-                 Please ensure the PDB file contains SSBOND list in header or \
-                 ensure there is an annotated FASTA file")
+                 Please ensure the PDB file contains SSBOND list in header or"
+                 " provide an annotated fasta file generated by complexSequenceTools.py\
+                 See Usage for more details.")
 
-
-    if tcra_cys1 is None:
-        print("Finding replacement for TCR alpha chain Cys 1")
-        tcra_cys1 = find_tcr_no_cys(TCRaCys, atom_matrix, 1)
-    if tcra_cys2 is None:
-        print("Finding replacement for TCR alpha chain Cys 2")
-        tcra_cys2 = find_tcr_no_cys(TCRaCys, atom_matrix, 2)
-    if tcrb_cys1 is None:
-        print("Finding replacement for TCR beta chain Cys 1")
-        tcrb_cys1 = find_tcr_no_cys(TCRbCys, atom_matrix, 1)
-    if tcrb_cys2 is None:
-        print("Finding replacement for TCR beta chain Cys 2")
-        tcrb_cys2 = find_tcr_no_cys(TCRbCys, atom_matrix, 2)
+    if(not x for x in cysCheck):
+        warnings.warn("Missing cysteine found in one of the TCR coordinates.This may be because your PDB file does not have a cysteine at the relevant location.The tool will proceed to calculate crossing angle from where this cysteine should be so proceed with caution and check to see if the result is sensible.")
 
     print("\nTCRa and TCRb cysteine pair SG atoms are:\n")
-    print(tcra_cys1)
-    print(tcra_cys2)
-    print(tcrb_cys1)
-    print(tcrb_cys2)
-
-    cys_alpha_1 = make_sg_coords(tcra_cys1)
-    cys_alpha_2 = make_sg_coords(tcra_cys2)
-
-    cys_beta_1 = make_sg_coords(tcrb_cys1)
-    cys_beta_2 = make_sg_coords(tcrb_cys2)
-
+    print(TCRaCys1)
+    print(TCRaCys2)
+    print(TCRbCys1)
+    print(TCRbCys2)
+    cysAlpha1 = make_sg_coords(TCRaCys1)
+    cysAlpha2 = make_sg_coords(TCRaCys2)
+    cysBeta1 = make_sg_coords(TCRbCys1)
+    cysBeta2 = make_sg_coords(TCRbCys2)
     print("\nTCRa and TCRb cysteine pair SG coordinates are [x,y,z]:\n")
-    print(cys_alpha_1)
-    print(cys_alpha_2)
-    print(cys_beta_1)
-    print(cys_beta_1)
-    TCRA = [(cys_alpha_1[0] + cys_alpha_2[0]) / 2, (cys_alpha_1[1] + cys_alpha_2[1]) / 2, (cys_alpha_1[2] + cys_alpha_2[2]) / 2]
+    print(cysAlpha1)
+    print(cysAlpha2)
+    print(cysBeta1)
+    print(cysBeta1)
+    TCRA = [(cysAlpha1[0] + cysAlpha2[0]) / 2, (cysAlpha1[1] + cysAlpha2[1]) / 2, (cysAlpha1[2] + cysAlpha2[2]) / 2]
 
     TCRA = np.array(TCRA)
 
-    TCRB = [(cys_beta_1[0] + cys_beta_2[0]) / 2, (cys_beta_1[1] + cys_beta_2[1]) / 2, (cys_beta_1[2] + cys_beta_2[2]) / 2]
+    TCRB = [(cysBeta1[0] + cysBeta2[0]) / 2, (cysBeta1[1] + cysBeta2[1]) / 2, (cysBeta1[2] + cysBeta2[2]) / 2]
 
     TCRB = np.array(TCRB)
 
@@ -640,16 +609,16 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     print(type(TCR), "shape = ", TCR.shape)
     print(TCR, "\n")
 
-    MHCcoords = findMHCaxisCoords(atom_matrix, mhc_class, MHCachain, MHCbchain)
-    mhc_data = np.array(MHCcoords)
-    mhc_data = mhc_data.T
-    print("Data is stored as a ", mhc_data.shape, "numpy array.")
+    MHCcoords = findMHCaxisCoords(atom_matrix, MHCclass, MHCachain, MHCbchain)
+    MHCdata = np.array(MHCcoords)
+    MHCdata = MHCdata.T
+    print("Data is stored as a ", MHCdata.shape, "numpy array.")
 
     # Calculate the mean of the points, i.e. the 'center' of the cloud
     print("Finding mean of MHC datapoints...")
-    mhc_data_2 = mhc_data
+    MHCdata2 = MHCdata
 
-    mhc_data_2_mean = mhc_data_2.mean(axis=0)
+    MHCdata2mean = MHCdata2.mean(axis=0)
 
     print("\nGot the TCR and MHC coordinate data. Beginnning line and plane fitting..\n")
 
@@ -658,7 +627,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     print("Generating a line of best fit through the MHC datapoints...")
     print("NB This uses the np.linalg.svd algorithm which is a more stable " \
           "alternative to the largest eigenvalue method used previous.")
-    uu, dd, vv = np.linalg.svd(mhc_data_2 - mhc_data_2_mean)
+    uu, dd, vv = np.linalg.svd(MHCdata2 - MHCdata2mean)
 
     # Now generate some points along this best fit line, for plotting.
     # A scale factor (sf) is used to determine the arbitary length of this line
@@ -669,7 +638,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     # shift by the mean to get the line in the right place
     print("Shifting best fit line to the mean.. ")
-    MHC += mhc_data_2_mean
+    MHC += MHCdata2mean
     MHC = np.flipud(MHC)
 
     print("\nMHC is...")
@@ -678,21 +647,21 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     print("Generating MHC LOBF points transformed to TCRB for better visualisation")
 
-    mhc_to_tcr_b = MHC[0] - TCR[1]
-    mhc_at_tcr_b = MHC - mhc_to_tcr_b
+    mhc_to_tcr_a = MHC[0] - TCR[0]
+    mhc_at_tcr_a = MHC - mhc_to_tcr_a
 
-    print("\nMHCatTCRB is...")
-    print(type(mhc_at_tcr_b), "shape = ", mhc_to_tcr_b.shape)
-    print(mhc_at_tcr_b)
+    print("\nMHCatTCRA is...")
+    print(type(mhc_at_tcr_a), "shape = ", mhc_to_tcr_a.shape)
+    print(mhc_at_tcr_a)
 
     # Create plane datapoints in X,Y
     print("\nCreating a plane of best fit through the MHC to which we can project MHC LOBF and TCR centroids onto..\n")
-    mn = np.min(mhc_data, axis=0)  # used to set range of the plane
-    mx = np.max(mhc_data, axis=0)  # used to set range of the plane
+    mn = np.min(MHCdata, axis=0)  # used to set range of the plane
+    mx = np.max(MHCdata, axis=0)  # used to set range of the plane
     X, Y = np.meshgrid(np.linspace(mn[0] - 20, mx[0] + 20, 20),
                        np.linspace(mn[1] - 20, mx[1] + 20, 20))  # min/max +/- 20 seems to capture a good area
     print("Calculating plane..")
-    projectionPlane = calc_plane_bis(mhc_data[:, 0], mhc_data[:, 1], mhc_data[:, 2])
+    projectionPlane = calc_plane_bis(MHCdata[:, 0], MHCdata[:, 1], MHCdata[:, 2])
     # this creates the coefficients of the plane in form ax + by +cz = d where d = 1
     # projectionPlane is a numpy array of shape (3,) i.e. 3 x 1 storing coeffcients a,b,c
 
@@ -734,21 +703,21 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     print(MHCproj, "\n")
     print("..Done!\n")
 
-    print("Projecting MHCatTCRB line to the generated MHC plane..\n")
-    MHCAproj2 = project_points(mhc_at_tcr_b[0, 0], mhc_at_tcr_b[0, 1], mhc_at_tcr_b[0, 2], projectionPlane[0],
+    print("Projecting MHCatTCRA line to the generated MHC plane..\n")
+    MHCAproj2 = project_points(mhc_at_tcr_a[0, 0], mhc_at_tcr_a[0, 1], mhc_at_tcr_a[0, 2], projectionPlane[0],
                                projectionPlane[1], projectionPlane[2])
-    MHCBproj2 = project_points(mhc_at_tcr_b[1, 0], mhc_at_tcr_b[1, 1], mhc_at_tcr_b[1, 2], projectionPlane[0],
+    MHCBproj2 = project_points(mhc_at_tcr_a[1, 0], mhc_at_tcr_a[1, 1], mhc_at_tcr_a[1, 2], projectionPlane[0],
                                projectionPlane[1], projectionPlane[2])
-    MHCatTCRBP = np.concatenate((MHCAproj2, MHCBproj2), axis=0)
+    MHCatTCRAP = np.concatenate((MHCAproj2, MHCBproj2), axis=0)
 
-    print("\nMHCatTCRBProj is...")
-    print(type(MHCatTCRBP), "shape = ", MHCatTCRBP.shape)
-    print(MHCatTCRBP, "\n")
+    print("\nMHCatTCRAProj is...")
+    print(type(MHCatTCRAP), "shape = ", MHCatTCRAP.shape)
+    print(MHCatTCRAP, "\n")
     print("..Done!\n")
 
     # Vector between TCR and TCRproj
 
-    print("Finally, the plane is transformed to TCRB to create an axis parallel to the MHC but at the TCRB location.")
+    print("Finally, the plane is transformed to TCRA to create an axis parallel to the MHC but at the TCRA location.")
     print("This is performed by transforming TCRproj as only a line (not a plane) is required for this calculation.\n")
 
     tcr_to_tcr_projection_v = tcr_projection - TCR
@@ -774,18 +743,18 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     TCRaPtxt = TRAproj[0].tolist()
     TCRbPtxt = TRBproj[0].tolist()
 
-    MHCaatTCRBtxt = mhc_at_tcr_b[0].tolist()
-    MHCbatTCRBtxt = mhc_at_tcr_b[1].tolist()
+    MHCaatTCRAtxt = mhc_at_tcr_a[0].tolist()
+    MHCbatTCRAtxt = mhc_at_tcr_a[1].tolist()
     MHCaPtxt = MHCAproj[0].tolist()
     MHCbPtxt = MHCBproj[0].tolist()
-    MHCaatTCRBPtxt = MHCatTCRBP[0].tolist()
-    MHCbatTCRBPtxt = MHCatTCRBP[1].tolist()
+    MHCaatTCRAPtxt = MHCatTCRAP[0].tolist()
+    MHCbatTCRAPtxt = MHCatTCRAP[1].tolist()
 
     planeAtTCRatxt = plane_at_tcr[0].tolist()
     planeAtTCRbtxt = plane_at_tcr[1].tolist()
 
     outPDB = ''
-    outPDBfile = open(file_name + "/crossingAngle/" + id + "_planeCorners.pdb", mode="w")
+    outPDBfile = open(file_name + "/crossingAngle/" + pdb_name + "_planeCorners.pdb", mode="w")
 
     # File header
 
@@ -801,12 +770,12 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     REMARK   1      MHC plane corner 4                                        \n\
     REMARK   1      MHCa fit                                                  \n\
     REMARK   1      MHCb fit                                                  \n\
-    REMARK   1      MHCa fit at TCRB                                          \n\
-    REMARK   1      MHCb fit at TCRB                                          \n\
+    REMARK   1      MHCa fit at TCRA                                          \n\
+    REMARK   1      MHCb fit at TCRA                                         \n\
     REMARK   1      MHCa fit projected onto plane                             \n\
     REMARK   1      MHCb fit projected onto plane                             \n\
-    REMARK   1      MHCa fit at TCRB projected onto plane                     \n\
-    REMARK   1      MHCb fit at TCRB projected onto plane                     \n\
+    REMARK   1      MHCa fit at TCRA projected onto plane                     \n\
+    REMARK   1      MHCb fit at TCRA projected onto plane                     \n\
     REMARK   1      TCRa centroid                                             \n\
     REMARK   1      TCRb centroid                                             \n\
     REMARK   1      TCRa centroid projected onto plane                        \n\
@@ -849,19 +818,19 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     j1, j2, j3 = j1.rjust(8), j2.rjust(8), j3.rjust(8)
     outPDB += "ATOM      8  SG  CYS N   2    " + j1 + j2 + j3 + "  1.00  1.00           S" + "\n"
 
-    o1, o2, o3 = str("%.3f" % MHCaatTCRBtxt[0]), str("%.3f" % MHCaatTCRBtxt[1]), str("%.3f" % MHCaatTCRBtxt[2])
+    o1, o2, o3 = str("%.3f" % MHCaatTCRAtxt[0]), str("%.3f" % MHCaatTCRAtxt[1]), str("%.3f" % MHCaatTCRAtxt[2])
     o1, o2, o3 = o1.rjust(8), o2.rjust(8), o3.rjust(8)
     outPDB += "ATOM      9  CA  LEU O   1    " + o1 + o2 + o3 + "  1.00  1.00           S" + "\n"
 
-    p1, p2, p3 = str("%.3f" % MHCbatTCRBtxt[0]), str("%.3f" % MHCbatTCRBtxt[1]), str("%.3f" % MHCbatTCRBtxt[2])
+    p1, p2, p3 = str("%.3f" % MHCbatTCRAtxt[0]), str("%.3f" % MHCbatTCRAtxt[1]), str("%.3f" % MHCbatTCRAtxt[2])
     p1, p2, p3 = p1.rjust(8), p2.rjust(8), p3.rjust(8)
     outPDB += "ATOM     10  N   ALA O   2    " + p1 + p2 + p3 + "  1.00  1.00           S" + "\n"
 
-    q1, q2, q3 = str("%.3f" % MHCaatTCRBPtxt[0]), str("%.3f" % MHCaatTCRBPtxt[1]), str("%.3f" % MHCaatTCRBPtxt[2])
+    q1, q2, q3 = str("%.3f" % MHCaatTCRAPtxt[0]), str("%.3f" % MHCaatTCRAPtxt[1]), str("%.3f" % MHCaatTCRAPtxt[2])
     q1, q2, q3 = q1.rjust(8), q2.rjust(8), q3.rjust(8)
     outPDB += "ATOM     11  CA  LEU Q   1    " + q1 + q2 + q3 + "  1.00  1.00           S" + "\n"
 
-    r1, r2, r3 = str("%.3f" % MHCbatTCRBPtxt[0]), str("%.3f" % MHCbatTCRBPtxt[1]), str("%.3f" % MHCbatTCRBPtxt[2])
+    r1, r2, r3 = str("%.3f" % MHCbatTCRAPtxt[0]), str("%.3f" % MHCbatTCRAPtxt[1]), str("%.3f" % MHCbatTCRAPtxt[2])
     r1, r2, r3 = r1.rjust(8), r2.rjust(8), r3.rjust(8)
     outPDB += "ATOM     12  N   ALA Q   2    " + r1 + r2 + r3 + "  1.00  1.00           S" + "\n"
 
@@ -892,7 +861,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     outPDBfile.write(outPDB)
     outPDBfile.close()
 
-    print("Done!", "\n", "Coordinate file written as ", file_name + "/crossingAngle/" + id + "_planeCorners.pdb\n")
+    print("Done!", "\n", "Coordinate file written as ", file_name + "/crossingAngle/" + pdb_name + "_planeCorners.pdb\n")
 
     coordinateDict = {
         "corner1": "/corners//P/CYS`1/SG",
@@ -938,7 +907,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
           "to x,y,z = [0,0,0] and MHCBatTCRB sits along the x axis  to x,y,z = [20,0,0]")
     print("\nLet's check that stays the same if we move MHC points to MHCA at TCRB")
 
-    MHCV2 = mhc_at_tcr_b[0, :] - mhc_at_tcr_b[1, :]
+    MHCV2 = mhc_at_tcr_a[0, :] - mhc_at_tcr_a[1, :]
     TCRV2 = TCR[1, :] - TCR[0, :]
 
     print(math.degrees(angle_between(MHCV2, TCRV2)))
@@ -948,7 +917,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.delete("all")
     pymol.cmd.scene("*", "clear")
     # alignment
-    pymol.cmd.load(file_name + "/crossingAngle/" + id + "_planeCorners.pdb", "corners")
+    pymol.cmd.load(file_name + "/crossingAngle/" + pdb_name + "_planeCorners.pdb", "corners")
     pymol.cmd.select("MHCmove", selection=coordinateDict["MHCafitatTCR"] + " + " + coordinateDict["MHCbfitatTCR"])
     pymol.cmd.load("bin/data/centroids_target.pdb", "centroids_target")
     pymol.cmd.align("MHCmove", "centroids_target")
@@ -972,13 +941,13 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.color("black", "MHCline")
     pymol.cmd.set("dash_gap", 0)
 
-    # Photo op here
+    # Photo op here   
     # set camera angle
     pymol.cmd.set_view(viewSet.originView)
     # generate images
     print("Generating image..")
 
-    centroidonxaxis = file_name + "/crossingAngle/" + id + "_crossingAngleOnAxis.png"
+    centroidonxaxis = file_name + "/crossingAngle/" + pdb_name + "_crossingAngleOnAxis.png"
 
     if ray:
         ray_tracer(centroidonxaxis, 1)
@@ -988,8 +957,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     # save the moved centroids
 
-    pymol.cmd.save(file_name + "/crossingAngle/" + id + "_centroid_onxaxis.pdb")
-    pymol.cmd.save(file_name + "/sessions/" + id + "_centroid_onxaxis.pse")
+    pymol.cmd.save(file_name + "/crossingAngle/" + pdb_name + "_centroid_onxaxis.pdb")
+    pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_centroid_onxaxis.pse")
 
     # Getting coords of TCRB
     TCRorig = np.vstack((pymol.cmd.get_coords("TCRA"), pymol.cmd.get_coords("TCRB")))
@@ -1034,7 +1003,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     print("Let's check that stays the same if we move MHCA point to TCRB..")
 
-    MHCprojV2 = MHCatTCRBP[0, :] - MHCatTCRBP[1, :]
+    MHCprojV2 = MHCatTCRAP[0, :] - MHCatTCRAP[1, :]
     TCRprojV2 = tcr_projection[1, :] - tcr_projection[0, :]
     print(math.degrees(angle_between(MHCprojV2, TCRprojV2)))
 
@@ -1077,7 +1046,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     print(smartCrossingAngle)
 
     outTxt = ''
-    outTxt += id + ".pdb\n\n"
+    outTxt += pdb_name + ".pdb\n\n"
     outTxt += "Crossing angle (Rudolph 3D angle)\t" + str("%.2f" % smartCrossingAngle) + "\n"
     outTxt += "Rotation angle (2D crossing angle)\t" + str("%.2f" % smart2DAngle) + "\n"
     outTxt += "Tilt angle (2D elevation away from MHC)\t" + str("%.2f" % tilt2D) + "\n"
@@ -1142,25 +1111,22 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
         outTxt += "TCR docks with canonical polarity\n\n"
     if rangeHigh is 270 or rangeHigh is 360:
         outTxt += "TCR docks with reverse polarity\n\n"
+    outTxtFile = open(file_name + "/crossingAngle/" + pdb_name + '_crossingAngle.txt', 'w')
+    outTxtFile.write(outTxt)
 
-
-    #buffering issue here, hence moved to with open to keep from flushing
-    with open(file_name + "/crossingAngle/" + id + '_crossingAngle.txt', 'w') as out:
-        out.write(outTxt)
-
-    print("Done!"); import sys; sys.exit()
+    print("Done!")
 
     print("~~~~~~~~~~~ Creating visualisations of crossing angles in pymol... ~~~~~~~~~~~")
 
     # load and extract to objects
-    pymol.cmd.load(file_name + "/crossingAngle/" + id + "_planeCorners.pdb", "corners")
+    pymol.cmd.load(file_name + "/crossingAngle/" + pdb_name + "_planeCorners.pdb", "corners")
 
     for key in coordinateDict:
         pymol.cmd.select(key + "s", selection=coordinateDict[key])
         pymol.cmd.extract(key, key + "s")
         pymol.cmd.delete(key + "s")
 
-    pymol.cmd.load(file_name + "/crossingAngle/" + id + "_aligned.pdb", "complex")
+    pymol.cmd.load(file_name + "/crossingAngle/" + pdb_name + "_aligned.pdb", "complex")
 
     for key in complexDict:
         pymol.cmd.select(key + "s", selection="complex and chain " + complexDict[key])
@@ -1190,13 +1156,13 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     # show MHC
     MHCa1h, MHCa2h = None, None
 
-    if mhc_class is "I":
+    if MHCclass is "I":
         a1locs = list(range(50, 86))
         MHCa1h = ["MHCa"] + a1locs
         a2locs = list(range(140, 176))
         MHCa2h = ["MHCa"] + a2locs
 
-    if mhc_class is "II":
+    if MHCclass is "II":
         a1locs = list(range(46, 78))
         MHCa1h = ["MHCa"] + a1locs
         a2locs = list(range(54, 91))
@@ -1207,26 +1173,26 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     name = "MHCa2"
     locs = '+'.join(str(x) for x in MHCa2h[1:])
     pymol.cmd.select(name, selection=MHCa2h[0] + " and resi " + locs)
-
-
+    
+    
     # Bruce edited here 16/06/19
     # pMHC surface
-    if mhc_class == "I":
+    if MHCclass == "I":
         pymol.cmd.select("MHCgrooves", selection="MHCa and resi " + '+'.join(str(x) for x in range(1,176)))
-    if mhc_class == "II":
+    if MHCclass == "II":
         pymol.cmd.select("MHCgrooves", selection="MHCa and resi "+ '+'.join(str(x) for x in range(1,78))+" or MHCb and resi "+ '+'.join(str(x) for x in range(1,91)))
-
+    
     pymol.cmd.extract("MHCgroove", "MHCgrooves")
     pymol.cmd.delete("MHCgrooves")
     pymol.cmd.show("surface", "MHCgroove")
-
-    if mhc_class == "I":
+    
+    if MHCclass == "I":
         pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
-
-    if mhc_class == "II":
+    
+    if MHCclass == "II": 
         pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCgroove and chain "+MHCachain)
         pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCgroove and chain "+MHCbchain)
-
+        
 #    pymol.cmd.color(colourSet.generalColourSet["MHCa"], "MHCa")
 #    pymol.cmd.color(colourSet.generalColourSet["MHCb"], "MHCb")
     pymol.cmd.color(colourSet.generalColourSet["p"], "p")
@@ -1238,7 +1204,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.show("cartoon", "MHCa1")
     pymol.cmd.show("cartoon", "MHCa2")
     pymol.cmd.set("cartoon_transparency", 0.5)
-
+    
     # End Bruce edit 16/06/19
 
     # set view
@@ -1246,7 +1212,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.scene(key="crossing_angle", action="store")
     # generate images
 
-    scene_name = file_name + "/crossingAngle/" + id + "_crossing_centroids_angle_pMHC.png"
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_crossing_centroids_angle_pMHC.png"
 
     if ray:
         ray_tracer(scene_name, 1)
@@ -1260,8 +1226,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="centroids_angle", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_crossing_centroids_angle.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_crossing_centroids_angle.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1273,8 +1239,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="centroids", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_crossing_centroids.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_crossing_centroids.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1287,17 +1253,13 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="angle", action="store")
 
-
-    scene_name = file_name + "/crossingAngle/" + id + "_crossing_angle.png"
-
-    if ray:
-        ray_tracer(scene_name, 1)
-    else:
-        ray_tracer(scene_name, 0)
+    if ray is True:
+        scene_name = file_name + "/crossingAngle/" + pdb_name + "_crossing_angle.png"
+        ray_tracer(scene_name)
 
     # save session
-    pymol.cmd.save(file_name + "/sessions/" + id + "_crossing_angle.pse")
-    print("\nOutputted PyMOL session file: " + file_name + "/sessions/" + id + "_crossing_angle.pse")
+    pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_crossing_angle.pse")
+    print("\nOutputted PyMOL session file: " + file_name + "/sessions/" + pdb_name + "_crossing_angle.pse")
 
     # rotation angle
     pymol.cmd.scene("*", "clear")
@@ -1339,8 +1301,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_pMHC_1", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_angle_pMHC.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_angle_pMHC.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1350,8 +1312,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_pMHC_2", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_angle_pMHC_2.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_angle_pMHC_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1365,8 +1327,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle_centroids_1", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_angle_centroids_1.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_angle_centroids_1.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1376,8 +1338,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_centroids_2", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_angle_centroids_2.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_angle_centroids_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1392,8 +1354,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_centroids", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_centroids_1.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_centroids_1.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1403,8 +1365,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_centroids_2", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_centroids_2.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_centroids_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1420,7 +1382,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.zoom("center", 80)
     pymol.cmd.scene(key="rotation_angle", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_angle_1.png"
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_angle_1.png"
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1430,15 +1392,15 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="rotation_angle_2", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_rotation_angle_2.png"
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_rotation_angle_2.png"
     if ray:
         ray_tracer(scene_name, 1)
     else:
         ray_tracer(scene_name, 0)
 
     # save session
-    pymol.cmd.save(file_name + "/sessions/" + id + "_rotation_angle.pse")
-    print("\nOutputted PyMOL session file: " + file_name + "/sessions/" + id + "_rotation_angle.pse")
+    pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_rotation_angle.pse")
+    print("\nOutputted PyMOL session file: " + file_name + "/sessions/" + pdb_name + "_rotation_angle.pse")
 
     pymol.cmd.scene("*", "clear")
     pymol.cmd.hide("all")
@@ -1470,8 +1432,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_TCR_pMHC_1", action="store")
-
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_TCR_pMHC_1.png"
+    
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_TCR_pMHC_1.png"
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1484,8 +1446,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_pMHC_1", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_pMHC_1.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_pMHC_1.png"
+        
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1498,8 +1460,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_centroids_1", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_centroids_1.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_centroids_1.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1510,9 +1472,9 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     # Photo op here
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_centroids_1", action="store")
-
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_centroids_1.png"
-
+        
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_centroids_1.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1530,7 +1492,7 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.set_view(viewSet.offAxis)
     pymol.cmd.scene(key="tilt_angle_1", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_1.png"
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_1.png"
 
     if ray:
         ray_tracer(scene_name, 1)
@@ -1538,8 +1500,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
         ray_tracer(scene_name, 0)
 
     # save session
-    pymol.cmd.save(file_name + "/sessions/" + id + "_tilt_angle.pse")
-    print("\nOutputted PyMOL session file: " + id + "/sessions/" + id + "_tilt_angle.pse")
+    pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_tilt_angle.pse")
+    print("\nOutputted PyMOL session file: " + file_name + "/sessions/" + pdb_name + "_tilt_angle.pse")
 
     pymol.cmd.scene("*", "clear")
     pymol.cmd.hide("all")
@@ -1582,20 +1544,20 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     pymol.cmd.show("dashes", "plane4")
 
     # Bruce edited here 16/06/19
-    # Photo op here
+    # Photo op here   
     pymol.cmd.orient("mobile or corner3 or corner4")
     pymol.cmd.zoom("center", 80)
     pymol.cmd.turn("x", +90)
-
-    if rangeLow == 180 or rangeLow == 270:
+    
+    if rangeLow is 180 or rangeLow is 270:
         pymol.cmd.turn("x", +180)
-
+    
     # Bruce edited here 16/06/19 END
 
     pymol.cmd.scene(key="tilt_angle_TCR_pMHC_2", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_TCR_pMHC_2.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_TCR_pMHC_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1607,8 +1569,8 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     # Photo op here
     pymol.cmd.scene(key="tilt_angle_pMHC_2", action="store")
 
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_pMHC_2.png"
-
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_pMHC_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1619,9 +1581,9 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     # Photo op here
     pymol.cmd.scene(key="tilt_angle_centroids_2", action="store")
-
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_centroids_2.png"
-
+    
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_centroids_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1631,9 +1593,9 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     # Photo op here
     pymol.cmd.scene(key="tilt_centroids_2", action="store")
-
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_centroids_2.png"
-
+    
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_centroids_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
@@ -1649,17 +1611,17 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
 
     # Photo op here
     pymol.cmd.scene(key="tilt_angle_2", action="store")
-
-    scene_name = file_name + "/crossingAngle/" + id + "_tilt_angle_2.png"
-
+    
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_tilt_angle_2.png"
+    
     if ray:
         ray_tracer(scene_name, 1)
     else:
         ray_tracer(scene_name, 0)
 
         # save session
-    pymol.cmd.save(file_name + "/sessions/" + id + "_tilt_angle_2.pse")
-    print("\nOutputted PyMOL session file: " + file_name + "/sessions/" + id + "_tilt_angle_2.pse")
+    pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_tilt_angle_2.pse")
+    print("\nOutputted PyMOL session file: " + pdb_name + "/sessions/" + pdb_name + "_tilt_angle_2.pse")
 
     # planeProperties = {'ALPHA':0.6, 'COLOR':[0.55, 0.25, 0.60], 'INVERT':False}
     # plane.make_plane("MHCplane","corner2","corner3", "corner4", center = True, settings=planeProperties)
@@ -1669,16 +1631,13 @@ def calculate_and_print(pdb, fasta, mhc_class, ray, chains, file_name, id):
     print("\nDone!\n")
 
     # Clean up #
-    #outTxtFile.close()
+    outTxtFile.close()
     #pymol.cmd.quit()
-    os.remove(file_name + "/crossingAngle/" + id + "_aligned_noMeta.pdb")
+    os.remove(file_name + "/crossingAngle/" + pdb_name + "_aligned_noMeta.pdb")
     print("\ncrossingAngle.py created the following files in the directory " + file_name + "/crossingAngle" + ":")
     for files in os.listdir(os.getcwd() + "/" + file_name + "/crossingAngle"):
         print(files)
 
     print('     ~  End crossingAngle.py v1.9 BETA  ~')
 
-
-def calculate(pdb, fasta, mhc, ray, chains):
-    calculate_and_print(pdb, fasta, mhc, ray, chains)
 

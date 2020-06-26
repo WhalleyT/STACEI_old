@@ -203,7 +203,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm1sig", action="store")
-    PeptideEdm1sig = file_name + "/visualisation/" + "PeptideEdm1sig.png"
+    PeptideEdm1sig = file_name + "/visualisation/" + pdb_name + "_PeptideEdm1sig.png"
 
     if ray:
         ray_tracer(PeptideEdm1sig, 1)
@@ -217,7 +217,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm05sig", action="store")
-    PeptideEdm05sig = file_name + "/visualisation/" + "PeptideEdm05sig.png"
+    PeptideEdm05sig = file_name + "/visualisation/" + pdb_name + "_PeptideEdm05sig.png"
 
     if ray:
         ray_tracer(PeptideEdm05sig, 1)
@@ -236,7 +236,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="differencemap", action="store")
-    differencemap = file_name + "/visualisation/" + "differencemap.png"
+    differencemap = file_name + "/visualisation/" + pdb_name + "_differencemap.png"
 
     if ray:
         ray_tracer(differencemap, 1)
@@ -251,7 +251,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="MHChelixPeptide1", action="store")
-    MHChelixPeptide1 = file_name + "/visualisation/" + "MHChelixPeptid1e.png"
+    MHChelixPeptide1 = file_name + "/visualisation/" + pdb_name + "_MHChelixPeptid1e.png"
 
     if ray:
         ray_tracer(MHChelixPeptide1, 1)
@@ -265,7 +265,7 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
     # Photo op here
 
     pymol.cmd.scene(key="MHChelixPeptide2", action="store")
-    MHChelixPeptide2 = file_name + "/visualisation/" + "MHChelixPeptide2.png"
+    MHChelixPeptide2 = file_name + "/visualisation/" + pdb_name + "_MHChelixPeptide2.png"
 
     if ray:
         ray_tracer(MHChelixPeptide2, 1)
@@ -448,7 +448,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm_omitmap_1sig", action="store")
-    PeptideEdm1sig = file_name + "/visualisation/" + "omitmap_PeptideEdm1sig.png"
+    PeptideEdm1sig = file_name + "/visualisation/" + pdb_name + "_omitmap_PeptideEdm1sig.png"
 
     if ray:
         ray_tracer(PeptideEdm1sig, 1)
@@ -462,7 +462,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="PeptideEdm_omitmap_05sig", action="store")
-    PeptideEdm05sig = file_name + "/visualisation/" + "omitmap_PeptideEdm05sig.png"
+    PeptideEdm05sig = file_name + "/visualisation/" + pdb_name + "_omitmap_PeptideEdm05sig.png"
 
     if ray:
         ray_tracer(PeptideEdm05sig, 1)
@@ -480,7 +480,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="omitmap_differencemap", action="store")
-    differencemap = file_name + "/visualisation/" + "omitmap_differencemap.png"
+    differencemap = file_name + "/visualisation/" + pdb_name + "+omitmap_differencemap.png"
 
     if ray:
         ray_tracer(differencemap, 1)
@@ -495,7 +495,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # Photo op here
     pymol.cmd.scene(key="MHChelixPeptide1", action="store")
-    MHChelixPeptide1 = file_name + "/visualisation/" + "omitmap_MHChelixPeptide1.png"
+    MHChelixPeptide1 = file_name + "/visualisation/" + pdb_name + "_omitmap_MHChelixPeptide1.png"
 
     if ray:
         ray_tracer(MHChelixPeptide1, 1)
@@ -509,7 +509,7 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
     # Photo op here
 
     pymol.cmd.scene(key="MHChelixPeptide2", action="store")
-    MHChelixPeptide2 = file_name + "/visualisation/" + "omitmap_MHChelixPeptide2.png"
+    MHChelixPeptide2 = file_name + "/visualisation/" + pdb_name + "_omitmap_MHChelixPeptide2.png"
 
     if ray:
         ray_tracer(MHChelixPeptide2, 1)

@@ -53,3 +53,5 @@ st8*
 *.mtz
 outputs/
 outputs/*
+stacei_src/
+stacei_src/*

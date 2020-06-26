@@ -81,24 +81,22 @@ def fill_crossing_params(html, cangle):
 
 
 
-def make_html(name):
-    create_copy(name)
+def make_html(path, id):
+    create_copy(path)
 
     #rewrite the general file
     print("writing file for general visualisations")
-    rewrite_file(name + "/gen_vis.html", ["sessions/"], name)
+    rewrite_file(path + "/gen_vis.html", ["sessions/", "visualisation/"], id)
 
     #rewrite the crossing angle html
     print("writing file for crossing angle")
-    rewrite_file(name + "/cross_ang.html", ["crossingAngle/", "sessions/"], name)
-    fill_crossing_params(name + "/cross_ang.html", name + "/crossingAngle/" + name + "_crossingAngle.txt")
+    rewrite_file(path + "/cross_ang.html", ["crossingAngle/", "sessions/"], id)
+    fill_crossing_params(path + "/cross_ang.html", path + "/crossingAngle/" + id + "_crossingAngle.txt")
 
     #rewrite CDR loops
     print("writing file for CDR loops")
-    rewrite_file(name + "/CDR_pos.html", ["visualisation/", "sessions/"], name)
+    rewrite_file(path + "/CDR_pos.html", ["visualisation/", "sessions/"], id)
 
     #omit map
     print("writing file for omit map")
-    rewrite_file(name + "/pep_density.html", ["sessions/"], name)
-
-
+    rewrite_file(path + "/pep_density.html", ["sessions/"], id)

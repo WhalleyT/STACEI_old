@@ -14,7 +14,7 @@ import bin.contacts as contacts
 import bin.contact_map as con_map
 import bin.peptide_pisa as peptide_pisa
 import bin.full_pisa as full_pisa
-import bin.planar_crossing_angle as crossing_angle
+import bin.planar_crossing_angle2 as crossing_angle
 import bin.pymol_cdr_loops as pymol_cdr
 import bin.peptide_MHC_visualise as electrostatic
 import bin.shape_complementarity as sc
@@ -105,6 +105,7 @@ def main():
     print("Running final pdb cleaning")
     contacts.clean_pdb(pdb.imgt, pdb.name)
 
+
     print("Calling NCONT")
     contacts.run_ncont(pdb.name, full_complex.mhca, full_complex.mhcb, full_complex.peptide,
                        full_complex.tcra, full_complex.tcrb, pdb.clean_imgt)
@@ -146,7 +147,7 @@ def main():
     print("Generating contact maps for p to MHC")
     
     con_map.generate_mhc(contact_paths.mhc_to_pep_list, full_complex.mhc_class, pdb.name)
-    
+
 
     ####################################################################################################################
 
@@ -154,7 +155,8 @@ def main():
     Now let's call PISA. This will calculate the BSA for the whole TCR-pMHC complex and label it according to CDR loop.
     Then we can do the same, but just for pMHC.
     """
-    
+
+
     pisa_files = classes.PisaOutputs(pdb.name, full_complex.mhca, full_complex.mhcb, full_complex.peptide,
                                      full_complex.tcra, full_complex.tcrb)
 
@@ -170,6 +172,8 @@ def main():
 
     for i, j in zip(pisa_files.order, pisa_files.monomers):
         full_pisa.extract_pisa("full_complex", j, full_complex.complex_list, i, full_complex.annotation_dictionary)
+    
+
 
 
 
@@ -180,7 +184,8 @@ def main():
     """
      Pymol based analysis: both visualisation and analysis for crossing angle
     """
-
+    print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
+                                       args.ray_trace, full_complex.complex, pdb.name, pdb.id)
     crossing_angle.calculate_and_print(pdb.clean_imgt, fasta_files.annotated, full_complex.mhc_class,
                                        args.ray_trace, full_complex.complex, pdb.name, pdb.id)
     
@@ -248,8 +253,10 @@ def main():
 
     print("Done! Now cleaning up")
     housekeeping.clean_namespace(pdb.name, paths, args.infile, pdb.id)
-    #html_ops.make_html(pdb.name)
+    html_ops.make_html(pdb.name, pdb.id)
 
 
 if __name__ == "__main__":
     main()
+
+#todo check peptide orientation in pymol
