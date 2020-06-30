@@ -194,176 +194,137 @@ colour_name  <- c("TCRa", "TCRb", "peptide", "MHCa", "MHCb",
 TCR <- contacts[grep("TCR", contacts$Donor_Chain),]
 TCR <- TCR[!is.na(TCR$Donor_Annotation),]
 
-#print(head(TCR))
-
-force_count <- TCR %>%
-  group_by(Donor_Annotation, Type) %>%
-  tally
-
-colnames(force_count) <- c("CDR loop", "Force", "Count")
-
-force_count$Force      <- gsub("HB", "Hydrogen Bond", force_count$Force)
-force_count$Force      <- gsub("SB", "Salt Bridge", force_count$Force)
-force_count$Force      <- gsub("VW", "Van der Waals", force_count$Force)
-
-force_count <- as.data.frame(force_count)
-
-ggplot(force_count, aes(x = `CDR loop`, y = Count, fill = Force))+
-  geom_bar(stat = "identity")+
-  theme_classic()+
-  ggtitle("Contact Contribution of CDR loops")+
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.title.align = 0.5)+
-  scale_fill_brewer(palette = "Set2")
-
-force_count_out <- paste(sub_dir, "/force_count.tiff", sep = "")
-
-ggsave(force_count_out)
-
-force_count_residues <- TCR %>%
+TCR %>%
   group_by(Donor_Annotation, Donor_ResNum, Type) %>%
-  tally
-
-colnames(force_count_residues) <- c("CDR loop", "Residue", "Force", "Count")
-
-
-#get start residues of fasta
-annotated_fasta <- readLines(args[3])
-tcra_line       <- annotated_fasta[7]
-tcrb_line       <- annotated_fasta[9]
-
-tcra_cdr_starts <- get_start_of_loop(tcra_line)
-tcrb_cdr_starts <- get_start_of_loop(tcrb_line)
-
-
-x <- subtract_CDR(as.data.frame(force_count_residues), tcra_cdr_starts, "a")
-y <- subtract_CDR(as.data.frame(force_count_residues), tcrb_cdr_starts, "b")
-z <- rbind(x,y)
-
-colnames(z) <- c("CDR Loop", "Residue", "Force", "Count")
-
-ggplot(z, aes(x = Residue, y = Count, fill = Force))+
-  geom_bar(stat = "identity")+
-  facet_grid(`CDR Loop` ~ .)+
-  scale_x_continuous(breaks = seq(0, max(z$Count), 1))+
+  tally() %>%
+  filter(Donor_Annotation != "") %>%
+  ggplot(., aes(x=Donor_ResNum, y=n, fill=Type))+
+  geom_bar(stat="identity")+
+  facet_grid(Donor_Annotation~.)+
   scale_fill_brewer(palette = "Set2")+
-  theme_classic()
+  theme_classic()+
+  ylab("No. contacts")+
+  xlab("residue number")+
+  guides(fill=guide_legend(title="Contact force"))+
+  theme(plot.title=element_text(hjust = 0.5))
 
-single_facet <- paste(sub_dir, "/single_facet.tiff", sep = "")
-ggsave(single_facet)
+cdr_pie <- paste(sub_dir, "/single_facet.tiff", sep = "")
+ggsave(cdr_pie)
 
-x <- z[z$`CDR Loop` %in% c("CDR1a", "CDR2a", "CDR3a", "CDR3afw"),]
-y <- z[z$`CDR Loop` %in% c("CDR1b", "CDR2b", "CDR3b", "CDR3bfw"),]
-x$Chain <- "alpha"
-y$Chain <- "beta"
 
-zz <- rbind(x,y)
+TCR %>%
+  group_by(Donor_Annotation, Donor_ResNum, Type) %>%
+  tally() %>%
+  filter(Donor_Annotation != "") %>%
+  mutate(chain = replace(Donor_Annotation, 
+                         Donor_Annotation == "CDR1a", "alpha")) %>%
+  mutate(chain = replace(chain, 
+                         chain == "CDR2a", "alpha")) %>%
+  mutate(chain = replace(chain, 
+                         chain == "CDR3a", "alpha")) %>%
+  mutate(chain = replace(chain, 
+                         chain == "FWa", "alpha")) %>%
+  mutate(chain = replace(chain, 
+                         chain == "CDR1b", "beta")) %>%
+  mutate(chain = replace(chain, 
+                         chain == "CDR2b", "beta")) %>%
+  mutate(chain = replace(chain, 
+                         chain == "CDR3b", "beta")) %>%
+  mutate(chain = replace(chain, 
+                         chain == "FWb", "beta")) -> chain_split
 
-zz$`CDR Loop` <- gsub('a', '', zz$`CDR Loop`)
-zz$`CDR Loop` <- gsub('b', '', zz$`CDR Loop`)
-zz$`CDR Loop` <- gsub('fw', '', zz$`CDR Loop`)
-zz$Force      <- gsub("HB", "Hydrogen Bond", zz$Force)
-zz$Force      <- gsub("SB", "Salt Bridge", zz$Force)
-zz$Force      <- gsub("VW", "Van der Waals", zz$Force)
+chain_split$Donor_Annotation <- gsub('.{1}$', '', chain_split$Donor_Annotation)
 
-ggplot(zz, aes(x = Residue, y = Count, fill = Force))+
-  geom_bar(stat = "identity")+
-  facet_grid(`CDR Loop` ~ Chain)+
-  scale_x_continuous(breaks = seq(0, max(zz$Count), 1))+
-  ggtitle("Contact Contribution of CDR loops")+
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.title.align = 0.5)+
+ggplot(chain_split, aes(x=Donor_ResNum, y=n, fill=Type))+
+  geom_bar(stat="identity")+
+  facet_grid(Donor_Annotation~chain)+
   scale_fill_brewer(palette = "Set2")+
-  theme_classic()
+  theme_classic()+
+  ylab("No. contacts")+
+  xlab("residue number")+
+  guides(fill=guide_legend(title="Contact force"))+
+  theme(legend.title.align = 0.5)
 
-force_count_double <- paste(sub_dir, "/cdr_loop_force_contact.tiff", sep = "")
-ggsave(force_count_double)
+cdr_rev <- paste(sub_dir, "/cdr_loop_force_contact.tiff", sep = "")
+ggsave(cdr_rev)
 
-
-
-ggplot(zz, aes(x = Residue, y = Count, fill = Force))+
-  geom_bar(stat = "identity")+
-  facet_grid(Chain ~ `CDR Loop`)+
-  scale_x_continuous(breaks = seq(0, max(zz$Count), 1))+
+ggplot(chain_split, aes(x=Donor_ResNum, y=n, fill=Type))+
+  geom_bar(stat="identity")+
+  facet_grid(chain~Donor_Annotation)+
   scale_fill_brewer(palette = "Set2")+
-  theme_classic()
+  theme_classic()+
+  ylab("No. contacts")+
+  xlab("residue number")+
+  guides(fill=guide_legend(title="Contact force"))+
+  theme(plot.title=element_text(hjust = 0.5))
 
-force_count_double_rev <- paste(sub_dir, "/cdr_loop_force_contact_rev.tiff", sep = "")
-ggsave(force_count_double_rev)
+cdr_facet <- paste(sub_dir, "/cdr_loop_force_contact_rev.tiff", sep = "")
+ggsave(cdr_facet)
 
-################
-#now pie charts#
-################
+
+TCR %>%
+  group_by(Donor_Annotation, Type) %>%
+  tally() %>%
+  filter(Donor_Annotation != "") %>%
+  ggplot(., aes(x=Donor_Annotation, y=n, fill=Type))+
+  geom_bar(stat="identity")+
+  scale_fill_brewer(palette = "Set2")+
+  theme_classic()+
+  ylab("No. contacts")+
+  xlab("CDR loop")+
+  guides(fill=guide_legend(title="Contact force"))+
+  ggtitle("Contact contribution of CDR loop")+
+  theme(plot.title=element_text(hjust = 0.5))
+
+
+force_plot <- paste(sub_dir, "/force_count.tiff", sep = "")
+ggsave(force_plot)
+
+
+###################################################
+# pie
+##################################################
 
 #get our chains of interest (e.g. cdr -> p and MHC)
 to_mhc  <- get_chain(contacts, "MHC")
 to_p    <- get_chain(contacts, "peptide")
 to_pmhc <- rbind(to_mhc, to_p)
 
-#we can keep above if we want to compare different chains etc.
-to_p_count    <- plyr::count(to_p, "Donor_Annotation")
-to_mhc_count  <- plyr::count(to_mhc, "Donor_Annotation")
-to_pmhc_count <- plyr::count(to_pmhc, "Donor_Annotation")
+#get our chains of interest (e.g. cdr -> p and MHC)
+to_mhc  <- get_chain(contacts, "MHC")
+to_p    <- get_chain(contacts, "peptide")
+to_pmhc <- rbind(to_mhc, to_p)
 
-to_pmhc_count$Source <- "pMHC"
-to_mhc_count$Source  <- "MHC"
-to_p_count$Source    <- "peptide"
+to_pmhc %>% group_by(Donor_Annotation, Acceptor_Chain) %>%
+  tally() %>%
+  filter(Donor_Annotation != "") %>%
+  group_by(Acceptor_Chain) %>%
+  mutate(freq = sum(n)) %>%
+  mutate(group = replace(Acceptor_Chain, Acceptor_Chain == "MHCa", "MHC")) %>% 
+  mutate(group = replace(Acceptor_Chain, Acceptor_Chain == "MHCb", "MHC")) %>% 
+  mutate(group = replace(Acceptor_Chain, Acceptor_Chain == "peptide", "peptide")) %>%
+  ungroup() %>%
+  select(-Acceptor_Chain) -> pie_df_split
 
-all_mhc_counts <- rbind(to_p_count, to_mhc_count, to_pmhc_count)
+to_pmhc %>%
+  group_by(Donor_Annotation) %>%
+  tally() %>%
+  mutate(freq = sum(n)) %>%
+  filter(Donor_Annotation != "") %>%
+  ungroup() -> pie_df_combined
 
-total_size <- sum(all_mhc_counts$freq)
+pie_df_combined$group <- "pMHC"
 
-to_pmhc_count$Size   <- sum(to_pmhc_count$freq) / total_size
-to_mhc_count$Size    <- sum(to_mhc_count$freq) / total_size
-to_p_count$Size      <- sum(to_p_count$freq) / total_size
+pie_df <- rbind(pie_df_combined, pie_df_split)
 
-all_mhc_counts <- rbind(to_p_count, to_mhc_count, to_pmhc_count)
-
-all_mhc_counts <- all_mhc_counts[all_mhc_counts$Donor_Annotation %in% 
-                                   c("CDR1a","CDR1b","CDR2a", "CDR2b",
-                                     "CDR3a","CDR3b","FWa","FWb"),]
-
-names_in_contact <- unique(as.character(all_mhc_counts$Donor_Annotation))
+#get the palette ready
+names_in_contact <- unique(as.character(pie_df$Donor_Annotation))
 name_indexes     <- match(sort(names_in_contact), colour_name)
 sub_pallete      <- colour_hex[name_indexes]
 
-#so there's no way that seems to properly let me fit the pallete
-#to a given string. let's try and order our pallete based on what's
-#in the mhc dataframe
 
-names_in_contact <- unique(as.character(all_mhc_counts$Donor_Annotation))
-name_indexes     <- match(sort(names_in_contact), colour_name)
-sub_pallete      <- colour_hex[name_indexes]
-
-#now let's make value for relative size of pie
-
-
-ggplot(all_mhc_counts, aes(x=Size/2, y=freq, fill=Donor_Annotation,
-                           width=Size))+
-  theme_classic()+
-  ggtitle("Relative Contribution of CDR Loop to Contacts")+
-  # black border around pie slices
-  geom_bar(stat="identity", color='black', position = "fill")+
-  # remove black diagonal line from legend
-  guides(fill=guide_legend(override.aes=list(colour=NA)))+
-  # polar coordinates
-  coord_polar(theta='y')+
-  # label aesthetics
-  theme(axis.ticks=element_blank(),  # the axis ticks
-        axis.title=element_blank(),  # the axis labels
-        axis.text.y=element_blank(), # the 0.75, 1.00, 1.25 labels
-        axis.text.x=element_blank(),
-        plot.title=element_text(hjust = 0.5),
-        legend.title.align = 0.5)+
-  facet_grid(.~Source)+
-  scale_fill_manual(values=sub_pallete, name = "CDR Loop")
-
-cdr_pie <- paste(sub_dir, "/cdr_loop_contact_scaled_pie.tiff", sep = "")
-ggsave(cdr_pie)
-
-####
-ggplot(all_mhc_counts, aes(x=1, y=freq, fill=Donor_Annotation,
-                           width=1))+
+#non-scaled pie chart
+ggplot(pie_df, aes(x=1, y=n, fill=Donor_Annotation, width=1))+
   theme_classic()+
   ggtitle("Contribution of CDR Loop to Contacts")+
   # black border around pie slices
@@ -379,12 +340,29 @@ ggplot(all_mhc_counts, aes(x=1, y=freq, fill=Donor_Annotation,
         axis.text.x=element_blank(),
         plot.title=element_text(hjust = 0.5),
         legend.title.align = 0.5)+
-  facet_grid(.~Source)+
+  facet_grid(.~group)+
   scale_fill_manual(values=sub_pallete, name = "CDR Loop")
 
 cdr_pie <- paste(sub_dir, "/cdr_loop_contact_pie.tiff", sep = "")
 ggsave(cdr_pie)
 
+ggplot(pie_df, aes(x=freq/2, y=n, fill=Donor_Annotation, width=freq))+
+  theme_classic()+
+  ggtitle("Relative Contribution of CDR Loop to Contacts")+
+  geom_bar(stat="identity", color='black', position = "fill")+
+  guides(fill=guide_legend(override.aes=list(colour=NA)))+
+  coord_polar(theta='y')+
+  theme(axis.ticks=element_blank(),
+        axis.title=element_blank(),
+        axis.text.y=element_blank(),
+        axis.text.x=element_blank(),
+        plot.title=element_text(hjust = 0.5),
+        legend.title.align = 0.5)+
+  facet_grid(.~group)+
+  scale_fill_manual(values=sub_pallete, name = "CDR Loop")
+
+cdr_pie <- paste(sub_dir, "/cdr_loop_contact_scaled_pie.tiff", sep = "")
+ggsave(cdr_pie)
 
 #now let's have a go at the circos plots
 #get rid of ratio

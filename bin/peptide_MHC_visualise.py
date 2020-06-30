@@ -162,11 +162,11 @@ def visualise_omit_MHC_only(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # align to template
     print("\nAligning file to template...\n")
-    pymol.cmd.load("bin/data/" + MHCclass + "_template.pdb")
-    pymol.cmd.align("complex", MHCclass + "_template")
+    pymol.cmd.load("bin/data/" + MHCclass + "_electro_template.pdb")
+    pymol.cmd.align("complex", MHCclass + "_electro_template")
     pymol.cmd.matrix_copy("complex", pdb_name + "_map")
-    pymol.cmd.delete(MHCclass + "_template")
-    print("\nAlignment to " + MHCclass + "_template.pdb  complete!\n")
+    pymol.cmd.delete(MHCclass + "_electro_template")
+    print("\nAlignment to " + MHCclass + "_electro_template.pdb  complete!\n")
 
     # Make chains objects
     pymol.cmd.select("MHCas", selection="chain " + MHCachain)
@@ -404,13 +404,13 @@ def omit_map(pdb, mtz, MHCclass, chains, ray, file_name):
 
     # align to template
     print("\nAligning file to template...\n")
-    pymol.cmd.load("bin/data/" + MHCclass + "_template.pdb")
-    pymol.cmd.align("omitxyz", MHCclass + "_template")
+    pymol.cmd.load("bin/data/" + MHCclass + "_electro_template.pdb")
+    pymol.cmd.align("omitxyz", MHCclass + "_electro_template")
     pymol.cmd.matrix_copy("omitxyz", "complex")
     pymol.cmd.matrix_copy("omitxyz", pdb_name + "_map")
     pymol.cmd.matrix_copy("omitxyz", pdb_name + "_dmap")
-    pymol.cmd.delete(MHCclass + "_template")
-    print("\nAlignment to " + MHCclass + "_template.pdb  complete!\n")
+    pymol.cmd.delete(MHCclass + "_electro_template")
+    print("\nAlignment to " + MHCclass + "_electro_template.pdb  complete!\n")
     pymol.cmd.delete("omitxyz")
 
     # Make chains objects

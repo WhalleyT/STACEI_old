@@ -231,6 +231,8 @@ def main():
                                                                     contact_paths.tcr_to_mhc_clean_file,
                                                                     fasta_files.annotated,
                                                                     pdb.name), shell=True)
+
+    print(contact_paths.mhc_to_pep_clean_file,contact_paths.tcr_to_mhc_clean_file,fasta_files.annotated,pdb.name)
     
  ###################################################################################################################
     """
@@ -259,4 +261,5 @@ def main():
 if __name__ == "__main__":
     main()
 
-#todo check peptide orientation in pymol
+#todo check contact map with long cdr3
+#todo r viz long cdr3
