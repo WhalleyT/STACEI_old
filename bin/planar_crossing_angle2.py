@@ -46,7 +46,10 @@ def align_to_template(pdb, file_name, mhc_class, pdb_name):
     print("\nAligning file to template...\n")
     pymol.cmd.load(pdb)
     pymol.cmd.load("bin/data/" + mhc_class + "_template.pdb")
-    pymol.cmd.align(file_name, mhc_class + "_template")
+
+    pdb_pymol = pdb.split("/")[-1].replace(".pdb", "")
+    pymol.cmd.align(pdb_pymol, mhc_class + "_template")
+
     pymol.cmd.save(file_name + "/crossingAngle/" + pdb_name + "_aligned_noMeta.pdb", pdb_name)
     print("\nAlignment to " + mhc_class + "_template.pdb complete!\n")
     return None

@@ -55,3 +55,4 @@ outputs/
 outputs/*
 stacei_src/
 stacei_src/*
+error.log
