@@ -102,7 +102,7 @@ def ray_tracer(saveas, tracing):
     if os.path.exists(saveas):
         print("Removing " + saveas + " as it already exists!")
         os.remove(saveas)
-    time.sleep(10)
+    time.sleep(1)
     pymol.cmd.png(saveas, ray=tracing, width=3000, height=3000, dpi=300)
     wait4ray(saveas)
     print("Done! " + str(saveas) + " was outputted")
@@ -1256,9 +1256,12 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name, pdb_name):
     pymol.cmd.set_view(viewSet.birdsEyeView)
     pymol.cmd.scene(key="angle", action="store")
 
-    if ray is True:
-        scene_name = file_name + "/crossingAngle/" + pdb_name + "_crossing_angle.png"
-        ray_tracer(scene_name)
+    scene_name = file_name + "/crossingAngle/" + pdb_name + "_crossing_angle.png"
+
+    if ray:
+        ray_tracer(scene_name, 1)
+    else:
+        ray_tracer(scene_name, 0)
 
     # save session
     pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_crossing_angle.pse")

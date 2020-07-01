@@ -56,3 +56,4 @@ outputs/*
 stacei_src/
 stacei_src/*
 error.log
+index.html
