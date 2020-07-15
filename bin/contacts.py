@@ -209,9 +209,14 @@ def make_contact_matrix(contact_lines, tcr_a_locations, tcr_b_locations, mhc_a_c
             contact_matrix.append(contact_matrix_row(lines, tcr_a_locations, tcr_b_locations, mhc_a_chain,
                                                      mhc_b_chain, peptide_chain, tcr_a_chain, tcr_b_chain))
     print(str(omit_counter) + ' contacts were omitted due to water "HOH"')
-    
-    sorted_contacts = sorted(contact_matrix, key=lambda items: (items[0], items[2]))
 
+    """
+    index_ordering = map(str, list(range(-10, 111)) + ["111", "111A", "111B", "112B", "112A", "112"] + list(range(113, 300)))
+
+    print(contact_matrix) ; import sys; sys.exit()
+    """
+
+    sorted_contacts = sorted(contact_matrix, key=lambda items: (items[0], items[2]))
     #hacky way of sorting with our inserts:
     #   if inserts are present convert to residue + 0.5 for sorting as the come afterwards
     #   then string replace the 0.5 back to A later
@@ -306,7 +311,31 @@ def annotate_all_wrapper(contact_matrix, vdw_dist, h_bond_dist, s_bond_dist):
     return contact_matrix_new
 
 
-def clean_contacts(ncont, chains, fasta, vdw_dist, h_bond_dist, s_bond_dist):
+def add_MHC_annotation(matrix, mhc_class):
+    out = []
+
+    for line in matrix:
+        chain = line[8]
+        residue = int(re.sub("[^0-9]", "", str(line[9])))
+
+        if chain == 'MHCa' and mhc_class == 1:
+            if 50 <= residue <= 86:
+                line[10] = 'MHCa1'
+            if 140 <= residue <= 176:
+                line[10] = 'MHCa2'
+        if chain == 'MHCa' and mhc_class == 2:
+            if 46 <= residue <= 78:
+                line[10] = 'MHCa1'
+        if chain == 'MHCa' and mhc_class == 2:
+            if 54 <= residue <= 91:
+                 line[10] = 'MHCb1'
+
+        out.append(line)
+
+    return out
+
+
+def clean_contacts(ncont, chains, fasta, vdw_dist, h_bond_dist, s_bond_dist, mhc_class):
     in_file = read_file(ncont, "txt")
 
     in_file_name = ncont.rsplit('.', 1)[0]
@@ -337,6 +366,7 @@ def clean_contacts(ncont, chains, fasta, vdw_dist, h_bond_dist, s_bond_dist):
         tcr_b_locations = purge_cys_locations(tcr_b_locations)
 
     else:
+        print("Cannot find CDR locations in FASTA")
         tcr_a_locations = [""]
         tcr_b_locations = [""]
 
@@ -350,6 +380,7 @@ def clean_contacts(ncont, chains, fasta, vdw_dist, h_bond_dist, s_bond_dist):
     
 
     contact_matrix = annotate_all_wrapper(contact_matrix, vdw_dist, h_bond_dist, s_bond_dist)
+    contact_matrix = add_MHC_annotation(contact_matrix, mhc_class)
 
     out_file = open(str(in_file_name) + '_clean.txt', 'w')
     output2 = ''
@@ -363,7 +394,7 @@ def clean_contacts(ncont, chains, fasta, vdw_dist, h_bond_dist, s_bond_dist):
         output2 += '\n'
 
     out_file.write(output2)
-   #### print '\nOutputted file: ' + str(in_file_name) + '_clean.txt'
+    print("Outputted file: " + str(in_file_name) + '_clean.txt')
    #### print('\n''     ~  End ProjectContacts.py v0.6      ~')
 
 
@@ -409,25 +440,36 @@ def clean_pdb(pdb, name):
 
 
 def data_stripper(contact_matrix):
+    """
+    Chain == 0 in original, 0 in new
+    Annotation == 3 in original, 1 in new
+    ResNum == 2 in original, 2 in new
+    ResCode == 4 in original, 3 in new
+    Chain == 7 in original, 4 in new
+    Annotation == 10 in original, 5 in new
+    ResNum == 11 in original, 6 in new
+    ResCode == 15 in original, 7 in new
+    """
     new_matrix = []
     for x in contact_matrix:
         y = []
         z = ''
         y.append(x[0])
         z += x[0]
+        y.append(x[3])
+        z += x[3]
         y.append(x[2])
         z += x[2]
         y.append(x[4])
         z += x[4]
         y.append(x[7])
         z += x[7]
-        y.append(x[9])
-        z += x[9]
+        y.append(x[10])
+        z += x[10]
         y.append(x[11])
         z += x[11]
         y.append(x[15])
         y.append(z)
-
         new_matrix.append(y)
     return new_matrix
 
@@ -437,7 +479,7 @@ def contact_grouper(contact_matrix):
    #### print "\nReducing contacts to single residue level.."
 
     result = []
-    for key, group in itertools.groupby(contact_matrix, lambda x: x[7]):
+    for key, group in itertools.groupby(contact_matrix, lambda x: x[8]):
         result.append(list(group))
     # print result
     return result
@@ -460,7 +502,7 @@ def new_group(group):
     y = group[0]
     vdw, HB, SB = force_bools(group)
    #### print y[1]
-    return [y[0], '', y[1], y[2], y[3], '', y[4], y[5], vdw, HB, SB]
+    return [y[0], y[1], y[2], y[3], y[4], y[5], y[6], vdw, HB, SB]
 
 
 def simple_contact_matrix(grouped_contact_matrix):
@@ -495,7 +537,7 @@ def replace_3_to_1(aa):
     new = []
     for x in old:
         x[3] = three2one(x[3])
-        x[7] = three2one(x[7])
+        x[6] = three2one(x[6])
 
         new.append(x)
 
@@ -505,16 +547,20 @@ def replace_3_to_1(aa):
 def name_chains(line, where, chains):
     old_code = line[where]
     new_line = line
+
     if old_code == chains[0]:
         new_code = 'MHCA'
-    if old_code == chains[1]:
+    elif old_code == chains[1]:
         new_code = 'MHCB'
-    if old_code == chains[2]:
+    elif old_code == chains[2]:
         new_code = 'peptide'
-    if old_code == chains[3]:
+    elif old_code == chains[3]:
         new_code = 'TCRA'
-    if old_code == chains[4]:
+    elif old_code == chains[4]:
         new_code = 'TCRB'
+    else:
+        sys.exit("Error in creating contact residue file, please check the _contacts_clean.txt file")
+
     new_line[where] = new_code
     return new_line
 
@@ -525,15 +571,17 @@ def residue_only_contacts(infile, chains):
 
     if type(in_file_name) != str:
         raise IOError('No file was loaded. Please view usage and provide a valid file to be processed')
+
     all_lines = everything_parser(in_file)
     contact_matrix = matrix_parser(all_lines)
     contact_matrix = contact_matrix[1:]
     contact_matrix = data_stripper(contact_matrix)
-
     grouped_contact_matrix = contact_grouper(contact_matrix)
     output_contact_matrix = simple_contact_matrix(grouped_contact_matrix)
-    output_contact_matrix2 = output_contact_matrix[:]
-    output_contact_matrix2 = replace_3_to_1(output_contact_matrix2)
+
+
+    #output_contact_matrix2 = output_contact_matrix[:]
+    output_contact_matrix = replace_3_to_1(output_contact_matrix)
 
     for x in output_contact_matrix:
         name_chains(x, 0, chains)

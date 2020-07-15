@@ -46,7 +46,7 @@ def _get_chains(pdb):
     return list(set(chains))
 
 def _call_ANARCI(fasta):
-    subprocess.call(["ANARCI", "--sequence", fasta, "--outfile", "ANARCI.txt"])
+    subprocess.call(["ANARCI", "-r", "tr", "--sequence", fasta, "--outfile", "ANARCI.txt"])
 
     alphas = []
     betas = []

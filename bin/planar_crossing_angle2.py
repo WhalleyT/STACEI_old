@@ -4,6 +4,8 @@ import sys
 import time
 import math
 import warnings
+import re
+import inspect
 
 import bin.data.colourSet as colourSet
 import bin.data.viewSet as viewSet
@@ -45,7 +47,9 @@ def align_to_template(pdb, file_name, mhc_class, pdb_name):
     pymol.cmd.delete("all")
     print("\nAligning file to template...\n")
     pymol.cmd.load(pdb)
-    pymol.cmd.load("bin/data/" + mhc_class + "_template.pdb")
+
+    full_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    pymol.cmd.load(full_path + "/data/" + mhc_class + "_template.pdb")
 
     pdb_pymol = pdb.split("/")[-1].replace(".pdb", "")
     pymol.cmd.align(pdb_pymol, mhc_class + "_template")
@@ -262,7 +266,10 @@ def depack_locations(sub_entries):
     for col in sub_entries:
         location = [col.rsplit("=", 1)[0]]
         location_string = (col.partition('[')[-1].rpartition(']')[0])
-        location += list(map(int, location_string.split(',')))
+        split_string = location_string.split(',')
+        split_string_regex = [re.sub("[^0-9]", "", x) for x in split_string]
+
+        location += list(map(int, split_string_regex))
         locations.append(location)
     return locations
 
@@ -922,7 +929,9 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name, pdb_name):
     # alignment
     pymol.cmd.load(file_name + "/crossingAngle/" + pdb_name + "_planeCorners.pdb", "corners")
     pymol.cmd.select("MHCmove", selection=coordinateDict["MHCafitatTCR"] + " + " + coordinateDict["MHCbfitatTCR"])
-    pymol.cmd.load("bin/data/centroids_target.pdb", "centroids_target")
+    full_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+    pymol.cmd.load(full_path + "/data/centroids_target.pdb", "centroids_target")
     pymol.cmd.align("MHCmove", "centroids_target")
     pymol.cmd.rotate("z", "180", camera=0)
     print("Aligned at origin!")
@@ -1512,7 +1521,7 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name, pdb_name):
     pymol.cmd.scene("*", "clear")
     pymol.cmd.hide("all")
     # move to common location to take image with planeAtTCRb flat across image
-    pymol.cmd.load("bin/data/centroids_target.pdb", "centroid_target")
+    pymol.cmd.load(full_path + "/data/centroids_target.pdb", "centroid_target")
     pymol.cmd.create("mobile", "TCRcentroidaP or TCRcentroidbP")
     pymol.cmd.align("mobile", "centroid_target")
 
@@ -1629,10 +1638,6 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name, pdb_name):
     pymol.cmd.save(file_name + "/sessions/" + pdb_name + "_tilt_angle_2.pse")
     print("\nOutputted PyMOL session file: " + pdb_name + "/sessions/" + pdb_name + "_tilt_angle_2.pse")
 
-    # planeProperties = {'ALPHA':0.6, 'COLOR':[0.55, 0.25, 0.60], 'INVERT':False}
-    # plane.make_plane("MHCplane","corner2","corner3", "corner4", center = True, settings=planeProperties)
-
-    # plane.plane("corner1","corner2", "corner3", "corner3", settings=planeProperties)
 
     print("\nDone!\n")
 
@@ -1640,10 +1645,5 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name, pdb_name):
     outTxtFile.close()
     #pymol.cmd.quit()
     os.remove(file_name + "/crossingAngle/" + pdb_name + "_aligned_noMeta.pdb")
-    print("\ncrossingAngle.py created the following files in the directory " + file_name + "/crossingAngle" + ":")
-    for files in os.listdir(os.getcwd() + "/" + file_name + "/crossingAngle"):
-        print(files)
-
-    print('     ~  End crossingAngle.py v1.9 BETA  ~')
 
 

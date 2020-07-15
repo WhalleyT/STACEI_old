@@ -2,6 +2,7 @@ from distutils.dir_util import copy_tree
 from shutil import rmtree
 
 import os
+import inspect
 
 """
 This module is used to generate our output into a HTML file
@@ -12,10 +13,10 @@ def create_copy(directory_path):
     Copy our master copy to the output directory
     """
 
-    #if os.path.exists(directory_path):
-     #   rmtree(directory_path)
+    full_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    full_path = "/".join(full_path.split("/")[:-1]) + "/web"
 
-    copy_tree("web/", directory_path)
+    copy_tree(full_path, directory_path)
 
 def rewrite_file(file, keywords, name, file_named = True):
     data = []

@@ -88,5 +88,5 @@ def _convert_pdb_to_fasta(pdb_name, pdb_fa):
 
 
 def run_anarci(anarci_in, anarci_out):
-    subprocess.call(["ANARCI", "--sequence", anarci_in, "--scheme", "imgt",
+    subprocess.call(["ANARCI", "-r", "tr", "--sequence", anarci_in, "--scheme", "imgt",
                      "--assign_germline", "--outfile", anarci_out])

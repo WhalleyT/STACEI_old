@@ -146,7 +146,6 @@ def renumber_chain(anarci_num, pdb_num, aa, current_chain, pdb_list):
                 for i in range(len(new_number)):
                     line[start_idx] = new_number[i]
                     start_idx += 1
-
                 
                 out.append("".join(line))
     return out

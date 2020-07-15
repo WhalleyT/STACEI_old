@@ -22,6 +22,8 @@ import bin.html_operations as html_ops
 
 import warnings
 import subprocess
+import os
+import inspect
 
 from Bio import BiopythonWarning
 
@@ -119,7 +121,9 @@ def main():
     print("Cleaning and generating TCR to pMHC contacts")
     # TCR -> pMHC contacts
     contacts.clean_contacts(contact_paths.tcr_to_mhc_file, full_complex.string, fasta_files.annotated,
-                            args.van_der_waals_distance, args.h_bond_distance, args.s_bond_distance)
+                            args.van_der_waals_distance, args.h_bond_distance, args.s_bond_distance,
+                            full_complex.mhc_class)
+
     contacts.residue_only_contacts(contact_paths.tcr_to_mhc_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.tcr_to_mhc_residues)
     
@@ -131,7 +135,6 @@ def main():
 
     
     for tcr, pmhc in zip(tcr_permutations.tcr, tcr_permutations.pmhc):
-        print(tcr, pmhc)
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, [], pdb.name)
     for tcr, pmhc, smart in zip(tcr_permutations.tcr_safe, tcr_permutations.pmhc_safe, tcr_permutations.safe_calls):
         con_map.generate_tcr(contact_paths.tcr_to_mhc_list, tcr, pmhc, smart, pdb.name)
@@ -140,7 +143,9 @@ def main():
     print("Cleaning and generating p to MHC contacts")
     # MHC -> peptide contacts
     contacts.clean_contacts(contact_paths.mhc_to_pep_file, full_complex.string, fasta_files.annotated,
-                            args.van_der_waals_distance, args.h_bond_distance, args.s_bond_distance)
+                            args.van_der_waals_distance, args.h_bond_distance, args.s_bond_distance,
+                            full_complex.mhc_class)
+
     contacts.residue_only_contacts(contact_paths.mhc_to_pep_clean_file, full_complex.string)
     contacts.annotate_sequence_list(sequences.annotated, contact_paths.mhc_to_pep_residues)
 
@@ -221,18 +226,22 @@ def main():
     """
     Run the R code for BSA, and the circos plots/pies (static).
     """
-    
+    current_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    bsa_script = current_path + "/bin/R/peptide_BSA.R"
+    circos_script = current_path + "/bin/R/circos_and_pie.R"
+
     print("Calling R for BSA of peptide")
-    subprocess.call("Rscript bin/R/peptide_BSA.R %s" % pisa_files.pept_chains, shell=True)
+    subprocess.call("Rscript %s %s" % (bsa_script,
+                                       pisa_files.pept_chains), shell=True)
 
     print("Making Circos plots")
 
-    subprocess.call("Rscript bin/R/circos_and_pie.R %s %s %s %s" % (contact_paths.mhc_to_pep_clean_file,
-                                                                    contact_paths.tcr_to_mhc_clean_file,
-                                                                    fasta_files.annotated,
-                                                                    pdb.name), shell=True)
+    subprocess.call("Rscript %s %s %s %s %s" % (circos_script,
+                                                contact_paths.mhc_to_pep_clean_file,
+                                                contact_paths.tcr_to_mhc_clean_file,
+                                                fasta_files.annotated,
+                                                pdb.name), shell=True)
 
-    print(contact_paths.mhc_to_pep_clean_file,contact_paths.tcr_to_mhc_clean_file,fasta_files.annotated,pdb.name)
     
  ###################################################################################################################
     """
@@ -263,3 +272,4 @@ if __name__ == "__main__":
 
 #todo check contact map with long cdr3
 #todo r viz long cdr3
+#todo contacts sort based on PDB not pure number
