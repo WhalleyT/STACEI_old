@@ -8,7 +8,11 @@ class PDBStrings:
 
         #use outdir if specified, else use pdb name
         if outdir != "":
-            self.name = outdir + "/" + arg.rsplit(".")[0].split("/")[-1]
+
+            if outdir.endswith("/"):
+                outdir = outdir + "/"
+
+            self.name = outdir + arg.rsplit(".")[0].split("/")[-1]
             self.id = arg.rsplit(".")[0].split("/")[-1]
         else:
             self.name = arg.rsplit(".")[0].split("/")[-1]

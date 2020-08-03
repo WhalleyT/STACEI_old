@@ -3,6 +3,9 @@ import os
 import swalign
 import sys
 import shutil
+import pymol
+
+import numpy as np
 
 from Bio.SeqIO import convert
 from itertools import product
@@ -81,7 +84,7 @@ def _non_tcr_chains(chains, alphas, betas):
 def _pair_tcrs(alphas, betas, pdb):
     if len(alphas) is 1 and len(betas) is 1:
         print("There is only one TCR alpha and beta chain pairing possible")
-        return alphas[0], betas[0]
+        return tuple([alphas[0], betas[0]])
 
     if len(alphas) is 0 or len(betas) is 0:
         os.remove("ANARCI.txt")
@@ -92,29 +95,29 @@ def _pair_tcrs(alphas, betas, pdb):
 
     #if not we have to start pairing them.
     pairs = [list(product([ai], betas)) for ai in alphas]
-    tcrs  = []
-    for pair in pairs:
-        tcrs.append(pair[0])
-        tcrs.append(pair[1])
-
     contacts = []
+
+    tcrs = [item for sublist in pairs for item in sublist]
 
     for pair in tcrs:
         command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
-                      "source /*/%s\n" \
-                      "target /*/%s\n" \
+                      "source /*/%s/85-110/\n" \
+                      "target /*/%s/85-110/\n" \
                       "mindist 0.0\n" \
-                      "maxdist 4.0" %(pdb, pair[0], pair[1])
+                      "maxdist 22.0" %(pdb, pair[0], pair[1])
         os.system(command)
 
+        total = 0
         with open("ab_contact.txt") as f:
             for line in f:
-                if "Total" in line:
-                    contacts.append(line.split()[1])
+                if "CYS" in line:
+                    total += 1
+
+        contacts.append(total)
 
     pair = tcrs[contacts.index(max(contacts))]
 
-    return [x for y, x in sorted(zip(contacts, tcrs), reverse=True)]
+    return pair
 
 
 def  _get_mhc_pep(none_tcr, fasta):
@@ -174,7 +177,42 @@ def  _get_mhc_pep(none_tcr, fasta):
     return peptides, mhcas, mhcbs, mhc_class
 
 
-def _pair_mhcs(alphas, betas, pdb, alpha_range, beta_range, distance):
+def init_pymol():
+    print("\nInitialising pymol...\n")
+    pymol.finish_launching(['pymol', '-nqc'])
+    pymol.cmd.reinitialize()
+
+    return np.array([float(x), float(y), float(z)])
+
+
+def dist(residue_one, residue_two):
+    diff = residue_one - residue_two
+    return np.sqrt(np.sum(diff * diff))
+
+
+def COM(pdb, pairs_of_chains):
+    pymol.cmd.delete("all")
+    print("Loading PDB")
+    pymol.cmd.load(pdb)
+
+    distances = []
+    for pair in pairs_of_chains:
+
+        pymol.cmd.select("to", "chain %s" % pair[0])
+        pymol.cmd.select("from", "chain %s" % pair[1])
+
+        to_COM = np.asarray(pymol.cmd.centerofmass("to"), dtype=np.float32)
+        from_COM = np.asarray(pymol.cmd.centerofmass("from"), dtype=np.float32)
+
+        distance = dist(to_COM, from_COM)
+
+        distances.append(distance)
+
+    return distances
+
+
+
+def _pair_mhcs(alphas, betas, pdb, mhc_class):
     if len(alphas) is 1 and len(betas) is 1:
         print("There is only one MHC alpha and beta chain pairing possible")
         return [tuple([alphas[0], betas[0]])]
@@ -183,68 +221,71 @@ def _pair_mhcs(alphas, betas, pdb, alpha_range, beta_range, distance):
 
     #if not we have to start pairing them.
     pairs = [list(product([ai], betas)) for ai in alphas]
-    mhcs  = []
-    for pair in pairs:
-        mhcs.append(pair[0])
-        mhcs.append(pair[1])
+    mhcs = [item for sublist in pairs for item in sublist]
 
-    contacts = []
+    distances = COM(pdb, mhcs)
 
-    for pair in mhcs:
-        command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
-                      "source /*/%s/%s\n" \
-                      "target /*/%s/%s\n" \
-                      "mindist 0.0\n" \
-                      "maxdist %s" %(pdb, pair[0], alpha_range, pair[1], beta_range, distance)
-        os.system(command)
-
-        with open("ab_contact.txt") as f:
-            for line in f:
-                if "Total" in line:
-                    contacts.append(line.split()[1])
 
     for a in alphas:
         subpair = []
         subcont = []
 
-        for p, c in zip(mhcs, contacts):
+        for p, c in zip(mhcs, distances):
             if a == p[0]:
                 subpair.append(p)
                 subcont.append(c)
 
-        idx = subcont.index(max(subcont))
+        idx = subcont.index(min(subcont))
         potential_pairs.append(subpair[idx])
 
     return potential_pairs
 
 
-def _map_tcr_to_mhc(mhc_pairs, alpha, beta, pdb):
+def _map_tcr_to_mhc(mhc_pairs, alpha, beta, pdb, mhc_class):
     contacts = []
+
+    """
+    lazy to not account for single pairing but it shouldn't fail
     if len(mhc_pairs) == 1:
-       return mhc_pairs[0][0], mhc_pairs[0][1], True
+       return mhc_pairs[0][0], mhc_pairs[0][1]
+    """
+    #todo skip contacts for 5 chain complex
+
+    if mhc_class == 1:
+        a1 = "50-86"
+        a2 = "140-176"
+    elif mhc_class == 2:
+        a1 = "46-78"
+        a2 = "54-91"
+    else:
+        sys.exit("MHC class unknown")
 
     for pairing in mhc_pairs:
-        command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
-                  "source /*/%s/40-60\n" \
-                  "source /*/%s/40-60\n" \
-                  "target /*/%s\n" \
-                  "target /*/%s\n" \
-                  "mindist 0.0\n" \
-                  "maxdist 8.0" %(pdb, alpha, beta, pairing[0], pairing[1])
+
+        if mhc_class == 1:
+            command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
+                      "source /*/%s/40-60\n" \
+                      "source /*/%s/40-60\n" \
+                    "target /*/%s/%s/\n" \
+                    "target /*/%s/%s/\n" \
+                    "mindist 0.0\n" \
+                    "maxdist 4.0" %(pdb, alpha, beta, pairing[0], a1, pairing[0], a2)
+        else:
+            command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
+                      "source /*/%s/40-60\n" \
+                      "source /*/%s/40-60\n" \
+                      "target /*/%s/%s/\n" \
+                      "target /*/%s/%s/\n" \
+                      "mindist 0.0\n" \
+                      "maxdist 4.0" % (pdb, alpha, beta, pairing[0], a1, pairing[1], a2)
+
         os.system(command)
         with open("ab_contact.txt") as f:
             for line in f:
                 if "Total" in line:
                     contacts.append(int(line.split()[1]))
 
-    pair = mhc_pairs[contacts.index(max(contacts))]
-    if all(v == 0 for v in contacts):
-        success = False
-    else:
-        success = True
-
-    
-    return pair[0], pair[1], success
+    return mhc_pairs, contacts
 
 
 def _map_peptide(tcra, tcrb, peptides, pdb):
@@ -335,15 +376,10 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
     removable = alphas + betas
 
     not_tcrs = _non_tcr_chains(chains, alphas, betas)
-    tcr_pairs = _pair_tcrs(alphas, betas, numbered_name)
 
+    tcr_pair = _pair_tcrs(alphas, betas, numbered_name)
 
-    if len(tcr_pairs) > 2:
-        alphas, betas = list(zip(*tcr_pairs))
-    else:
-        alphas = list(tcr_pairs[0])
-        betas = list(tcr_pairs[1])
-        tcr_pairs = [tcr_pairs]
+    print("The following is the TCR pair being used: %s and %s" %(tcr_pair[0], tcr_pair[1]))
 
     none_tcr = list(set(chains) - set(removable))
     peps, mhcas, mhcbs, mhc_class =_get_mhc_pep(none_tcr, "clean.fasta")
@@ -359,31 +395,20 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
         outdir = pdb_file.split("/")[-1].replace(".pdb", "")
         shutil.rmtree(outdir)
         sys.exit("One of MHCa or MHCb could not be identified")
-        
-    if mhc_class == 1:
-        print("Pairing MHC class I")
-        alpha_range = "14-16"
-        beta_range = "22-24"
-        distance = "32.0"
-        mhc_pairs = _pair_mhcs(mhcas, mhcbs, numbered_name, alpha_range, beta_range, distance)
-    else:
-        alpha_range = "28-30"
-        beta_range = "38-40"
-        distance = "22.0"
-        mhc_pairs = _pair_mhcs(mhcas, mhcbs, numbered_name, alpha_range, beta_range, distance)
-        print("Pairing MHC class II")
 
-    for tcr in tcr_pairs:
-        mhc_alpha, mhc_beta, success =_map_tcr_to_mhc(mhc_pairs, tcr[0], tcr[1], numbered_name)
+    print("The following chains are peptides: %s" % (",".join(peps)))
+    print("The following chains are MHCas: %s" % (",".join(mhcas)))
+    print("The following chains are MHCbs/B2Ms: %s" % (",".join(mhcbs)))
 
-        if success:
-            print("Successfully paired a TCR to MHC")
-            peptide = _map_peptide(tcr[0], tcr[1], peps, numbered_name)
-            tcr_alpha = tcr[0]
-            tcr_beta = tcr[1]
-            return tcr_alpha, tcr_beta, peptide, mhc_alpha, mhc_beta, mhc_class
-        else:
-            print("Unsuccessfuly tried to pair a TCR and MHC, trying again")
-            continue
-    
-    sys.exit("Could not successfully group a TCR-pMHC complex")
+
+    mhc_pairs = _pair_mhcs(mhcas, mhcbs, numbered_name, mhc_class)
+
+
+    mhc_pairings, contact_no =_map_tcr_to_mhc(mhc_pairs, tcr_pair[0], tcr_pair[1], numbered_name, mhc_class)
+
+    index = contact_no.index(max(contact_no))
+    chosen_mhc = mhc_pairings[index]
+
+    peptide = _map_peptide(tcr_pair[0], tcr_pair[1], peps, numbered_name)
+
+    return tcr_pair[0], tcr_pair[1],  peptide, chosen_mhc[0], chosen_mhc[1], mhc_class

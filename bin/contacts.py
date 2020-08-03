@@ -326,7 +326,7 @@ def add_MHC_annotation(matrix, mhc_class):
         if chain == 'MHCa' and mhc_class == 2:
             if 46 <= residue <= 78:
                 line[10] = 'MHCa1'
-        if chain == 'MHCa' and mhc_class == 2:
+        if chain == 'MHCb' and mhc_class == 2:
             if 54 <= residue <= 91:
                  line[10] = 'MHCb1'
 
