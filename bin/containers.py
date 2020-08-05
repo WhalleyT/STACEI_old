@@ -9,7 +9,7 @@ class PDBStrings:
         #use outdir if specified, else use pdb name
         if outdir != "":
 
-            if outdir.endswith("/"):
+            if outdir.endswith("/") == False:
                 outdir = outdir + "/"
 
             self.name = outdir + arg.rsplit(".")[0].split("/")[-1]
@@ -69,7 +69,7 @@ class ChainInformation:
 
 class Paths:
     def __init__(self, seq_path, contact_path, pisa_path, sc_path, xing_path,
-                 pdb_path, vis_path, session_path, fasta_path, elec_path, r_path):
+                 pdb_path, vis_path, session_path, fasta_path, elec_path, r_path, basic_path):
         self.sequence_path = seq_path
         self.contact_path = contact_path
         self.sc_path = sc_path
@@ -82,6 +82,7 @@ class Paths:
         self.elec_path = elec_path
         self.r_plots_path = r_path
         self.current = os.getcwd()
+        self.basic_information = basic_path
 
 
 class FastaPaths:

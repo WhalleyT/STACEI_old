@@ -583,7 +583,9 @@ def calculate_and_print(pdb, fasta, MHCclass, ray, chains, file_name, pdb_name):
                  See Usage for more details.")
 
     if(not x for x in cysCheck):
-        warnings.warn("Missing cysteine found in one of the TCR coordinates.This may be because your PDB file does not have a cysteine at the relevant location.The tool will proceed to calculate crossing angle from where this cysteine should be so proceed with caution and check to see if the result is sensible.")
+        warnings.warn("Missing cysteine found in one of the TCR coordinates.This may be because your PDB file does \
+        not have a cysteine at the relevant location.The tool will proceed to calculate crossing angle from where \
+        this cysteine should be so proceed with caution and check to see if the result is sensible.")
 
     print("\nTCRa and TCRb cysteine pair SG atoms are:\n")
     print(TCRaCys1)

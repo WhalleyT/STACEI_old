@@ -194,13 +194,17 @@ colour_name  <- c("TCRa", "TCRb", "peptide", "MHCa", "MHCb",
 TCR <- contacts[grep("TCR", contacts$Donor_Chain),]
 TCR <- TCR[!is.na(TCR$Donor_Annotation),]
 
+#order as -> 111, 111A, 111B, 112B, 112A, 112
+orderings <- c(as.character(seq(1, 110)), c("111", "111A", "111B", "112B", "112A", "112"), as.character(seq(113, 250)))
+TCR$Donor_ResNum <- factor(TCR$Donor_ResNum, levels = orderings)
+
 TCR %>%
   group_by(Donor_Annotation, Donor_ResNum, Type) %>%
   tally() %>%
   filter(Donor_Annotation != "") %>%
   ggplot(., aes(x=Donor_ResNum, y=n, fill=Type))+
   geom_bar(stat="identity")+
-  facet_grid(Donor_Annotation~.)+
+  facet_grid(Donor_Annotation~., scales = "free")+
   scale_fill_brewer(palette = "Set2")+
   theme_classic()+
   ylab("No. contacts")+
@@ -208,8 +212,8 @@ TCR %>%
   guides(fill=guide_legend(title="Contact force"))+
   theme(plot.title=element_text(hjust = 0.5))
 
-cdr_pie <- paste(sub_dir, "/single_facet.tiff", sep = "")
-ggsave(cdr_pie)
+cdr_plot <- paste(sub_dir, "/single_facet.tiff", sep = "")
+ggsave(cdr_plot)
 
 
 TCR %>%
@@ -237,7 +241,7 @@ chain_split$Donor_Annotation <- gsub('.{1}$', '', chain_split$Donor_Annotation)
 
 ggplot(chain_split, aes(x=Donor_ResNum, y=n, fill=Type))+
   geom_bar(stat="identity")+
-  facet_grid(Donor_Annotation~chain)+
+  facet_grid(Donor_Annotation~chain, scales = "free")+
   scale_fill_brewer(palette = "Set2")+
   theme_classic()+
   ylab("No. contacts")+
@@ -250,7 +254,7 @@ ggsave(cdr_rev)
 
 ggplot(chain_split, aes(x=Donor_ResNum, y=n, fill=Type))+
   geom_bar(stat="identity")+
-  facet_grid(chain~Donor_Annotation)+
+  facet_grid(chain~Donor_Annotation, scales = "free")+
   scale_fill_brewer(palette = "Set2")+
   theme_classic()+
   ylab("No. contacts")+
@@ -346,7 +350,9 @@ ggplot(pie_df, aes(x=1, y=n, fill=Donor_Annotation, width=1))+
 cdr_pie <- paste(sub_dir, "/cdr_loop_contact_pie.tiff", sep = "")
 ggsave(cdr_pie)
 
-ggplot(pie_df, aes(x=freq/2, y=n, fill=Donor_Annotation, width=freq))+
+print("Making scaled pie")
+
+scaled_pie <- ggplot(pie_df, aes(x=freq/2, y=n, fill=Donor_Annotation, width=freq))+
   theme_classic()+
   ggtitle("Relative Contribution of CDR Loop to Contacts")+
   geom_bar(stat="identity", color='black', position = "fill")+
@@ -361,8 +367,8 @@ ggplot(pie_df, aes(x=freq/2, y=n, fill=Donor_Annotation, width=freq))+
   facet_grid(.~group)+
   scale_fill_manual(values=sub_pallete, name = "CDR Loop")
 
-cdr_pie <- paste(sub_dir, "/cdr_loop_contact_scaled_pie.tiff", sep = "")
-ggsave(cdr_pie)
+cdr_pie_scaled <- paste(sub_dir, "/cdr_loop_contact_scaled_pie.tiff", sep = "")
+ggsave(filename = cdr_pie_scaled, plot = scaled_pie)
 
 #now let's have a go at the circos plots
 #get rid of ratio

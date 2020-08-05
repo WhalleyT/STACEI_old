@@ -81,6 +81,11 @@ def _non_tcr_chains(chains, alphas, betas):
     return list(set(chains) - set(alphas + betas))
 
 
+def all_zero(values):
+    #return if a list is all zero
+    return all(v == 0 for v in values)
+
+
 def _pair_tcrs(alphas, betas, pdb):
     if len(alphas) is 1 and len(betas) is 1:
         print("There is only one TCR alpha and beta chain pairing possible")
@@ -156,8 +161,13 @@ def  _get_mhc_pep(none_tcr, fasta):
         max_score = max(scores)
         max_index = scores.index(max(scores))
 
+        protein_len = len(hit_protein)
+
+        #Low BLAST score
         if max_score < 50:
-            peptides.append(test)
+            #is it a peptide?
+            if protein_len <= 40:
+                peptides.append(test)
         else:
             ref_name = refs[max_index]
 
@@ -264,8 +274,8 @@ def _map_tcr_to_mhc(mhc_pairs, alpha, beta, pdb, mhc_class):
 
         if mhc_class == 1:
             command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
-                      "source /*/%s/40-60\n" \
-                      "source /*/%s/40-60\n" \
+                      "source /*/%s/70-110\n" \
+                      "source /*/%s/70-110\n" \
                     "target /*/%s/%s/\n" \
                     "target /*/%s/%s/\n" \
                     "mindist 0.0\n" \
@@ -288,26 +298,40 @@ def _map_tcr_to_mhc(mhc_pairs, alpha, beta, pdb, mhc_class):
     return mhc_pairs, contacts
 
 
-def _map_peptide(tcra, tcrb, peptides, pdb):
+def _map_peptide(mhca, mhcb, peptides, pdb, mhc_class):
     if len(peptides) == 1:
        return peptides[0]
 
     contacts = []
 
+    if mhc_class == 1:
+        a1 = "50-86"
+        a2 = "140-176"
+    elif mhc_class == 2:
+        a1 = "46-78"
+        a2 = "54-91"
+
     for peptide in peptides:
-        command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
-                  "source /*/%s/95-120\n" \
-                  "source /*/%s/95-120\n" \
-                  "target /*/%s\n" \
-                  "mindist 0.0\n" \
-                  "maxdist 4.0" %(pdb, tcra, tcrb, peptide)
+        if mhc_class == 1:
+            command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
+                      "source /*/%s/\n" \
+                      "target /*/%s/%s/\n" \
+                      "target /*/%s/%s/\n" \
+                      "mindist 0.0\n" \
+                      "maxdist 4.0" %(pdb, peptide, mhca, a1, mhca, a2)
+        else:
+            command = "ncont XYZIN %s <<eof > ab_contact.txt \n" \
+                      "source /*/%s/\n" \
+                      "target /*/%s/%s/\n" \
+                      "target /*/%s/%s/\n" \
+                      "mindist 0.0\n" \
+                      "maxdist 4.0" % (pdb, peptide, mhca, a1, mhcb, a2)
 
         os.system(command)
-
         with open("ab_contact.txt") as f:
             for line in f:
                 if "Total" in line:
-                    contacts.append(line.split()[1])
+                    contacts.append(int(line.split()[1]))
 
     pep = peptides[contacts.index(max(contacts))]
     return pep
@@ -357,13 +381,16 @@ def clean_pdb_standard(infile, outfile):
                             previous_string = current_string
 
 
-def annotate_complex(pdb_file, filtered_name, numbered_name):
+def annotate_complex(pdb_file, numbered_name, outdir):
     chains = _get_chains(pdb_file)
     print("PDB contains %i chains" %len(chains))
 
-    outdir = pdb_file.split("/")[-1].replace(".pdb", "")
-
     if len(chains) < 5:
+        #os.remove(numbered_name)
+        #os.remove("ANARCI.txt")
+        #os.remove("ab_contact.txt")
+       # os.remove("clean.fasta")
+
         shutil.rmtree(outdir)
         sys.exit("Not enough chains")
 
@@ -386,13 +413,12 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
 
     #now let's pair our mhca and bs then see if they map to the tcr
 
-    if not mhcas or not mhcbs:
+    if not mhcas or not mhcbs or not peps:
         os.remove(numbered_name)
         os.remove("ANARCI.txt")
-        os.remove("ab_contact.txt")
+        #os.remove("ab_contact.txt")
         os.remove("clean.fasta")
 
-        outdir = pdb_file.split("/")[-1].replace(".pdb", "")
         shutil.rmtree(outdir)
         sys.exit("One of MHCa or MHCb could not be identified")
 
@@ -406,9 +432,27 @@ def annotate_complex(pdb_file, filtered_name, numbered_name):
 
     mhc_pairings, contact_no =_map_tcr_to_mhc(mhc_pairs, tcr_pair[0], tcr_pair[1], numbered_name, mhc_class)
 
+
     index = contact_no.index(max(contact_no))
     chosen_mhc = mhc_pairings[index]
 
-    peptide = _map_peptide(tcr_pair[0], tcr_pair[1], peps, numbered_name)
+    peptide = _map_peptide(chosen_mhc[0], chosen_mhc[1], peps, numbered_name, mhc_class)
 
     return tcr_pair[0], tcr_pair[1],  peptide, chosen_mhc[0], chosen_mhc[1], mhc_class
+
+
+def annotate_complex_specified_chains(pdb_file, numbered_name, outdir):
+    chains = _get_chains(pdb_file)
+    print("PDB contains %i chains" %len(chains))
+
+    if len(chains) < 5:
+        #os.remove(numbered_name)
+        #os.remove("ANARCI.txt")
+        #os.remove("ab_contact.txt")
+       # os.remove("clean.fasta")
+
+        shutil.rmtree(outdir)
+        sys.exit("Not enough chains")
+
+
+    clean_pdb_standard(pdb_file, numbered_name)

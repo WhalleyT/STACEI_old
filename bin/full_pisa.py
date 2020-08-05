@@ -27,7 +27,6 @@ def retrieve_interface(pairing):
                     to_chain = line[5]
 
                     if from_chain in pairing and to_chain in pairing:
-                        print(pairing)
                         if from_chain == pairing[1]:
                             structure = "Struct. 1"
                         else:
@@ -35,7 +34,6 @@ def retrieve_interface(pairing):
 
                         return id, structure
 
-    print("Could not retrieve chain pair")
     return None, None
 
 
@@ -58,7 +56,6 @@ def extract_pisa(session, chain, all_chains, outfile, annotation_dictionary):
         tchain = c
         fchain = chain
 
-        print(tchain, fchain)
         interface, structure = retrieve_interface([tchain, fchain])
 
         if interface is not None:

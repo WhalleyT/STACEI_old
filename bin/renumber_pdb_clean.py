@@ -65,10 +65,6 @@ def grab_anarci_numbers(anarci_file):
 def filter_alignment(anarci, pdb):
     swout = SMITH_WATERMAN.align(anarci, pdb)
     offset = swout.q_pos - swout.r_pos
-    
-    attrs = vars(swout)
-    print(', '.join("%s: %s" % item for item in list(attrs.items())))
-
     return offset
 
 

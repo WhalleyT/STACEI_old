@@ -1,9 +1,26 @@
 #graphs peptide BSA
 
-library("ggplot2")
-library("dplyr")
+install_load <- function (package1, ...)  {   
+  
+  # convert arguments to vector
+  
+  # start loop to determine if each package is installed
+  for(package in package1){
+    
+    # if package is installed locally, load
+    if(package %in% rownames(installed.packages()))
+      do.call('library', list(package))
+    
+    # if package is not installed locally, download, then load
+    else {
+      install.packages(package)
+      do.call("library", list(package))
+    }
+  } 
+}
+packages <- c("ggplot2", "dplyr", "magrittr")
 
-#print(getwd())
+install_load(packages)
 
 args <- commandArgs(TRUE)
 
@@ -28,6 +45,6 @@ plt <- ggplot(data = BSA, aes(x = No, y = mean_avail, fill = peptide))+
   scale_fill_manual(values = c("peptide" = "#FFFF00"))
 
 ggsave("BSA.png", plot = plt)
-write.table(BSA[,5], "peptide_BSA_piped.txt", sep="\t",
+write.table(BSA$mean_avail, "peptide_BSA_piped.txt", sep="\t",
             row.names = FALSE, quote = FALSE,
             col.names = FALSE) 

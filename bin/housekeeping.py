@@ -112,6 +112,7 @@ def create_paths(file_name):
     fasta_path = file_name + "/FASTAs"
     elec_path = file_name + "/electrostatics"
     r_path = file_name + "/R_visualisation"
+    basic_path = file_name + "/basic_information.txt"
 
     table_path = contact_path + "/contact_tables"
     mhc_table = table_path + "/MHC_to_pep"
@@ -126,7 +127,7 @@ def create_paths(file_name):
             os.makedirs(path)
 
     return containers.Paths(seq_path, contact_path, pisa_path, sc_path, xing_path,
-                            pdb_path, vis_path, session_path, fasta_path, elec_path, r_path)
+                            pdb_path, vis_path, session_path, fasta_path, elec_path, r_path, basic_path)
 
 
 def clean_namespace(name, paths, original, id):
@@ -174,3 +175,24 @@ def check_install():
     for comm in commands:
         if find_executable(comm) == False:
             sys.exit("Could not find executable for %s" %comm)
+
+
+def write_basic_info(file, genes, complex):
+    outfile = open(file, "w")
+
+    outfile.write("TCRa chain %s\n" % complex.tcra)
+    outfile.write("TCRb chain %s\n" % complex.tcrb)
+    outfile.write("peptide chain: %s\n" % complex.peptide)
+    outfile.write("MHCa chain: %s\n" % complex.mhca)
+    outfile.write("MHCb chain: %s\n" % complex.mhcb)
+    outfile.write("\n")
+
+    outfile.write("MHC class: %s\n" % complex.mhc_class)
+    outfile.write("\n")
+
+    outfile.write("TRAV: %s\n" %genes["TRAV"])
+    outfile.write("TRAJ: %s\n" %genes["TRAJ"])
+    outfile.write("TRBV: %s\n" %genes["TRBV"])
+    outfile.write("TRBJ: %s\n" %genes["TRBJ"])
+
+    outfile.close()

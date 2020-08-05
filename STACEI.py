@@ -54,8 +54,22 @@ def main():
 
 
     print("Finding TCR-pMHC chain annotation")
-    tcra, tcrb, peptide, mhca, mhcb, mhc_class = annotation.annotate_complex(pdb.file, pdb.filtered, pdb.numbered)
-    full_complex = classes.ChainInformation(tcra, tcrb, peptide, mhc_class, mhca, mhcb)
+    print(pdb.name)
+    if auto:
+        tcra, tcrb, peptide, mhca, mhcb, mhc_class = annotation.annotate_complex(pdb.file, pdb.numbered, pdb.name)
+        full_complex = classes.ChainInformation(tcra, tcrb, peptide, mhc_class, mhca, mhcb)
+    else:
+        annotation.annotate_complex_specified_chains(pdb.file, pdb.numbered, pdb.name)
+
+        tcra = args.chains[0]
+        tcrb = args.chains[1]
+        peptide = args.chains[2]
+        mhca = args.chains[3]
+        mhcb = args.chains[4]
+
+        mhc_class = args.mhc_class
+
+        full_complex = classes.ChainInformation(tcra, tcrb, peptide, mhc_class, mhca, mhcb)
 
 
     print("TCRa and TCRb are %s and %s, respectively" % (tcra, tcrb))
@@ -86,8 +100,10 @@ def main():
                   full_complex.peptide, pdb.imgt)
     
     print("Parsing ANARCI")
-    vdj_out.anarci_to_imgt_fasta(pdb.imgt, tcra, tcrb, peptide, mhca, mhcb, anarci_files.outfile, 
-                                 pdb.name, fasta_files.linear, fasta_files.annotated)
+    gene_keys = vdj_out.anarci_to_imgt_fasta(pdb.imgt, tcra, tcrb, peptide, mhca, mhcb, anarci_files.outfile,
+                                             pdb.name, fasta_files.linear, fasta_files.annotated)
+
+    housekeeping.write_basic_info(paths.basic_information, gene_keys, full_complex)
 
 
 
@@ -231,11 +247,11 @@ def main():
     circos_script = current_path + "/bin/R/circos_and_pie.R"
 
     print("Calling R for BSA of peptide")
-    subprocess.call("Rscript %s %s" % (bsa_script,
-                                       pisa_files.pept_chains), shell=True)
+    print(bsa_script, pisa_files.pept_chains)
+    subprocess.call("Rscript %s %s" % (bsa_script, pisa_files.pept_chains), shell=True)
 
     print("Making Circos plots")
-
+    print(circos_script, contact_paths.mhc_to_pep_clean_file, contact_paths.tcr_to_mhc_clean_file, fasta_files.annotated,pdb.name)
     subprocess.call("Rscript %s %s %s %s %s" % (circos_script,
                                                 contact_paths.mhc_to_pep_clean_file,
                                                 contact_paths.tcr_to_mhc_clean_file,

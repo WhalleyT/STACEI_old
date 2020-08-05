@@ -1,4 +1,7 @@
 import swalign
+import sys
+import warnings
+
 from . import generic_functions
 
 #GLOBAL PARAMETERS
@@ -15,6 +18,7 @@ def grab_VDJ_from_ANARCI(anarci):
     
 
     with open(anarci) as f:
+        tra_found, trb_found, trd_found = False, False, False
         for line in f:
             split_line = line.split("|")
             
@@ -22,22 +26,35 @@ def grab_VDJ_from_ANARCI(anarci):
                 gene_keys["TRBV"] = split_line[2]
                 gene_keys["TRBJ"] = split_line[4]
                 gene_keys["B_species"] = split_line[1]
-                gene_keys["B_score"] = split_line[3]   
-
-            if "TRA" in line:
+                gene_keys["B_score"] = split_line[3]
+                trb_found = True
+            elif "TRA" in line:
                 gene_keys["TRAV"] = split_line[2]
                 gene_keys["TRAJ"] = split_line[4]
                 gene_keys["A_species"] = split_line[1]
-                gene_keys["A_score"] = split_line[3]  
+                gene_keys["A_score"] = split_line[3]
+                tra_found = True
+            elif "TRD" in line:
+                gene_keys["TRAV"] = split_line[2]
+                gene_keys["TRAJ"] = split_line[4]
+                gene_keys["A_species"] = split_line[1]
+                gene_keys["A_score"] = split_line[3]
+                trd_found = True
+                tra_found = True
 
+        if trd_found:
+            warnings.warn("Warning. The ANARCI file annotated the TCRa as TCRd, this seems to happen on some "
+                          "occasions, the numbering is still correct, but pay specific attention to it.")
+
+        if not tra_found or not trb_found:
+            sys.exit("Error, both the TCRa and TCRb were not found.")
     return gene_keys
 
 
 def cheatsblastp(query, imgt_seq):
     alignment = SMITH_WATERMAN.align(query, imgt_seq)
-    cigar = alignment.cigar
 
-    return alignment.r_pos, alignment.r_end, cigar
+    return alignment.r_pos, alignment.r_end, alignment.cigar
 
 def grab_cdr_loops(pair, start, end, loop_string):
     nums = [i[0] for i in pair]
@@ -130,4 +147,4 @@ def anarci_to_imgt_fasta(pdb, tcra, tcrb, peptide, mhca, mhcb, anarci,
         outfile.write(name + "\n" + seq + "\n")
     
     print("Gene usage is as follows:\n\t-%s\n\t-%s\n\t-%s\n\t-%s" %(gene_keys["TRAV"], gene_keys["TRAJ"], gene_keys["TRBV"], gene_keys["TRBJ"]))
-    return gene_keys["TRAV"], gene_keys["TRAJ"], gene_keys["TRBV"], gene_keys["TRBJ"]
+    return gene_keys
