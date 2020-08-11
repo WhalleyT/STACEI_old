@@ -31,7 +31,8 @@ Python and R generally come pre-installed on most Linux and Mac distributions, b
 `sudo apt-get install python2.7`
 `sudo apt-get install r-base`
 
-## Manually installng
+## Installation
+### Manually installation
 
 CCP4 can be installed by following the instruction guidlines. It must also be added to the path in order for Python to recognise it when making calls to it. This can be done by either running `./start` from within the CCP4 directory, or by running `source /applications/ccp4-x.y.x/bin/ccp4.setup-sh` and adding it to your BASH path.
 
@@ -39,7 +40,7 @@ PyMol can also be downloaded by following the above link. Conda users can instal
 
 ANARCI must be downloaded by following the link manually, or by installing via ```setuptools```.
 
-### Installing
+### Python package installation
 To install, simply clone this repository or download it. Cloning it can be done with:
 
 `git clone github.com/whalleyt/STACEI`
